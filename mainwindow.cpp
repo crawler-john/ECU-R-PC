@@ -8,6 +8,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->label_6->hide();
+    ui->label_9->hide();
+    ui->label_10->hide();
+    ui->label_11->hide();
+    ui->label_12->hide();
+    ui->lineEdit_IPAddress->hide();
+    ui->lineEdit_Mask->hide();
+    ui->lineEdit_gate->hide();
+    ui->lineEdit_DNS1->hide();
+    ui->lineEdit_DNS2->hide();
     ECU_Client = new Communication("10.10.100.254",8899);
 }
 
@@ -112,12 +122,12 @@ void MainWindow::on_btn_baseInfo_clicked()
 
 void MainWindow::on_btn_getTime_clicked()
 {
+    //获取当前的时间
     ui->dateTimeEdit->setDateTime(QDateTime::currentDateTime());
 }
 
 void MainWindow::on_btn_setTime_clicked()
 {
-
     qint64 recvLen=0;
     bool flag = false;
     char Sendbuff[100];
@@ -130,6 +140,7 @@ void MainWindow::on_btn_setTime_clicked()
     int hour = ui->dateTimeEdit->dateTime().time().hour();
     int minute = ui->dateTimeEdit->dateTime().time().minute();
     int second = ui->dateTimeEdit->dateTime().time().second();
+    //设置ECU-R的时间
     sprintf(DateTime,"%04d%02d%02d%02d%02d%02d",year,month,day,hour,minute,second);
     DateTime[14] = '\0';
     sprintf(Sendbuff,"APS1100450006%sEND%sEND",ECUID,DateTime);
@@ -154,7 +165,35 @@ void MainWindow::on_btn_setTime_clicked()
 
 void MainWindow::on_btn_setNetwork_clicked()
 {
+    /*
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[100];
+    char Recvbuff[4096] = {'\0'};
 
+    memset(Recvbuff,0x00,4096);
+
+    //设置ECU-R的有线网
+    sprintf(DateTime,"%04d%02d%02d%02d%02d%02d",year,month,day,hour,minute,second);
+    DateTime[14] = '\0';
+    sprintf(Sendbuff,"APS1100450006%sEND%sEND",ECUID,DateTime);
+    qDebug("%s",Sendbuff);
+    flag = ECU_Client->ECU_Communication(Sendbuff,45,Recvbuff,&recvLen,2000);
+    if(flag == true)
+    {
+        if(!memcmp(&Recvbuff[13],"00",2))
+        {
+            statusBar()->showMessage(tr("Set Time Success ..."), 1000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("Set Time Failed ..."), 1000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 1000);
+    }
+    */
 }
 
 void MainWindow::on_btn_addID_clicked()
@@ -169,26 +208,6 @@ void MainWindow::on_btn_addID_clicked()
     {
         statusBar()->showMessage(tr("ID Length Mismatching ..."), 1000);
     }
-}
-
-void MainWindow::on_btn_SetID_clicked()
-{
-
-}
-
-void MainWindow::on_btn_ECUImport_clicked()
-{
-
-}
-
-void MainWindow::on_btn_configWIFI_clicked()
-{
-
-}
-
-void MainWindow::on_btn_checkWifiStatus_clicked()
-{
-
 }
 
 void MainWindow::on_btn_setPasswd_clicked()
@@ -216,12 +235,12 @@ void MainWindow::on_btn_setPasswd_clicked()
     OldPasswd[OldLen] = '\0';
     NewPasswd[NewLen] = '\0';
 
-    sprintf(Sendbuff,"APS11000005%sEND%02d%s%02d%sEND",ECUID,OldLen,OldPasswd,NewLen,NewPasswd);
+    sprintf(Sendbuff,"APS1100000005%sEND%02d%s%02d%sEND",ECUID,OldLen,OldPasswd,NewLen,NewPasswd);
     sprintf(length,"%04d",QString(Sendbuff).length());
     memcpy(&Sendbuff[5],length,4);
     memset(Recvbuff,0x00,200);
     qDebug("%s\n",Sendbuff);
-    flag = ECU_RSClient->ECU_Communication(Sendbuff,QString(Sendbuff).length(),Recvbuff,&recvLen,2000);
+    flag = ECU_Client->ECU_Communication(Sendbuff,QString(Sendbuff).length(),Recvbuff,&recvLen,2000);
     if(flag == true)
     {
         if(Recvbuff[12] == '1')
@@ -236,5 +255,54 @@ void MainWindow::on_btn_setPasswd_clicked()
     }else
     {
         statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_checkWifiStatus_clicked()
+{
+
+}
+
+void MainWindow::on_btn_configWIFI_clicked()
+{
+
+}
+
+void MainWindow::on_btn_SetID_clicked()
+{
+
+}
+
+void MainWindow::on_btn_ECUImport_clicked()
+{
+
+}
+
+void MainWindow::on_comboBox_activated(int index)
+{
+    if(index == 0)
+    {
+        ui->label_6->hide();
+        ui->label_9->hide();
+        ui->label_10->hide();
+        ui->label_11->hide();
+        ui->label_12->hide();
+        ui->lineEdit_IPAddress->hide();
+        ui->lineEdit_Mask->hide();
+        ui->lineEdit_gate->hide();
+        ui->lineEdit_DNS1->hide();
+        ui->lineEdit_DNS2->hide();
+    }else if(index == 1)
+    {
+        ui->label_6->show();
+        ui->label_9->show();
+        ui->label_10->show();
+        ui->label_11->show();
+        ui->label_12->show();
+        ui->lineEdit_IPAddress->show();
+        ui->lineEdit_Mask->show();
+        ui->lineEdit_gate->show();
+        ui->lineEdit_DNS1->show();
+        ui->lineEdit_DNS2->show();
     }
 }
