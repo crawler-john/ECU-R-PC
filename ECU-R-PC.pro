@@ -6,15 +6,19 @@
 
 QT       += core gui network
 
+RC_FILE = myapp.rc
 TARGET = ECU-R-PC
 TEMPLATE = app
 
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    Source/socket/Socket.cpp
+    communication.cpp
 
 HEADERS  += mainwindow.h \
-    Source/socket/Socket.h
+    communication.h
 
 FORMS    += mainwindow.ui
+
+OTHER_FILES += \
+    myapp.rc
