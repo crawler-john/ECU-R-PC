@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Tue Aug 8 22:06:16 2017
+** Created: Thu Aug 10 16:57:52 2017
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -89,10 +89,40 @@ public:
     QLabel *label_10;
     QLabel *label_11;
     QLabel *label_12;
+    QLabel *label_22;
+    QLabel *label_24;
+    QLabel *label_28;
+    QLabel *label_31;
+    QLabel *label_32;
+    QLabel *label_33;
+    QLabel *label_34;
+    QLabel *label_35;
+    QLabel *label_36;
+    QLabel *label_37;
+    QLabel *label_38;
+    QLabel *label_26;
+    QLabel *label_39;
+    QLabel *label_40;
+    QLabel *label_41;
+    QLineEdit *lineEdit_IPAddress2;
+    QLineEdit *lineEdit_IPAddress3;
+    QLineEdit *lineEdit_IPAddress4;
     QLineEdit *lineEdit_Mask;
+    QLineEdit *lineEdit_Mask2;
+    QLineEdit *lineEdit_Mask3;
+    QLineEdit *lineEdit_Mask4;
     QLineEdit *lineEdit_gate;
+    QLineEdit *lineEdit_gate2;
+    QLineEdit *lineEdit_gate3;
+    QLineEdit *lineEdit_gate4;
     QLineEdit *lineEdit_DNS1;
+    QLineEdit *lineEdit_DNS12;
+    QLineEdit *lineEdit_DNS13;
+    QLineEdit *lineEdit_DNS14;
     QLineEdit *lineEdit_DNS2;
+    QLineEdit *lineEdit_DNS22;
+    QLineEdit *lineEdit_DNS23;
+    QLineEdit *lineEdit_DNS24;
     QGroupBox *groupBox_5;
     QWidget *gridLayoutWidget_3;
     QGridLayout *gridLayout_3;
@@ -424,25 +454,175 @@ public:
 
         gridLayout_2->addWidget(label_12, 4, 0, 1, 1);
 
+        label_22 = new QLabel(gridLayoutWidget_2);
+        label_22->setObjectName(QString::fromUtf8("label_22"));
+
+        gridLayout_2->addWidget(label_22, 0, 2, 1, 1);
+
+        label_24 = new QLabel(gridLayoutWidget_2);
+        label_24->setObjectName(QString::fromUtf8("label_24"));
+
+        gridLayout_2->addWidget(label_24, 0, 4, 1, 1);
+
+        label_28 = new QLabel(gridLayoutWidget_2);
+        label_28->setObjectName(QString::fromUtf8("label_28"));
+
+        gridLayout_2->addWidget(label_28, 1, 2, 1, 1);
+
+        label_31 = new QLabel(gridLayoutWidget_2);
+        label_31->setObjectName(QString::fromUtf8("label_31"));
+
+        gridLayout_2->addWidget(label_31, 2, 2, 1, 1);
+
+        label_32 = new QLabel(gridLayoutWidget_2);
+        label_32->setObjectName(QString::fromUtf8("label_32"));
+
+        gridLayout_2->addWidget(label_32, 3, 2, 1, 1);
+
+        label_33 = new QLabel(gridLayoutWidget_2);
+        label_33->setObjectName(QString::fromUtf8("label_33"));
+
+        gridLayout_2->addWidget(label_33, 4, 2, 1, 1);
+
+        label_34 = new QLabel(gridLayoutWidget_2);
+        label_34->setObjectName(QString::fromUtf8("label_34"));
+
+        gridLayout_2->addWidget(label_34, 1, 4, 1, 1);
+
+        label_35 = new QLabel(gridLayoutWidget_2);
+        label_35->setObjectName(QString::fromUtf8("label_35"));
+
+        gridLayout_2->addWidget(label_35, 2, 4, 1, 1);
+
+        label_36 = new QLabel(gridLayoutWidget_2);
+        label_36->setObjectName(QString::fromUtf8("label_36"));
+
+        gridLayout_2->addWidget(label_36, 3, 4, 1, 1);
+
+        label_37 = new QLabel(gridLayoutWidget_2);
+        label_37->setObjectName(QString::fromUtf8("label_37"));
+
+        gridLayout_2->addWidget(label_37, 4, 4, 1, 1);
+
+        label_38 = new QLabel(gridLayoutWidget_2);
+        label_38->setObjectName(QString::fromUtf8("label_38"));
+
+        gridLayout_2->addWidget(label_38, 1, 6, 1, 1);
+
+        label_26 = new QLabel(gridLayoutWidget_2);
+        label_26->setObjectName(QString::fromUtf8("label_26"));
+
+        gridLayout_2->addWidget(label_26, 0, 6, 1, 1);
+
+        label_39 = new QLabel(gridLayoutWidget_2);
+        label_39->setObjectName(QString::fromUtf8("label_39"));
+
+        gridLayout_2->addWidget(label_39, 2, 6, 1, 1);
+
+        label_40 = new QLabel(gridLayoutWidget_2);
+        label_40->setObjectName(QString::fromUtf8("label_40"));
+
+        gridLayout_2->addWidget(label_40, 3, 6, 1, 1);
+
+        label_41 = new QLabel(gridLayoutWidget_2);
+        label_41->setObjectName(QString::fromUtf8("label_41"));
+
+        gridLayout_2->addWidget(label_41, 4, 6, 1, 1);
+
+        lineEdit_IPAddress2 = new QLineEdit(gridLayoutWidget_2);
+        lineEdit_IPAddress2->setObjectName(QString::fromUtf8("lineEdit_IPAddress2"));
+
+        gridLayout_2->addWidget(lineEdit_IPAddress2, 0, 3, 1, 1);
+
+        lineEdit_IPAddress3 = new QLineEdit(gridLayoutWidget_2);
+        lineEdit_IPAddress3->setObjectName(QString::fromUtf8("lineEdit_IPAddress3"));
+
+        gridLayout_2->addWidget(lineEdit_IPAddress3, 0, 5, 1, 1);
+
+        lineEdit_IPAddress4 = new QLineEdit(gridLayoutWidget_2);
+        lineEdit_IPAddress4->setObjectName(QString::fromUtf8("lineEdit_IPAddress4"));
+
+        gridLayout_2->addWidget(lineEdit_IPAddress4, 0, 7, 1, 1);
+
         lineEdit_Mask = new QLineEdit(gridLayoutWidget_2);
         lineEdit_Mask->setObjectName(QString::fromUtf8("lineEdit_Mask"));
 
         gridLayout_2->addWidget(lineEdit_Mask, 1, 1, 1, 1);
+
+        lineEdit_Mask2 = new QLineEdit(gridLayoutWidget_2);
+        lineEdit_Mask2->setObjectName(QString::fromUtf8("lineEdit_Mask2"));
+
+        gridLayout_2->addWidget(lineEdit_Mask2, 1, 3, 1, 1);
+
+        lineEdit_Mask3 = new QLineEdit(gridLayoutWidget_2);
+        lineEdit_Mask3->setObjectName(QString::fromUtf8("lineEdit_Mask3"));
+
+        gridLayout_2->addWidget(lineEdit_Mask3, 1, 5, 1, 1);
+
+        lineEdit_Mask4 = new QLineEdit(gridLayoutWidget_2);
+        lineEdit_Mask4->setObjectName(QString::fromUtf8("lineEdit_Mask4"));
+
+        gridLayout_2->addWidget(lineEdit_Mask4, 1, 7, 1, 1);
 
         lineEdit_gate = new QLineEdit(gridLayoutWidget_2);
         lineEdit_gate->setObjectName(QString::fromUtf8("lineEdit_gate"));
 
         gridLayout_2->addWidget(lineEdit_gate, 2, 1, 1, 1);
 
+        lineEdit_gate2 = new QLineEdit(gridLayoutWidget_2);
+        lineEdit_gate2->setObjectName(QString::fromUtf8("lineEdit_gate2"));
+
+        gridLayout_2->addWidget(lineEdit_gate2, 2, 3, 1, 1);
+
+        lineEdit_gate3 = new QLineEdit(gridLayoutWidget_2);
+        lineEdit_gate3->setObjectName(QString::fromUtf8("lineEdit_gate3"));
+
+        gridLayout_2->addWidget(lineEdit_gate3, 2, 5, 1, 1);
+
+        lineEdit_gate4 = new QLineEdit(gridLayoutWidget_2);
+        lineEdit_gate4->setObjectName(QString::fromUtf8("lineEdit_gate4"));
+
+        gridLayout_2->addWidget(lineEdit_gate4, 2, 7, 1, 1);
+
         lineEdit_DNS1 = new QLineEdit(gridLayoutWidget_2);
         lineEdit_DNS1->setObjectName(QString::fromUtf8("lineEdit_DNS1"));
 
         gridLayout_2->addWidget(lineEdit_DNS1, 3, 1, 1, 1);
 
+        lineEdit_DNS12 = new QLineEdit(gridLayoutWidget_2);
+        lineEdit_DNS12->setObjectName(QString::fromUtf8("lineEdit_DNS12"));
+
+        gridLayout_2->addWidget(lineEdit_DNS12, 3, 3, 1, 1);
+
+        lineEdit_DNS13 = new QLineEdit(gridLayoutWidget_2);
+        lineEdit_DNS13->setObjectName(QString::fromUtf8("lineEdit_DNS13"));
+
+        gridLayout_2->addWidget(lineEdit_DNS13, 3, 5, 1, 1);
+
+        lineEdit_DNS14 = new QLineEdit(gridLayoutWidget_2);
+        lineEdit_DNS14->setObjectName(QString::fromUtf8("lineEdit_DNS14"));
+
+        gridLayout_2->addWidget(lineEdit_DNS14, 3, 7, 1, 1);
+
         lineEdit_DNS2 = new QLineEdit(gridLayoutWidget_2);
         lineEdit_DNS2->setObjectName(QString::fromUtf8("lineEdit_DNS2"));
 
         gridLayout_2->addWidget(lineEdit_DNS2, 4, 1, 1, 1);
+
+        lineEdit_DNS22 = new QLineEdit(gridLayoutWidget_2);
+        lineEdit_DNS22->setObjectName(QString::fromUtf8("lineEdit_DNS22"));
+
+        gridLayout_2->addWidget(lineEdit_DNS22, 4, 3, 1, 1);
+
+        lineEdit_DNS23 = new QLineEdit(gridLayoutWidget_2);
+        lineEdit_DNS23->setObjectName(QString::fromUtf8("lineEdit_DNS23"));
+
+        gridLayout_2->addWidget(lineEdit_DNS23, 4, 5, 1, 1);
+
+        lineEdit_DNS24 = new QLineEdit(gridLayoutWidget_2);
+        lineEdit_DNS24->setObjectName(QString::fromUtf8("lineEdit_DNS24"));
+
+        gridLayout_2->addWidget(lineEdit_DNS24, 4, 7, 1, 1);
 
         groupBox_5 = new QGroupBox(tab);
         groupBox_5->setObjectName(QString::fromUtf8("groupBox_5"));
@@ -610,6 +790,21 @@ public:
         label_10->setText(QApplication::translate("MainWindow", "\347\275\221\345\205\263\357\274\232", 0, QApplication::UnicodeUTF8));
         label_11->setText(QApplication::translate("MainWindow", "DNS1\357\274\232", 0, QApplication::UnicodeUTF8));
         label_12->setText(QApplication::translate("MainWindow", "DNS2\357\274\232", 0, QApplication::UnicodeUTF8));
+        label_22->setText(QApplication::translate("MainWindow", ".", 0, QApplication::UnicodeUTF8));
+        label_24->setText(QApplication::translate("MainWindow", ".", 0, QApplication::UnicodeUTF8));
+        label_28->setText(QApplication::translate("MainWindow", ".", 0, QApplication::UnicodeUTF8));
+        label_31->setText(QApplication::translate("MainWindow", ".", 0, QApplication::UnicodeUTF8));
+        label_32->setText(QApplication::translate("MainWindow", ".", 0, QApplication::UnicodeUTF8));
+        label_33->setText(QApplication::translate("MainWindow", ".", 0, QApplication::UnicodeUTF8));
+        label_34->setText(QApplication::translate("MainWindow", ".", 0, QApplication::UnicodeUTF8));
+        label_35->setText(QApplication::translate("MainWindow", ".", 0, QApplication::UnicodeUTF8));
+        label_36->setText(QApplication::translate("MainWindow", ".", 0, QApplication::UnicodeUTF8));
+        label_37->setText(QApplication::translate("MainWindow", ".", 0, QApplication::UnicodeUTF8));
+        label_38->setText(QApplication::translate("MainWindow", ".", 0, QApplication::UnicodeUTF8));
+        label_26->setText(QApplication::translate("MainWindow", ".", 0, QApplication::UnicodeUTF8));
+        label_39->setText(QApplication::translate("MainWindow", ".", 0, QApplication::UnicodeUTF8));
+        label_40->setText(QApplication::translate("MainWindow", ".", 0, QApplication::UnicodeUTF8));
+        label_41->setText(QApplication::translate("MainWindow", ".", 0, QApplication::UnicodeUTF8));
         groupBox_5->setTitle(QApplication::translate("MainWindow", "\346\227\240\347\272\277\347\275\221\347\273\234\350\256\276\347\275\256", 0, QApplication::UnicodeUTF8));
         label_13->setText(QApplication::translate("MainWindow", "SSID", 0, QApplication::UnicodeUTF8));
         label_14->setText(QApplication::translate("MainWindow", "\345\257\206\347\240\201\357\274\232", 0, QApplication::UnicodeUTF8));

@@ -13,11 +13,49 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->label_10->hide();
     ui->label_11->hide();
     ui->label_12->hide();
+
+
+    ui->label_22->hide();
+    ui->label_24->hide();
+    ui->label_26->hide();
+    ui->label_28->hide();
+    ui->label_31->hide();
+
+    ui->label_32->hide();
+    ui->label_33->hide();
+    ui->label_34->hide();
+    ui->label_35->hide();
+    ui->label_36->hide();
+    ui->label_37->hide();
+    ui->label_38->hide();
+    ui->label_39->hide();
+    ui->label_40->hide();
+    ui->label_41->hide();
+
+
     ui->lineEdit_IPAddress->hide();
     ui->lineEdit_Mask->hide();
     ui->lineEdit_gate->hide();
     ui->lineEdit_DNS1->hide();
     ui->lineEdit_DNS2->hide();
+
+    ui->lineEdit_IPAddress2->hide();
+    ui->lineEdit_Mask2->hide();
+    ui->lineEdit_gate2->hide();
+    ui->lineEdit_DNS12->hide();
+    ui->lineEdit_DNS22->hide();
+
+    ui->lineEdit_IPAddress3->hide();
+    ui->lineEdit_Mask3->hide();
+    ui->lineEdit_gate3->hide();
+    ui->lineEdit_DNS13->hide();
+    ui->lineEdit_DNS23->hide();
+
+    ui->lineEdit_IPAddress4->hide();
+    ui->lineEdit_Mask4->hide();
+    ui->lineEdit_gate4->hide();
+    ui->lineEdit_DNS14->hide();
+    ui->lineEdit_DNS24->hide();
     ECU_Client = new Communication("10.10.100.254",8899);
 }
 
@@ -165,35 +203,44 @@ void MainWindow::on_btn_setTime_clicked()
 
 void MainWindow::on_btn_setNetwork_clicked()
 {
-    /*
     qint64 recvLen=0;
     bool flag = false;
-    char Sendbuff[100];
+    char Sendbuff[200] = {'\0'};
     char Recvbuff[4096] = {'\0'};
-
+    int select_item = 0;
     memset(Recvbuff,0x00,4096);
 
-    //设置ECU-R的有线网
-    sprintf(DateTime,"%04d%02d%02d%02d%02d%02d",year,month,day,hour,minute,second);
-    DateTime[14] = '\0';
-    sprintf(Sendbuff,"APS1100450006%sEND%sEND",ECUID,DateTime);
-    qDebug("%s",Sendbuff);
-    flag = ECU_Client->ECU_Communication(Sendbuff,45,Recvbuff,&recvLen,2000);
+    select_item = ui->comboBox->currentIndex();
+    qDebug("%d\n",select_item);
+    //先判断是静态  还是动态
+    if(select_item == 0)
+    {   //动态获取IP
+        sprintf(Sendbuff,"APS1100530007%sEND0000000000000000000000END",ECUID);
+        qDebug("%d  Sendbuff: %s\n",select_item,Sendbuff);
+    }else if(select_item == 1)
+    {   //静态获取IP
+        sprintf(Sendbuff,"APS1100530007%sEND0100000000000000000000END",ECUID);
+        qDebug("%d  Sendbuff: %s\n",select_item,Sendbuff);
+        //Sendbuff[30] = 0x00; //IP 1
+
+    }
+
+    flag = ECU_Client->ECU_Communication(Sendbuff,53,Recvbuff,&recvLen,2000);
     if(flag == true)
     {
         if(!memcmp(&Recvbuff[13],"00",2))
         {
-            statusBar()->showMessage(tr("Set Time Success ..."), 1000);
+            statusBar()->showMessage(tr("Set Network Success ..."), 1000);
         }
         else
         {
-            statusBar()->showMessage(tr("Set Time Failed ..."), 1000);
+            statusBar()->showMessage(tr("Set Network Failed ..."), 1000);
         }
     }else
     {
         statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 1000);
     }
-    */
+
 }
 
 void MainWindow::on_btn_addID_clicked()
@@ -287,11 +334,49 @@ void MainWindow::on_comboBox_activated(int index)
         ui->label_10->hide();
         ui->label_11->hide();
         ui->label_12->hide();
+
+
+        ui->label_22->hide();
+        ui->label_24->hide();
+        ui->label_26->hide();
+        ui->label_28->hide();
+        ui->label_31->hide();
+
+        ui->label_32->hide();
+        ui->label_33->hide();
+        ui->label_34->hide();
+        ui->label_35->hide();
+        ui->label_36->hide();
+        ui->label_37->hide();
+        ui->label_38->hide();
+        ui->label_39->hide();
+        ui->label_40->hide();
+        ui->label_41->hide();
+
+
         ui->lineEdit_IPAddress->hide();
         ui->lineEdit_Mask->hide();
         ui->lineEdit_gate->hide();
         ui->lineEdit_DNS1->hide();
         ui->lineEdit_DNS2->hide();
+
+        ui->lineEdit_IPAddress2->hide();
+        ui->lineEdit_Mask2->hide();
+        ui->lineEdit_gate2->hide();
+        ui->lineEdit_DNS12->hide();
+        ui->lineEdit_DNS22->hide();
+
+        ui->lineEdit_IPAddress3->hide();
+        ui->lineEdit_Mask3->hide();
+        ui->lineEdit_gate3->hide();
+        ui->lineEdit_DNS13->hide();
+        ui->lineEdit_DNS23->hide();
+
+        ui->lineEdit_IPAddress4->hide();
+        ui->lineEdit_Mask4->hide();
+        ui->lineEdit_gate4->hide();
+        ui->lineEdit_DNS14->hide();
+        ui->lineEdit_DNS24->hide();
     }else if(index == 1)
     {
         ui->label_6->show();
@@ -299,10 +384,46 @@ void MainWindow::on_comboBox_activated(int index)
         ui->label_10->show();
         ui->label_11->show();
         ui->label_12->show();
+
+        ui->label_22->show();
+        ui->label_24->show();
+        ui->label_26->show();
+        ui->label_28->show();
+        ui->label_31->show();
+
+        ui->label_32->show();
+        ui->label_33->show();
+        ui->label_34->show();
+        ui->label_35->show();
+        ui->label_36->show();
+        ui->label_37->show();
+        ui->label_38->show();
+        ui->label_39->show();
+        ui->label_40->show();
+        ui->label_41->show();
+
         ui->lineEdit_IPAddress->show();
         ui->lineEdit_Mask->show();
         ui->lineEdit_gate->show();
         ui->lineEdit_DNS1->show();
         ui->lineEdit_DNS2->show();
+
+        ui->lineEdit_IPAddress2->show();
+        ui->lineEdit_Mask2->show();
+        ui->lineEdit_gate2->show();
+        ui->lineEdit_DNS12->show();
+        ui->lineEdit_DNS22->show();
+
+        ui->lineEdit_IPAddress3->show();
+        ui->lineEdit_Mask3->show();
+        ui->lineEdit_gate3->show();
+        ui->lineEdit_DNS13->show();
+        ui->lineEdit_DNS23->show();
+
+        ui->lineEdit_IPAddress4->show();
+        ui->lineEdit_Mask4->show();
+        ui->lineEdit_gate4->show();
+        ui->lineEdit_DNS14->show();
+        ui->lineEdit_DNS24->show();
     }
 }
