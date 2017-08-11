@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>781</width>
-    <height>471</height>
+    <height>468</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -98,7 +98,7 @@ color:#FF0000;
 }</string>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -745,10 +745,18 @@ color:#FF0000;
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QLineEdit" name="lineEdit_6"/>
+         <widget class="QLineEdit" name="lineEdit_SSID">
+          <property name="text">
+           <string>yuneng_ecu_test</string>
+          </property>
+         </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QLineEdit" name="lineEdit_7"/>
+         <widget class="QLineEdit" name="lineEdit_Passwd">
+          <property name="text">
+           <string>123456789</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -987,16 +995,377 @@ color:#FF0000;
      <attribute name="title">
       <string>发电量数据</string>
      </attribute>
+     <widget class="QGroupBox" name="groupBox_9">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>761</width>
+        <height>381</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>发电量数据</string>
+      </property>
+      <widget class="QTableWidget" name="tableWidget">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>40</y>
+         <width>711</width>
+         <height>341</height>
+        </rect>
+       </property>
+       <column>
+        <property name="text">
+         <string>ID</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>电网频率</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>机内温度</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>A路功率</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>A路电压</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>B路功率</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>B路电压</string>
+        </property>
+       </column>
+      </widget>
+      <widget class="QPushButton" name="btn_getRealData">
+       <property name="geometry">
+        <rect>
+         <x>15</x>
+         <y>19</y>
+         <width>91</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>获取发电量数据</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_all">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>15</y>
+         <width>54</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color:#ff0000</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_42">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>15</y>
+         <width>54</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>总台数：</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_time">
+       <property name="geometry">
+        <rect>
+         <x>350</x>
+         <y>15</y>
+         <width>141</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color:#ff0000</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_43">
+       <property name="geometry">
+        <rect>
+         <x>300</x>
+         <y>15</y>
+         <width>54</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>时间：</string>
+       </property>
+      </widget>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
       <string>功率曲线</string>
      </attribute>
+     <widget class="QGroupBox" name="groupBox_10">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>761</width>
+        <height>381</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>功率曲线</string>
+      </property>
+      <widget class="QPushButton" name="btn_getSystem_2">
+       <property name="geometry">
+        <rect>
+         <x>15</x>
+         <y>19</y>
+         <width>75</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>获取系统信息</string>
+       </property>
+      </widget>
+      <widget class="QTableWidget" name="tableWidget_2">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>40</y>
+         <width>741</width>
+         <height>371</height>
+        </rect>
+       </property>
+       <column>
+        <property name="text">
+         <string>ID</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>设备状态</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>开关机</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>功能开关</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>PV1欠压</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>PV1欠压</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>心跳次数</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>超时次数</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>当天关机数</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>PV1输入电压</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>PV2输入电压</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>输入电流</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>PV1输入功率</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>PV2输入功率</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>输出电压</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>信号强度</string>
+        </property>
+       </column>
+      </widget>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_3">
      <attribute name="title">
       <string>发电量曲线</string>
      </attribute>
+     <widget class="QGroupBox" name="groupBox_11">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>761</width>
+        <height>381</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>发电量曲线</string>
+      </property>
+      <widget class="QTableWidget" name="tableWidget_3">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>40</y>
+         <width>741</width>
+         <height>371</height>
+        </rect>
+       </property>
+       <column>
+        <property name="text">
+         <string>ID</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>设备状态</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>开关机</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>功能开关</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>PV1欠压</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>PV1欠压</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>心跳次数</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>超时次数</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>当天关机数</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>PV1输入电压</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>PV2输入电压</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>输入电流</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>PV1输入功率</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>PV2输入功率</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>输出电压</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>信号强度</string>
+        </property>
+       </column>
+      </widget>
+      <widget class="QPushButton" name="btn_getSystem_3">
+       <property name="geometry">
+        <rect>
+         <x>15</x>
+         <y>19</y>
+         <width>75</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>获取系统信息</string>
+       </property>
+      </widget>
+     </widget>
     </widget>
    </widget>
   </widget>

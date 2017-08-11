@@ -7,55 +7,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    sprintf(ECUID,"000000000000");
+    ECUID[12]  = '\0';
     ui->setupUi(this);
-    ui->label_6->hide();
-    ui->label_9->hide();
-    ui->label_10->hide();
-    ui->label_11->hide();
-    ui->label_12->hide();
-
-
-    ui->label_22->hide();
-    ui->label_24->hide();
-    ui->label_26->hide();
-    ui->label_28->hide();
-    ui->label_31->hide();
-
-    ui->label_32->hide();
-    ui->label_33->hide();
-    ui->label_34->hide();
-    ui->label_35->hide();
-    ui->label_36->hide();
-    ui->label_37->hide();
-    ui->label_38->hide();
-    ui->label_39->hide();
-    ui->label_40->hide();
-    ui->label_41->hide();
-
-
-    ui->lineEdit_IPAddress->hide();
-    ui->lineEdit_Mask->hide();
-    ui->lineEdit_gate->hide();
-    ui->lineEdit_DNS1->hide();
-    ui->lineEdit_DNS2->hide();
-
-    ui->lineEdit_IPAddress2->hide();
-    ui->lineEdit_Mask2->hide();
-    ui->lineEdit_gate2->hide();
-    ui->lineEdit_DNS12->hide();
-    ui->lineEdit_DNS22->hide();
-
-    ui->lineEdit_IPAddress3->hide();
-    ui->lineEdit_Mask3->hide();
-    ui->lineEdit_gate3->hide();
-    ui->lineEdit_DNS13->hide();
-    ui->lineEdit_DNS23->hide();
-
-    ui->lineEdit_IPAddress4->hide();
-    ui->lineEdit_Mask4->hide();
-    ui->lineEdit_gate4->hide();
-    ui->lineEdit_DNS14->hide();
-    ui->lineEdit_DNS24->hide();
+    IPInterfaceSataus(false);
     ECU_Client = new Communication("10.10.100.254",8899);
 }
 
@@ -65,6 +20,112 @@ MainWindow::~MainWindow()
     delete ECU_Client;
     ECU_Client = NULL;
 }
+
+void MainWindow::IPInterfaceSataus(bool status)
+{
+    if(status == true)
+    {
+        ui->label_6->show();
+        ui->label_9->show();
+        ui->label_10->show();
+        ui->label_11->show();
+        ui->label_12->show();
+
+        ui->label_22->show();
+        ui->label_24->show();
+        ui->label_26->show();
+        ui->label_28->show();
+        ui->label_31->show();
+
+        ui->label_32->show();
+        ui->label_33->show();
+        ui->label_34->show();
+        ui->label_35->show();
+        ui->label_36->show();
+        ui->label_37->show();
+        ui->label_38->show();
+        ui->label_39->show();
+        ui->label_40->show();
+        ui->label_41->show();
+
+        ui->lineEdit_IPAddress->show();
+        ui->lineEdit_Mask->show();
+        ui->lineEdit_gate->show();
+        ui->lineEdit_DNS1->show();
+        ui->lineEdit_DNS2->show();
+
+        ui->lineEdit_IPAddress2->show();
+        ui->lineEdit_Mask2->show();
+        ui->lineEdit_gate2->show();
+        ui->lineEdit_DNS12->show();
+        ui->lineEdit_DNS22->show();
+
+        ui->lineEdit_IPAddress3->show();
+        ui->lineEdit_Mask3->show();
+        ui->lineEdit_gate3->show();
+        ui->lineEdit_DNS13->show();
+        ui->lineEdit_DNS23->show();
+
+        ui->lineEdit_IPAddress4->show();
+        ui->lineEdit_Mask4->show();
+        ui->lineEdit_gate4->show();
+        ui->lineEdit_DNS14->show();
+        ui->lineEdit_DNS24->show();
+    }else
+    {
+        ui->label_6->hide();
+        ui->label_9->hide();
+        ui->label_10->hide();
+        ui->label_11->hide();
+        ui->label_12->hide();
+
+
+        ui->label_22->hide();
+        ui->label_24->hide();
+        ui->label_26->hide();
+        ui->label_28->hide();
+        ui->label_31->hide();
+
+        ui->label_32->hide();
+        ui->label_33->hide();
+        ui->label_34->hide();
+        ui->label_35->hide();
+        ui->label_36->hide();
+        ui->label_37->hide();
+        ui->label_38->hide();
+        ui->label_39->hide();
+        ui->label_40->hide();
+        ui->label_41->hide();
+
+
+        ui->lineEdit_IPAddress->hide();
+        ui->lineEdit_Mask->hide();
+        ui->lineEdit_gate->hide();
+        ui->lineEdit_DNS1->hide();
+        ui->lineEdit_DNS2->hide();
+
+        ui->lineEdit_IPAddress2->hide();
+        ui->lineEdit_Mask2->hide();
+        ui->lineEdit_gate2->hide();
+        ui->lineEdit_DNS12->hide();
+        ui->lineEdit_DNS22->hide();
+
+        ui->lineEdit_IPAddress3->hide();
+        ui->lineEdit_Mask3->hide();
+        ui->lineEdit_gate3->hide();
+        ui->lineEdit_DNS13->hide();
+        ui->lineEdit_DNS23->hide();
+
+        ui->lineEdit_IPAddress4->hide();
+        ui->lineEdit_Mask4->hide();
+        ui->lineEdit_gate4->hide();
+        ui->lineEdit_DNS14->hide();
+        ui->lineEdit_DNS24->hide();
+    }
+}
+
+
+
 
 void MainWindow::on_btn_config_clicked()
 {
@@ -205,8 +266,8 @@ void MainWindow::on_btn_setNetwork_clicked()
 {
     qint64 recvLen=0;
     bool flag = false;
-    char Sendbuff[200] = {'\0'};
-    char Recvbuff[4096] = {'\0'};
+    unsigned char Sendbuff[200] = {'\0'};
+    unsigned char Recvbuff[4096] = {'\0'};
     int select_item = 0;
     memset(Recvbuff,0x00,4096);
 
@@ -215,17 +276,46 @@ void MainWindow::on_btn_setNetwork_clicked()
     //先判断是静态  还是动态
     if(select_item == 0)
     {   //动态获取IP
-        sprintf(Sendbuff,"APS1100530007%sEND0000000000000000000000END",ECUID);
+        sprintf((char *)Sendbuff,"APS1100530007%sEND0000000000000000000000END",ECUID);
         qDebug("%d  Sendbuff: %s\n",select_item,Sendbuff);
     }else if(select_item == 1)
     {   //静态获取IP
-        sprintf(Sendbuff,"APS1100530007%sEND0100000000000000000000END",ECUID);
+        sprintf((char *)Sendbuff,"APS1100530007%sEND0100000000000000000000END",ECUID);
         qDebug("%d  Sendbuff: %s\n",select_item,Sendbuff);
-        //Sendbuff[30] = 0x00; //IP 1
+        Sendbuff[30] = (unsigned char )ui->lineEdit_IPAddress->text().toInt(); //IP 1
+        Sendbuff[31] = (unsigned char )ui->lineEdit_IPAddress2->text().toInt(); //IP 2
+        Sendbuff[32] = (unsigned char )ui->lineEdit_IPAddress3->text().toInt(); //IP 3
+        Sendbuff[33] = (unsigned char )ui->lineEdit_IPAddress4->text().toInt(); //IP 4
+
+        Sendbuff[34] = (unsigned char )ui->lineEdit_Mask->text().toInt(); //MASK 1
+        Sendbuff[35] = (unsigned char )ui->lineEdit_Mask2->text().toInt(); //MASK 2
+        Sendbuff[36] = (unsigned char )ui->lineEdit_Mask3->text().toInt(); //MASK 3
+        Sendbuff[37] = (unsigned char )ui->lineEdit_Mask4->text().toInt(); //MASK 4
+
+        Sendbuff[38] = (unsigned char )ui->lineEdit_gate->text().toInt(); //GATE 1
+        Sendbuff[39] = (unsigned char )ui->lineEdit_gate2->text().toInt(); //GATE 2
+        Sendbuff[40] = (unsigned char )ui->lineEdit_gate3->text().toInt(); //GATE 3
+        Sendbuff[41] = (unsigned char )ui->lineEdit_gate4->text().toInt(); //GATE 4
+
+        Sendbuff[42] = (unsigned char )ui->lineEdit_DNS1->text().toInt(); //DNS1 1
+        Sendbuff[43] = (unsigned char )ui->lineEdit_DNS12->text().toInt(); //DNS1 2
+        Sendbuff[44] = (unsigned char )ui->lineEdit_DNS13->text().toInt(); //DNS1 3
+        Sendbuff[45] = (unsigned char )ui->lineEdit_DNS14->text().toInt(); //DNS1 4
+
+        Sendbuff[46] = (unsigned char )ui->lineEdit_DNS2->text().toInt(); //DNS2 1
+        Sendbuff[47] = (unsigned char )ui->lineEdit_DNS22->text().toInt(); //DNS2 2
+        Sendbuff[48] = (unsigned char )ui->lineEdit_DNS23->text().toInt(); //DNS2 3
+        Sendbuff[49] = (unsigned char )ui->lineEdit_DNS24->text().toInt(); //DNS2 4
+
+        qDebug("ip:%d.%d.%d.%d\n",Sendbuff[30],Sendbuff[31],Sendbuff[32],Sendbuff[33]);
+        qDebug("mask:%d.%d.%d.%d\n",Sendbuff[34],Sendbuff[35],Sendbuff[36],Sendbuff[37]);
+        qDebug("gate:%d.%d.%d.%d\n",Sendbuff[38],Sendbuff[39],Sendbuff[40],Sendbuff[41]);
+        qDebug("dns1:%d.%d.%d.%d\n",Sendbuff[42],Sendbuff[43],Sendbuff[44],Sendbuff[45]);
+        qDebug("dns2:%d.%d.%d.%d\n",Sendbuff[46],Sendbuff[47],Sendbuff[48],Sendbuff[49]);
 
     }
 
-    flag = ECU_Client->ECU_Communication(Sendbuff,53,Recvbuff,&recvLen,2000);
+    flag = ECU_Client->ECU_Communication((char *)Sendbuff,53,(char *)Recvbuff,&recvLen,2000);
     if(flag == true)
     {
         if(!memcmp(&Recvbuff[13],"00",2))
@@ -290,7 +380,7 @@ void MainWindow::on_btn_setPasswd_clicked()
     flag = ECU_Client->ECU_Communication(Sendbuff,QString(Sendbuff).length(),Recvbuff,&recvLen,2000);
     if(flag == true)
     {
-        if(Recvbuff[12] == '1')
+        if(Recvbuff[14] == '1')
         {//ECU ID不匹配
             statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
         }
@@ -307,17 +397,136 @@ void MainWindow::on_btn_setPasswd_clicked()
 
 void MainWindow::on_btn_checkWifiStatus_clicked()
 {
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[300];
+    char Recvbuff[200] = {'\0'};
 
+    sprintf(Sendbuff,"APS1100280009%sEND",ECUID);
+    memset(Recvbuff,0x00,200);
+    qDebug("%s\n",Sendbuff);
+    flag = ECU_Client->ECU_Communication(Sendbuff,QString(Sendbuff).length(),Recvbuff,&recvLen,2000);
+    if(flag == true)
+    {
+        if(Recvbuff[14] == '2')
+        {//ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
+        }
+        else if(Recvbuff[14] == '1')
+        {
+            ui->checkBox->setCheckState(Qt::Checked);
+            statusBar()->showMessage(tr("Check Connect Success ..."), 2000);
+
+        }else
+        {
+            ui->checkBox->setCheckState(Qt::Unchecked);
+            statusBar()->showMessage(tr("Check Connect Success ..."), 2000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
 }
 
 void MainWindow::on_btn_configWIFI_clicked()
 {
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[300];
+    char Recvbuff[200] = {'\0'};
+    int SSIDLen = 0;
+    int PASSWDLen = 0;
+    char SSID[100];
+    char Passwd[100];
+    char length[5] = {'\0'};
 
+    SSIDLen = ui->lineEdit_SSID->text().length();
+    PASSWDLen = ui->lineEdit_Passwd->text().length();
+
+    if(SSIDLen < 3 || PASSWDLen < 8)
+    {
+        statusBar()->showMessage(tr("size too short ..."), 2000);
+        return;
+    }
+
+    memcpy(SSID, ui->lineEdit_SSID->text().toLatin1().data(),SSIDLen);
+    memcpy(Passwd, ui->lineEdit_Passwd->text().toLatin1().data(),PASSWDLen);
+    SSID[SSIDLen] = '\0';
+    Passwd[PASSWDLen] = '\0';
+
+    sprintf(Sendbuff,"APS1100000008%sEND%03d%s%03d%sEND",ECUID,SSIDLen,SSID,PASSWDLen,Passwd);
+    sprintf(length,"%04d",QString(Sendbuff).length());
+    memcpy(&Sendbuff[5],length,4);
+    memset(Recvbuff,0x00,200);
+    qDebug("%s\n",Sendbuff);
+    flag = ECU_Client->ECU_Communication(Sendbuff,QString(Sendbuff).length(),Recvbuff,&recvLen,2000);
+    if(flag == true)
+    {
+        if(Recvbuff[14] == '1')
+        {//ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("Set Config SSID Success ..."), 2000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
 }
 
 void MainWindow::on_btn_SetID_clicked()
 {
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[4096];
+    char Recvbuff[200] = {'\0'};
+    char ID_BCD[13];
+    char ID_BCD_List[4096];
+    char text[4096] = {'\0'};
+    int OPTCount = 0,index=0;
+    char packlength[5] = {'\0'};
+    int length = ui->plainTextEdit_ID->toPlainText().length();
+    OPTCount = (length + 1)/13;
+    qDebug("%d %d,%s",OPTCount,length,ui->plainTextEdit_ID->toPlainText().toLatin1().data());
+    memcpy(text,ui->plainTextEdit_ID->toPlainText().toLatin1().data(),length);
 
+    for(index = 0;index<OPTCount;index++)
+    {
+        memset(ID_BCD,0x00,13);
+        memcpy(ID_BCD,&text[0+index*13],12);
+        qDebug("%s \n",ID_BCD);
+        memcpy(&ID_BCD_List[index*12],ID_BCD,12);
+    }
+
+    sprintf(Sendbuff,"APS1100000005%sEND",ECUID);
+    memcpy(&Sendbuff[28],ID_BCD_List,(OPTCount*12));
+    Sendbuff[OPTCount*12+28] = 'E';
+    Sendbuff[OPTCount*12+29] = 'N';
+    Sendbuff[OPTCount*12+30] = 'D';
+
+    sprintf(packlength,"%04d",(OPTCount*12+31));
+    memcpy(&Sendbuff[5],packlength,4);
+
+    memset(Recvbuff,0x00,200);
+    qDebug("len:%d send:%s\n",(OPTCount*12+31),Sendbuff);
+
+    flag = ECU_Client->ECU_Communication(Sendbuff,(OPTCount*12+31),Recvbuff,&recvLen,3000);
+    if(flag == true)
+    {
+        if(Recvbuff[14] == '1')
+        {//ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("Set ID Success ..."), 2000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
 }
 
 void MainWindow::on_btn_ECUImport_clicked()
@@ -329,101 +538,128 @@ void MainWindow::on_comboBox_activated(int index)
 {
     if(index == 0)
     {
-        ui->label_6->hide();
-        ui->label_9->hide();
-        ui->label_10->hide();
-        ui->label_11->hide();
-        ui->label_12->hide();
-
-
-        ui->label_22->hide();
-        ui->label_24->hide();
-        ui->label_26->hide();
-        ui->label_28->hide();
-        ui->label_31->hide();
-
-        ui->label_32->hide();
-        ui->label_33->hide();
-        ui->label_34->hide();
-        ui->label_35->hide();
-        ui->label_36->hide();
-        ui->label_37->hide();
-        ui->label_38->hide();
-        ui->label_39->hide();
-        ui->label_40->hide();
-        ui->label_41->hide();
-
-
-        ui->lineEdit_IPAddress->hide();
-        ui->lineEdit_Mask->hide();
-        ui->lineEdit_gate->hide();
-        ui->lineEdit_DNS1->hide();
-        ui->lineEdit_DNS2->hide();
-
-        ui->lineEdit_IPAddress2->hide();
-        ui->lineEdit_Mask2->hide();
-        ui->lineEdit_gate2->hide();
-        ui->lineEdit_DNS12->hide();
-        ui->lineEdit_DNS22->hide();
-
-        ui->lineEdit_IPAddress3->hide();
-        ui->lineEdit_Mask3->hide();
-        ui->lineEdit_gate3->hide();
-        ui->lineEdit_DNS13->hide();
-        ui->lineEdit_DNS23->hide();
-
-        ui->lineEdit_IPAddress4->hide();
-        ui->lineEdit_Mask4->hide();
-        ui->lineEdit_gate4->hide();
-        ui->lineEdit_DNS14->hide();
-        ui->lineEdit_DNS24->hide();
+        IPInterfaceSataus(false);
     }else if(index == 1)
     {
-        ui->label_6->show();
-        ui->label_9->show();
-        ui->label_10->show();
-        ui->label_11->show();
-        ui->label_12->show();
+        IPInterfaceSataus(true);
+    }
+}
 
-        ui->label_22->show();
-        ui->label_24->show();
-        ui->label_26->show();
-        ui->label_28->show();
-        ui->label_31->show();
+void MainWindow::addTableData(QTableWidget *table, QList<YC600_RealData_t *> &List)
+{
+    table->setRowCount(0);
+    //清空Table中内容
+    table->clearContents();
 
-        ui->label_32->show();
-        ui->label_33->show();
-        ui->label_34->show();
-        ui->label_35->show();
-        ui->label_36->show();
-        ui->label_37->show();
-        ui->label_38->show();
-        ui->label_39->show();
-        ui->label_40->show();
-        ui->label_41->show();
+    QList<YC600_RealData_t *>::Iterator iter = List.begin();
+    for ( ; iter != List.end(); iter++)  {
+        int row_count = table->rowCount(); //获取表单行数
+        table->insertRow(row_count); //插入新行
+        QTableWidgetItem *item = new QTableWidgetItem();
+        QTableWidgetItem *item1 = new QTableWidgetItem();
+        QTableWidgetItem *item2 = new QTableWidgetItem();
+        QTableWidgetItem *item3 = new QTableWidgetItem();
+        QTableWidgetItem *item4 = new QTableWidgetItem();
+        QTableWidgetItem *item5 = new QTableWidgetItem();
+        QTableWidgetItem *item6 = new QTableWidgetItem();
 
-        ui->lineEdit_IPAddress->show();
-        ui->lineEdit_Mask->show();
-        ui->lineEdit_gate->show();
-        ui->lineEdit_DNS1->show();
-        ui->lineEdit_DNS2->show();
+        item->setText((*iter)->ID);
+        item1->setText(QString::number((double)((*iter)->Grid_Frequency/10)));
+        item2->setText(QString::number(((*iter)->Temperature - 100)));
+        item3->setText(QString::number((*iter)->Inverter_Power));
+        item4->setText(QString::number((*iter)->Grid_Voltage));
+        item5->setText(QString::number((*iter)->Inverter_Power_B));
+        item6->setText(QString::number((*iter)->Grid_Voltage_B));
 
-        ui->lineEdit_IPAddress2->show();
-        ui->lineEdit_Mask2->show();
-        ui->lineEdit_gate2->show();
-        ui->lineEdit_DNS12->show();
-        ui->lineEdit_DNS22->show();
 
-        ui->lineEdit_IPAddress3->show();
-        ui->lineEdit_Mask3->show();
-        ui->lineEdit_gate3->show();
-        ui->lineEdit_DNS13->show();
-        ui->lineEdit_DNS23->show();
+        item->setBackgroundColor(QColor(0,238,0));
+        item1->setBackgroundColor(QColor(0,238,0));
+        item2->setBackgroundColor(QColor(0,238,0));
+        item3->setBackgroundColor(QColor(0,238,0));
+        item4->setBackgroundColor(QColor(0,238,0));
+        item5->setBackgroundColor(QColor(0,238,0));
+        item6->setBackgroundColor(QColor(0,238,0));
 
-        ui->lineEdit_IPAddress4->show();
-        ui->lineEdit_Mask4->show();
-        ui->lineEdit_gate4->show();
-        ui->lineEdit_DNS14->show();
-        ui->lineEdit_DNS24->show();
+        table->setItem(row_count, 0, item);
+        table->setItem(row_count, 1, item1);
+        table->setItem(row_count, 2, item2);
+        table->setItem(row_count, 3, item3);
+        table->setItem(row_count, 4, item4);
+        table->setItem(row_count, 5, item5);
+        table->setItem(row_count, 6, item6);
+
+    }
+
+}
+
+void MainWindow::on_btn_getRealData_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[4096] = {'\0'};
+    int length = 0,index = 0;
+    char dateTime[15] = {'\0'};
+    int optcount = 0;
+    memset(Recvbuff,0x00,4096);
+    sprintf(Sendbuff,"APS1100280002%sEND",ECUID);
+    qDebug("send:%s\n",Sendbuff);
+    flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,2000);
+    YC600_RealData_List.clear();
+
+    if(flag == true)
+    {
+
+        if(Recvbuff[14] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
+        }
+        else if(Recvbuff[14] == '2')
+        {
+            statusBar()->showMessage(tr("ECU Have No Data ..."), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("ECU Get Real Data Success ..."), 2000);
+            optcount = (recvLen-27)/18;
+            qDebug("%d\n",optcount);
+            length = 24;
+            for(index = 0;index < optcount;index++)
+            {
+                YC600_RealData_t *YC600_RealData = new YC600_RealData_t;
+
+                sprintf(YC600_RealData->ID,"%02x%02x%02x%02x%02x%02x",(Recvbuff[length] & 0x000000ff),(Recvbuff[length+1] & 0x000000ff),(Recvbuff[length+2] & 0x000000ff),(Recvbuff[length+3] & 0x000000ff),(Recvbuff[length+4] & 0x000000ff),(Recvbuff[length+5] & 0x000000ff));
+                YC600_RealData->Grid_Frequency = (Recvbuff[length+6] & 0x000000ff)*256 + (Recvbuff[length+7] & 0x000000ff);
+                YC600_RealData->Temperature = (Recvbuff[length+8] & 0x000000ff)*256 + (Recvbuff[length+9] & 0x000000ff);
+                YC600_RealData->Inverter_Power = (Recvbuff[length+10] & 0x000000ff)*256 + (Recvbuff[length+11] & 0x000000ff);
+                YC600_RealData->Grid_Voltage = (Recvbuff[length+12] & 0x000000ff)*256 + (Recvbuff[length+13] & 0x000000ff);
+                YC600_RealData->Inverter_Power_B = (Recvbuff[length+14] & 0x000000ff)*256 + (Recvbuff[length+15] & 0x000000ff);
+                YC600_RealData->Grid_Voltage_B = (Recvbuff[length+16] & 0x000000ff)*256 + (Recvbuff[length+17] & 0x000000ff);
+
+                YC600_RealData_List.push_back(YC600_RealData);
+                length += 18;
+                qDebug("%s\n",YC600_RealData->ID);
+
+            }
+            addTableData(ui->tableWidget,YC600_RealData_List);
+            sprintf(dateTime,"%02x%02x%02x%02x%02x%02x%02x",Recvbuff[17],Recvbuff[18],Recvbuff[19],Recvbuff[20],Recvbuff[21],Recvbuff[22],Recvbuff[23]);
+            ui->label_all->setText(QString::number(optcount));
+            ui->label_time->setText(dateTime);
+            QList<YC600_RealData_t *>::Iterator iter = YC600_RealData_List.begin();
+            for ( ; iter != YC600_RealData_List.end(); iter++)  {
+                delete (*iter);
+            }
+
+
+
+        }
+
+
+    }else
+    {
+        ui->tableWidget->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget->clearContents();
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
     }
 }
