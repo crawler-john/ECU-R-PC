@@ -3,6 +3,9 @@
 #include "QDebug.h"
 #include "QDateTime"
 
+#define MAJOR_VERSION   1
+#define MINOR_VERSION   0
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -11,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ECUID[12]  = '\0';
     ui->setupUi(this);
     IPInterfaceSataus(false);
+    setWindowTitle(tr("ECU-R Test V%1.%2").arg(MAJOR_VERSION).arg(MINOR_VERSION));
+    setFixedSize(781,440);
     ECU_Client = new Communication("10.10.100.254",8899);
 }
 
@@ -531,7 +536,50 @@ void MainWindow::on_btn_SetID_clicked()
 
 void MainWindow::on_btn_ECUImport_clicked()
 {
+    qint64 recvLen=0;
+    bool flag = false;
+    char ID[13] = {'\0'};
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[4096] = {'\0'};
+    int length = 0,index = 0;
+    char dateTime[15] = {'\0'};
+    int optcount = 0;
+    memset(Recvbuff,0x00,4096);
+    sprintf(Sendbuff,"APS1100280002%sEND",ECUID);
+    qDebug("send:%s\n",Sendbuff);
+    flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,2000);
+    ui->plainTextEdit_ID->clear();
+    if(flag == true)
+    {
 
+        if(Recvbuff[14] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
+        }
+        else if(Recvbuff[14] == '2')
+        {
+            statusBar()->showMessage(tr("ECU Have No Data ..."), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("ECU Get Real Data Success ..."), 2000);
+            optcount = (recvLen-27)/18;
+            qDebug("%d\n",optcount);
+            length = 24;
+            for(index = 0;index < optcount;index++)
+            {
+
+                sprintf(ID,"%02x%02x%02x%02x%02x%02x",(Recvbuff[length] & 0x000000ff),(Recvbuff[length+1] & 0x000000ff),(Recvbuff[length+2] & 0x000000ff),(Recvbuff[length+3] & 0x000000ff),(Recvbuff[length+4] & 0x000000ff),(Recvbuff[length+5] & 0x000000ff));
+                ui->plainTextEdit_ID->appendPlainText(ID);
+                length += 18;
+            }
+        }
+
+
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
 }
 
 void MainWindow::on_comboBox_activated(int index)
@@ -545,7 +593,7 @@ void MainWindow::on_comboBox_activated(int index)
     }
 }
 
-void MainWindow::addTableData(QTableWidget *table, QList<YC600_RealData_t *> &List)
+void MainWindow::addRealData(QTableWidget *table, QList<YC600_RealData_t *> &List)
 {
     table->setRowCount(0);
     //清空Table中内容
@@ -592,6 +640,54 @@ void MainWindow::addTableData(QTableWidget *table, QList<YC600_RealData_t *> &Li
 
 }
 
+void MainWindow::addPowerData(QTableWidget *table, QList<YC600_PowerData_t *> &List)
+{
+    table->setRowCount(0);
+    //清空Table中内容
+    table->clearContents();
+
+    QList<YC600_PowerData_t *>::Iterator iter = List.begin();
+    for ( ; iter != List.end(); iter++)  {
+        int row_count = table->rowCount(); //获取表单行数
+        table->insertRow(row_count); //插入新行
+        QTableWidgetItem *item = new QTableWidgetItem();
+        QTableWidgetItem *item1 = new QTableWidgetItem();
+
+        item->setText((*iter)->time);
+        item1->setText(QString::number((*iter)->power));
+
+        item->setBackgroundColor(QColor(0,238,0));
+        item1->setBackgroundColor(QColor(0,238,0));
+
+        table->setItem(row_count, 0, item);
+        table->setItem(row_count, 1, item1);
+    }
+}
+
+void MainWindow::addEnergyData(QTableWidget *table, QList<YC600_EnergyData_t *> &List)
+{
+    table->setRowCount(0);
+    //清空Table中内容
+    table->clearContents();
+
+    QList<YC600_EnergyData_t *>::Iterator iter = List.begin();
+    for ( ; iter != List.end(); iter++)  {
+        int row_count = table->rowCount(); //获取表单行数
+        table->insertRow(row_count); //插入新行
+        QTableWidgetItem *item = new QTableWidgetItem();
+        QTableWidgetItem *item1 = new QTableWidgetItem();
+
+        item->setText((*iter)->date);
+        item1->setText(QString::number((double)(*iter)->energy));
+
+        item->setBackgroundColor(QColor(0,238,0));
+        item1->setBackgroundColor(QColor(0,238,0));
+
+        table->setItem(row_count, 0, item);
+        table->setItem(row_count, 1, item1);
+    }
+}
+
 void MainWindow::on_btn_getRealData_clicked()
 {
     qint64 recvLen=0;
@@ -609,7 +705,9 @@ void MainWindow::on_btn_getRealData_clicked()
 
     if(flag == true)
     {
-
+        ui->tableWidget_RealData->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_RealData->clearContents();
         if(Recvbuff[14] == '1')
         {   //ECU ID不匹配
             statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
@@ -641,7 +739,7 @@ void MainWindow::on_btn_getRealData_clicked()
                 qDebug("%s\n",YC600_RealData->ID);
 
             }
-            addTableData(ui->tableWidget,YC600_RealData_List);
+            addRealData(ui->tableWidget_RealData,YC600_RealData_List);
             sprintf(dateTime,"%02x%02x%02x%02x%02x%02x%02x",Recvbuff[17],Recvbuff[18],Recvbuff[19],Recvbuff[20],Recvbuff[21],Recvbuff[22],Recvbuff[23]);
             ui->label_all->setText(QString::number(optcount));
             ui->label_time->setText(dateTime);
@@ -657,9 +755,140 @@ void MainWindow::on_btn_getRealData_clicked()
 
     }else
     {
-        ui->tableWidget->setRowCount(0);
+        ui->tableWidget_RealData->setRowCount(0);
         //清空Table中内容
-        ui->tableWidget->clearContents();
+        ui->tableWidget_RealData->clearContents();
         statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
     }
+}
+
+void MainWindow::on_btn_getDate_clicked()
+{
+    //获取当前的时间
+    ui->dateEdit->setDate(QDate::currentDate());
+}
+
+void MainWindow::on_btn_getPower_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[4096] = {'\0'};
+    int length = 0,index = 0;
+    int num = 0;
+    int year = ui->dateEdit->date().year();
+    int month = ui->dateEdit->date().month();
+    int day = ui->dateEdit->date().day();
+    memset(Recvbuff,0x00,4096);
+    sprintf(Sendbuff,"APS1100390003%sEND%02d%02d%02dEND",ECUID,year,month,day);
+    qDebug("send:%s\n",Sendbuff);
+
+    flag = ECU_Client->ECU_Communication(Sendbuff,39,Recvbuff,&recvLen,2000);
+    YC600_PowerData_List.clear();
+
+    if(flag == true)
+    {
+        ui->tableWidget_Power->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_Power->clearContents();
+        if(Recvbuff[14] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("ECU Get Power Data Success ..."), 2000);
+            num = (recvLen-18)/4;
+            qDebug("%d\n",num);
+            length = 15;
+            for(index = 0;index < num;index++)
+            {
+                YC600_PowerData_t *YC600_PowerData = new YC600_PowerData_t;
+                sprintf(YC600_PowerData->time,"%02x:%02x",Recvbuff[length],Recvbuff[length+1]);
+                YC600_PowerData->time[5] = '\0';
+                YC600_PowerData->power = (Recvbuff[length+2] & 0x000000ff)*256 + (Recvbuff[length+3] & 0x000000ff);
+
+                YC600_PowerData_List.push_back(YC600_PowerData);
+                length += 4;
+
+            }
+            addPowerData(ui->tableWidget_Power,YC600_PowerData_List);
+
+            QList<YC600_PowerData_t *>::Iterator iter = YC600_PowerData_List.begin();
+            for ( ; iter != YC600_PowerData_List.end(); iter++)  {
+                delete (*iter);
+            }
+        }
+
+
+    }else
+    {
+        ui->tableWidget_Power->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_Power->clearContents();
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+
+}
+
+void MainWindow::on_btn_getEnergy_clicked()
+{
+
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[4096] = {'\0'};
+    int length = 0,index = 0;
+    int num = 0;
+    int select_item = ui->comboBox_2->currentIndex();
+    memset(Recvbuff,0x00,4096);
+    sprintf(Sendbuff,"APS1100330004%sEND%02dEND",ECUID,select_item);
+    qDebug("send:%s\n",Sendbuff);
+
+    flag = ECU_Client->ECU_Communication(Sendbuff,33,Recvbuff,&recvLen,2000);
+    YC600_EnergyData_List.clear();
+
+    if(flag == true)
+    {
+        ui->tableWidget_Energy->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_Energy->clearContents();
+        if(Recvbuff[14] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("ECU Get Energy Data Success ..."), 2000);
+            num = (recvLen-20)/6;
+            qDebug("%d\n",num);
+            length = 17;
+            for(index = 0;index < num;index++)
+            {
+                YC600_EnergyData_t *YC600_EnergyData = new YC600_EnergyData_t;
+
+                sprintf(YC600_EnergyData->date,"%02x%02x-%02x-%02x",Recvbuff[length],Recvbuff[length+1],Recvbuff[length+2],Recvbuff[length+3]);
+                qDebug("%d\n",((Recvbuff[length+4] & 0x000000ff)*256 + (Recvbuff[length+5] & 0x000000ff)));
+                YC600_EnergyData->energy = ((double)((Recvbuff[length+4] & 0x000000ff)*256 + (Recvbuff[length+5] & 0x000000ff))/100);
+                qDebug("%f\n",YC600_EnergyData->energy);
+                YC600_EnergyData_List.push_back(YC600_EnergyData);
+                length += 6;
+            }
+            addEnergyData(ui->tableWidget_Energy,YC600_EnergyData_List);
+
+            QList<YC600_EnergyData_t *>::Iterator iter = YC600_EnergyData_List.begin();
+            for ( ; iter != YC600_EnergyData_List.end(); iter++)  {
+                delete (*iter);
+            }
+        }
+
+
+    }else
+    {
+        ui->tableWidget_Energy->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_Energy->clearContents();
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+
 }

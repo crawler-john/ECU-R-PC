@@ -17,6 +17,19 @@ typedef struct
 
 } YC600_RealData_t;
 
+typedef struct
+{
+    char time[6];
+    int power;
+} YC600_PowerData_t;
+
+typedef struct
+{
+    char date[11];
+    double energy;
+} YC600_EnergyData_t;
+
+
 namespace Ui {
 class MainWindow;
 }
@@ -58,15 +71,25 @@ private slots:
 
     void on_comboBox_activated(int index);
 
-
-    void addTableData(QTableWidget *table, QList<YC600_RealData_t *> &List);
     void on_btn_getRealData_clicked();
 
+    void on_btn_getDate_clicked();
+
+    void on_btn_getPower_clicked();
+
+    void on_btn_getEnergy_clicked();
+
+    void addRealData(QTableWidget *table, QList<YC600_RealData_t *> &List);
+
+    void addPowerData(QTableWidget *table, QList<YC600_PowerData_t *> &List);
+    void addEnergyData(QTableWidget *table, QList<YC600_EnergyData_t *> &List);
 private:
     Ui::MainWindow *ui;
     Communication *ECU_Client;
     char ECUID[13];
     QList<YC600_RealData_t *> YC600_RealData_List;
+    QList<YC600_PowerData_t *> YC600_PowerData_List;
+    QList<YC600_EnergyData_t *> YC600_EnergyData_List;
 };
 
 #endif // MAINWINDOW_H
