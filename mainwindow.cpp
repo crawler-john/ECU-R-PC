@@ -377,7 +377,7 @@ void MainWindow::on_btn_setPasswd_clicked()
     OldPasswd[OldLen] = '\0';
     NewPasswd[NewLen] = '\0';
 
-    sprintf(Sendbuff,"APS1100000005%sEND%02d%s%02d%sEND",ECUID,OldLen,OldPasswd,NewLen,NewPasswd);
+    sprintf(Sendbuff,"APS1100000010%sEND%02d%s%02d%sEND",ECUID,OldLen,OldPasswd,NewLen,NewPasswd);
     sprintf(length,"%04d",QString(Sendbuff).length());
     memcpy(&Sendbuff[5],length,4);
     memset(Recvbuff,0x00,200);
