@@ -478,7 +478,7 @@ void MainWindow::on_btn_SetID_clicked()
     bool flag = false;
     char Sendbuff[4096];
     char Recvbuff[200] = {'\0'};
-    char ID_BCD[13];
+    char ID_BCD[7];
     char ID_BCD_List[4096];
     char text[4096] = {'\0'};
     int OPTCount = 0,index=0;
@@ -489,18 +489,25 @@ void MainWindow::on_btn_SetID_clicked()
 
     for(index = 0;index<OPTCount;index++)
     {
-        memset(ID_BCD,0x00,13);
-        memcpy(ID_BCD,&text[0+index*13],12);
-        memcpy(&ID_BCD_List[index*12],ID_BCD,12);
+        memset(ID_BCD,0x00,7);
+        ID_BCD[0] = ((text[0+index*13]&0x000000ff)-'0')*16+((text[1+index*13]&0x000000ff)-'0');
+        ID_BCD[1] = ((text[2+index*13]&0x000000ff)-'0')*16+((text[3+index*13]&0x000000ff)-'0');
+        ID_BCD[2] = ((text[4+index*13]&0x000000ff)-'0')*16+((text[5+index*13]&0x000000ff)-'0');
+        ID_BCD[3] = ((text[6+index*13]&0x000000ff)-'0')*16+((text[7+index*13]&0x000000ff)-'0');
+        ID_BCD[4] = ((text[8+index*13]&0x000000ff)-'0')*16+((text[9+index*13]&0x000000ff)-'0');
+        ID_BCD[5] = ((text[10+index*13]&0x000000ff)-'0')*16+((text[11+index*13]&0x000000ff)-'0');
+
+
+        memcpy(&ID_BCD_List[index*6],ID_BCD,6);
     }
 
     sprintf(Sendbuff,"APS1100000005%sEND",ECUID);
-    memcpy(&Sendbuff[28],ID_BCD_List,(OPTCount*12));
-    Sendbuff[OPTCount*12+28] = 'E';
-    Sendbuff[OPTCount*12+29] = 'N';
-    Sendbuff[OPTCount*12+30] = 'D';
+    memcpy(&Sendbuff[28],ID_BCD_List,(OPTCount*6));
+    Sendbuff[OPTCount*6+28] = 'E';
+    Sendbuff[OPTCount*6+29] = 'N';
+    Sendbuff[OPTCount*6+30] = 'D';
 
-    sprintf(packlength,"%04d",(OPTCount*12+31));
+    sprintf(packlength,"%04d",(OPTCount*6+31));
     memcpy(&Sendbuff[5],packlength,4);
 
     memset(Recvbuff,0x00,200);
@@ -546,15 +553,15 @@ void MainWindow::on_btn_ECUImport_clicked()
         else
         {
             statusBar()->showMessage(tr("ECU Import ID Success ..."), 2000);
-            optcount = (recvLen-18)/12;
+            optcount = (recvLen-18)/6;
             length = 15;
             for(index = 0;index < optcount;index++)
             {
-
-                memcpy(ID,&Recvbuff[length],12);
+                sprintf(ID,"%02x%02x%02x%02x%02x%02x",Recvbuff[length],Recvbuff[length+1],Recvbuff[length+2],Recvbuff[length+3],Recvbuff[length+4],Recvbuff[length+5]);
+                qDebug("%s\n",ID);
                 ID[12] = '\0';
                 ui->plainTextEdit_ID->appendPlainText(ID);
-                length += 12;
+                length += 6;
             }
         }
 
@@ -595,21 +602,34 @@ void MainWindow::addRealData(QTableWidget *table, QList<YC600_RealData_t *> &Lis
         QTableWidgetItem *item6 = new QTableWidgetItem();
 
         item->setText((*iter)->ID);
-        item1->setText(QString::number((double)((*iter)->Grid_Frequency/10)));
-        item2->setText(QString::number(((*iter)->Temperature - 100)));
-        item3->setText(QString::number((*iter)->Inverter_Power));
-        item4->setText(QString::number((*iter)->Grid_Voltage));
-        item5->setText(QString::number((*iter)->Inverter_Power_B));
-        item6->setText(QString::number((*iter)->Grid_Voltage_B));
+        if((*iter)->flag == 1)
+        {
+            item1->setText(QString::number((double)((*iter)->Grid_Frequency/10)));
+            item2->setText(QString::number(((*iter)->Temperature - 100)));
+            item3->setText(QString::number((*iter)->Inverter_Power));
+            item4->setText(QString::number((*iter)->Grid_Voltage));
+            item5->setText(QString::number((*iter)->Inverter_Power_B));
+            item6->setText(QString::number((*iter)->Grid_Voltage_B));
+
+            item->setBackgroundColor(QColor(0,238,0));
+            item1->setBackgroundColor(QColor(0,238,0));
+            item2->setBackgroundColor(QColor(0,238,0));
+            item3->setBackgroundColor(QColor(0,238,0));
+            item4->setBackgroundColor(QColor(0,238,0));
+            item5->setBackgroundColor(QColor(0,238,0));
+            item6->setBackgroundColor(QColor(0,238,0));
+
+        }else if ((*iter)->flag == 0)
+        {
+            item1->setText("-");
+            item2->setText("-");
+            item3->setText("-");
+            item4->setText("-");
+            item5->setText("-");
+            item6->setText("-");
+        }
 
 
-        item->setBackgroundColor(QColor(0,238,0));
-        item1->setBackgroundColor(QColor(0,238,0));
-        item2->setBackgroundColor(QColor(0,238,0));
-        item3->setBackgroundColor(QColor(0,238,0));
-        item4->setBackgroundColor(QColor(0,238,0));
-        item5->setBackgroundColor(QColor(0,238,0));
-        item6->setBackgroundColor(QColor(0,238,0));
 
         table->setItem(row_count, 0, item);
         table->setItem(row_count, 1, item1);
@@ -701,22 +721,23 @@ void MainWindow::on_btn_getRealData_clicked()
         else
         {
             statusBar()->showMessage(tr("ECU Get Real Data Success ..."), 2000);
-            optcount = (recvLen-27)/18;
+            optcount = (recvLen-27)/19;
             length = 24;
             for(index = 0;index < optcount;index++)
             {
                 YC600_RealData_t *YC600_RealData = new YC600_RealData_t;
 
                 sprintf(YC600_RealData->ID,"%02x%02x%02x%02x%02x%02x",(Recvbuff[length] & 0x000000ff),(Recvbuff[length+1] & 0x000000ff),(Recvbuff[length+2] & 0x000000ff),(Recvbuff[length+3] & 0x000000ff),(Recvbuff[length+4] & 0x000000ff),(Recvbuff[length+5] & 0x000000ff));
-                YC600_RealData->Grid_Frequency = (Recvbuff[length+6] & 0x000000ff)*256 + (Recvbuff[length+7] & 0x000000ff);
-                YC600_RealData->Temperature = (Recvbuff[length+8] & 0x000000ff)*256 + (Recvbuff[length+9] & 0x000000ff);
-                YC600_RealData->Inverter_Power = (Recvbuff[length+10] & 0x000000ff)*256 + (Recvbuff[length+11] & 0x000000ff);
-                YC600_RealData->Grid_Voltage = (Recvbuff[length+12] & 0x000000ff)*256 + (Recvbuff[length+13] & 0x000000ff);
-                YC600_RealData->Inverter_Power_B = (Recvbuff[length+14] & 0x000000ff)*256 + (Recvbuff[length+15] & 0x000000ff);
-                YC600_RealData->Grid_Voltage_B = (Recvbuff[length+16] & 0x000000ff)*256 + (Recvbuff[length+17] & 0x000000ff);
+                YC600_RealData->flag =(Recvbuff[length+6] & 0x000000ff);
+                YC600_RealData->Grid_Frequency = (Recvbuff[length+7] & 0x000000ff)*256 + (Recvbuff[length+8] & 0x000000ff);
+                YC600_RealData->Temperature = (Recvbuff[length+9] & 0x000000ff)*256 + (Recvbuff[length+10] & 0x000000ff);
+                YC600_RealData->Inverter_Power = (Recvbuff[length+11] & 0x000000ff)*256 + (Recvbuff[length+12] & 0x000000ff);
+                YC600_RealData->Grid_Voltage = (Recvbuff[length+13] & 0x000000ff)*256 + (Recvbuff[length+14] & 0x000000ff);
+                YC600_RealData->Inverter_Power_B = (Recvbuff[length+15] & 0x000000ff)*256 + (Recvbuff[length+16] & 0x000000ff);
+                YC600_RealData->Grid_Voltage_B = (Recvbuff[length+17] & 0x000000ff)*256 + (Recvbuff[length+18] & 0x000000ff);
 
                 YC600_RealData_List.push_back(YC600_RealData);
-                length += 18;
+                length += 19;
 
             }
             addRealData(ui->tableWidget_RealData,YC600_RealData_List);

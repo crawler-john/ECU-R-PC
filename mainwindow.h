@@ -8,6 +8,7 @@
 typedef struct
 {
     char ID[13];
+    unsigned char flag;
     unsigned short Grid_Frequency;
     unsigned short Temperature;
     unsigned short Inverter_Power;
