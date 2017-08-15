@@ -177,15 +177,15 @@ void MainWindow::on_btn_baseInfo_clicked()
         ECU_Model[2] = '\0';
         ui->label_ECUModel->setText(ECU_Model);
         //系统发电量
-        Lifttime_Energy = ((double)(Recvbuff[27]*(256*256*256) + Recvbuff[28]*(256*256) + Recvbuff[29]*256 + Recvbuff[30]))/10;
-        qDebug("%d\n",(Recvbuff[27]*(256*256*256) + Recvbuff[28]*(256*256) + Recvbuff[29]*256 + Recvbuff[30]));
+        Lifttime_Energy = ((double)((Recvbuff[27]&0x000000ff)*(256*256*256) + (Recvbuff[28]&0x000000ff)*(256*256) + (Recvbuff[29]&0x000000ff)*256 + (Recvbuff[30]&0x000000ff)))/10;
         ui->label_LifttimeEnergy->setText(QString::number(Lifttime_Energy));
 
         //当前系统功率
-        Last_System_Power = (Recvbuff[31]*(256*256*256) + Recvbuff[32]*(256*256) + Recvbuff[33]*256 + Recvbuff[34]);
+        Last_System_Power = ((Recvbuff[31]&0x000000ff)*(256*256*256) + (Recvbuff[32]&0x000000ff)*(256*256) + (Recvbuff[33]&0x000000ff)*256 + (Recvbuff[34]&0x000000ff));
         ui->label_LastSystemPower->setText(QString::number(Last_System_Power));
         //当天发电量
-        Generation_Current_Day = ((double)(Recvbuff[35]*(256*256*256) + Recvbuff[36]*(256*256) + Recvbuff[37]*256 + Recvbuff[38]))/100;
+        Generation_Current_Day = ((double)((Recvbuff[35]&0x000000ff)*(256*256*256) + (Recvbuff[36]&0x000000ff)*(256*256) + (Recvbuff[37]&0x000000ff)*256 + (Recvbuff[38]&0x000000ff)))/100;
+        qDebug("%x %x %x %x\n",Recvbuff[35],Recvbuff[36],Recvbuff[37],Recvbuff[38]);
         ui->label_GenerationCurrentDay->setText(QString::number(Generation_Current_Day));
 
         //最后一次连接EMA时间
@@ -193,15 +193,15 @@ void MainWindow::on_btn_baseInfo_clicked()
         ui->label_LastToEMA->setText(QString(Last_To_EMA));
 
         //逆变器总台数
-        Number_Inverters = (Recvbuff[46]*256 + Recvbuff[47]);
+        Number_Inverters = ((Recvbuff[46]&0x000000ff)*256 + (Recvbuff[47]&0x000000ff));
         ui->label_NumberInverters->setText(QString::number(Number_Inverters));
 
         //当前逆变器连接台数
-        Last_Number_Inverters = (Recvbuff[48]*256 + Recvbuff[49]);
+        Last_Number_Inverters = ((Recvbuff[48]&0x000000ff)*256 + (Recvbuff[49]&0x000000ff));
         ui->label_LastNumberInverters->setText(QString::number(Last_Number_Inverters));
 
         //软件版本
-        version_length = (Recvbuff[50]-'0')*100 + (Recvbuff[51]-'0')*10 + (Recvbuff[52]-'0');
+        version_length = ((Recvbuff[50]&0x000000ff)-'0')*100 + ((Recvbuff[51]&0x000000ff)-'0')*10 + ((Recvbuff[52]&0x000000ff)-'0');
         memcpy(Version,&Recvbuff[53],version_length);
         Version[version_length] = '\0';
         ui->label_Version->setText(Version);
@@ -248,7 +248,6 @@ void MainWindow::on_btn_setTime_clicked()
     sprintf(DateTime,"%04d%02d%02d%02d%02d%02d",year,month,day,hour,minute,second);
     DateTime[14] = '\0';
     sprintf(Sendbuff,"APS1100450006%sEND%sEND",ECUID,DateTime);
-    qDebug("%s",Sendbuff);
     flag = ECU_Client->ECU_Communication(Sendbuff,45,Recvbuff,&recvLen,2000);
     if(flag == true)
     {
@@ -277,16 +276,13 @@ void MainWindow::on_btn_setNetwork_clicked()
     memset(Recvbuff,0x00,4096);
 
     select_item = ui->comboBox->currentIndex();
-    qDebug("%d\n",select_item);
     //先判断是静态  还是动态
     if(select_item == 0)
     {   //动态获取IP
         sprintf((char *)Sendbuff,"APS1100530007%sEND0000000000000000000000END",ECUID);
-        qDebug("%d  Sendbuff: %s\n",select_item,Sendbuff);
     }else if(select_item == 1)
     {   //静态获取IP
         sprintf((char *)Sendbuff,"APS1100530007%sEND0100000000000000000000END",ECUID);
-        qDebug("%d  Sendbuff: %s\n",select_item,Sendbuff);
         Sendbuff[30] = (unsigned char )ui->lineEdit_IPAddress->text().toInt(); //IP 1
         Sendbuff[31] = (unsigned char )ui->lineEdit_IPAddress2->text().toInt(); //IP 2
         Sendbuff[32] = (unsigned char )ui->lineEdit_IPAddress3->text().toInt(); //IP 3
@@ -369,7 +365,6 @@ void MainWindow::on_btn_setPasswd_clicked()
     if(OldLen < 8 || NewLen < 8)
     {
         statusBar()->showMessage(tr("size too short ..."), 2000);
-        qDebug("字节长度太短\n");
         return;
     }
     memcpy(OldPasswd, ui->lineEdit_oldPasswd->text().toLatin1().data(),OldLen);
@@ -381,7 +376,6 @@ void MainWindow::on_btn_setPasswd_clicked()
     sprintf(length,"%04d",QString(Sendbuff).length());
     memcpy(&Sendbuff[5],length,4);
     memset(Recvbuff,0x00,200);
-    qDebug("%s\n",Sendbuff);
     flag = ECU_Client->ECU_Communication(Sendbuff,QString(Sendbuff).length(),Recvbuff,&recvLen,2000);
     if(flag == true)
     {
@@ -392,7 +386,6 @@ void MainWindow::on_btn_setPasswd_clicked()
         else
         {
             statusBar()->showMessage(tr("Set Password Success ..."), 2000);
-            qDebug("设置WIFI密码成功！");
         }
     }else
     {
@@ -409,7 +402,6 @@ void MainWindow::on_btn_checkWifiStatus_clicked()
 
     sprintf(Sendbuff,"APS1100280009%sEND",ECUID);
     memset(Recvbuff,0x00,200);
-    qDebug("%s\n",Sendbuff);
     flag = ECU_Client->ECU_Communication(Sendbuff,QString(Sendbuff).length(),Recvbuff,&recvLen,2000);
     if(flag == true)
     {
@@ -463,7 +455,6 @@ void MainWindow::on_btn_configWIFI_clicked()
     sprintf(length,"%04d",QString(Sendbuff).length());
     memcpy(&Sendbuff[5],length,4);
     memset(Recvbuff,0x00,200);
-    qDebug("%s\n",Sendbuff);
     flag = ECU_Client->ECU_Communication(Sendbuff,QString(Sendbuff).length(),Recvbuff,&recvLen,2000);
     if(flag == true)
     {
@@ -494,14 +485,12 @@ void MainWindow::on_btn_SetID_clicked()
     char packlength[5] = {'\0'};
     int length = ui->plainTextEdit_ID->toPlainText().length();
     OPTCount = (length + 1)/13;
-    qDebug("%d %d,%s",OPTCount,length,ui->plainTextEdit_ID->toPlainText().toLatin1().data());
     memcpy(text,ui->plainTextEdit_ID->toPlainText().toLatin1().data(),length);
 
     for(index = 0;index<OPTCount;index++)
     {
         memset(ID_BCD,0x00,13);
         memcpy(ID_BCD,&text[0+index*13],12);
-        qDebug("%s \n",ID_BCD);
         memcpy(&ID_BCD_List[index*12],ID_BCD,12);
     }
 
@@ -515,7 +504,6 @@ void MainWindow::on_btn_SetID_clicked()
     memcpy(&Sendbuff[5],packlength,4);
 
     memset(Recvbuff,0x00,200);
-    qDebug("len:%d send:%s\n",(OPTCount*12+31),Sendbuff);
 
     flag = ECU_Client->ECU_Communication(Sendbuff,(OPTCount*12+31),Recvbuff,&recvLen,3000);
     if(flag == true)
@@ -542,11 +530,10 @@ void MainWindow::on_btn_ECUImport_clicked()
     char Sendbuff[200] = {'\0'};
     char Recvbuff[4096] = {'\0'};
     int length = 0,index = 0;
-    char dateTime[15] = {'\0'};
     int optcount = 0;
     memset(Recvbuff,0x00,4096);
-    sprintf(Sendbuff,"APS1100280002%sEND",ECUID);
-    qDebug("send:%s\n",Sendbuff);
+    sprintf(Sendbuff,"APS1100280011%sEND",ECUID);
+
     flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,2000);
     ui->plainTextEdit_ID->clear();
     if(flag == true)
@@ -556,22 +543,18 @@ void MainWindow::on_btn_ECUImport_clicked()
         {   //ECU ID不匹配
             statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
         }
-        else if(Recvbuff[14] == '2')
-        {
-            statusBar()->showMessage(tr("ECU Have No Data ..."), 2000);
-        }
         else
         {
-            statusBar()->showMessage(tr("ECU Get Real Data Success ..."), 2000);
-            optcount = (recvLen-27)/18;
-            qDebug("%d\n",optcount);
-            length = 24;
+            statusBar()->showMessage(tr("ECU Import ID Success ..."), 2000);
+            optcount = (recvLen-18)/12;
+            length = 15;
             for(index = 0;index < optcount;index++)
             {
 
-                sprintf(ID,"%02x%02x%02x%02x%02x%02x",(Recvbuff[length] & 0x000000ff),(Recvbuff[length+1] & 0x000000ff),(Recvbuff[length+2] & 0x000000ff),(Recvbuff[length+3] & 0x000000ff),(Recvbuff[length+4] & 0x000000ff),(Recvbuff[length+5] & 0x000000ff));
+                memcpy(ID,&Recvbuff[length],12);
+                ID[12] = '\0';
                 ui->plainTextEdit_ID->appendPlainText(ID);
-                length += 18;
+                length += 12;
             }
         }
 
@@ -699,7 +682,6 @@ void MainWindow::on_btn_getRealData_clicked()
     int optcount = 0;
     memset(Recvbuff,0x00,4096);
     sprintf(Sendbuff,"APS1100280002%sEND",ECUID);
-    qDebug("send:%s\n",Sendbuff);
     flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,2000);
     YC600_RealData_List.clear();
 
@@ -720,7 +702,6 @@ void MainWindow::on_btn_getRealData_clicked()
         {
             statusBar()->showMessage(tr("ECU Get Real Data Success ..."), 2000);
             optcount = (recvLen-27)/18;
-            qDebug("%d\n",optcount);
             length = 24;
             for(index = 0;index < optcount;index++)
             {
@@ -736,7 +717,6 @@ void MainWindow::on_btn_getRealData_clicked()
 
                 YC600_RealData_List.push_back(YC600_RealData);
                 length += 18;
-                qDebug("%s\n",YC600_RealData->ID);
 
             }
             addRealData(ui->tableWidget_RealData,YC600_RealData_List);
@@ -781,7 +761,6 @@ void MainWindow::on_btn_getPower_clicked()
     int day = ui->dateEdit->date().day();
     memset(Recvbuff,0x00,4096);
     sprintf(Sendbuff,"APS1100390003%sEND%02d%02d%02dEND",ECUID,year,month,day);
-    qDebug("send:%s\n",Sendbuff);
 
     flag = ECU_Client->ECU_Communication(Sendbuff,39,Recvbuff,&recvLen,2000);
     YC600_PowerData_List.clear();
@@ -799,7 +778,6 @@ void MainWindow::on_btn_getPower_clicked()
         {
             statusBar()->showMessage(tr("ECU Get Power Data Success ..."), 2000);
             num = (recvLen-18)/4;
-            qDebug("%d\n",num);
             length = 15;
             for(index = 0;index < num;index++)
             {
@@ -833,7 +811,6 @@ void MainWindow::on_btn_getPower_clicked()
 
 void MainWindow::on_btn_getEnergy_clicked()
 {
-
     qint64 recvLen=0;
     bool flag = false;
     char Sendbuff[200] = {'\0'};
@@ -861,16 +838,13 @@ void MainWindow::on_btn_getEnergy_clicked()
         {
             statusBar()->showMessage(tr("ECU Get Energy Data Success ..."), 2000);
             num = (recvLen-20)/6;
-            qDebug("%d\n",num);
             length = 17;
             for(index = 0;index < num;index++)
             {
                 YC600_EnergyData_t *YC600_EnergyData = new YC600_EnergyData_t;
 
                 sprintf(YC600_EnergyData->date,"%02x%02x-%02x-%02x",Recvbuff[length],Recvbuff[length+1],Recvbuff[length+2],Recvbuff[length+3]);
-                qDebug("%d\n",((Recvbuff[length+4] & 0x000000ff)*256 + (Recvbuff[length+5] & 0x000000ff)));
                 YC600_EnergyData->energy = ((double)((Recvbuff[length+4] & 0x000000ff)*256 + (Recvbuff[length+5] & 0x000000ff))/100);
-                qDebug("%f\n",YC600_EnergyData->energy);
                 YC600_EnergyData_List.push_back(YC600_EnergyData);
                 length += 6;
             }
@@ -891,4 +865,44 @@ void MainWindow::on_btn_getEnergy_clicked()
         statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
     }
 
+}
+
+void MainWindow::on_btn_getTime_ECU_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Time[15] = {'\0'};
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[4096] = {'\0'};
+
+    memset(Recvbuff,0x00,4096);
+    sprintf(Sendbuff,"APS1100280012%sEND",ECUID);
+    flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,2000);
+    ui->plainTextEdit_ID->clear();
+    if(flag == true)
+    {
+        if(Recvbuff[14] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
+        }
+        else
+        {
+
+            statusBar()->showMessage(tr("ECU Get Time Success ..."), 2000);
+            memcpy(&Time,&Recvbuff[15],14);
+            Time[14] = '\0';
+            QDate date;
+            QTime time;
+            QString a = QString(Time).mid(0,8);
+            QString b = QString(Time).mid(8,6);
+            date = QDate::fromString(a,"yyyyMMdd");
+            time = QTime::fromString(b,"hhmmss");
+            ui->dateTimeEdit_ECU->setDateTime(QDateTime(date,time));
+        }
+
+
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
 }

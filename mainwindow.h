@@ -83,6 +83,8 @@ private slots:
 
     void addPowerData(QTableWidget *table, QList<YC600_PowerData_t *> &List);
     void addEnergyData(QTableWidget *table, QList<YC600_EnergyData_t *> &List);
+    void on_btn_getTime_ECU_clicked();
+
 private:
     Ui::MainWindow *ui;
     Communication *ECU_Client;

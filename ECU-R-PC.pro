@@ -10,6 +10,7 @@ RC_FILE = myapp.rc
 TARGET = ECU-R-PC
 TEMPLATE = app
 
+DESTDIR = $$PWD/Target/XP
 
 SOURCES += main.cpp\
         mainwindow.cpp \

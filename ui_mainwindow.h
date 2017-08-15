@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Mon Aug 14 12:41:56 2017
+** Created: Tue Aug 15 09:26:11 2017
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -150,6 +150,9 @@ public:
     QLabel *label_19;
     QPushButton *btn_setPasswd;
     QLineEdit *lineEdit_newPasswd;
+    QGroupBox *groupBox_12;
+    QPushButton *btn_getTime_ECU;
+    QDateTimeEdit *dateTimeEdit_ECU;
     QWidget *Tab_2;
     QGroupBox *groupBox_9;
     QTableWidget *tableWidget_RealData;
@@ -416,16 +419,16 @@ public:
         groupBox_3->setGeometry(QRect(270, 0, 241, 61));
         btn_getTime = new QPushButton(groupBox_3);
         btn_getTime->setObjectName(QString::fromUtf8("btn_getTime"));
-        btn_getTime->setGeometry(QRect(170, 10, 61, 23));
+        btn_getTime->setGeometry(QRect(150, 10, 81, 23));
         btn_setTime = new QPushButton(groupBox_3);
         btn_setTime->setObjectName(QString::fromUtf8("btn_setTime"));
-        btn_setTime->setGeometry(QRect(170, 36, 61, 23));
+        btn_setTime->setGeometry(QRect(150, 36, 81, 23));
         dateTimeEdit = new QDateTimeEdit(groupBox_3);
         dateTimeEdit->setObjectName(QString::fromUtf8("dateTimeEdit"));
-        dateTimeEdit->setGeometry(QRect(10, 21, 151, 21));
+        dateTimeEdit->setGeometry(QRect(10, 21, 131, 21));
         groupBox_4 = new QGroupBox(tab);
         groupBox_4->setObjectName(QString::fromUtf8("groupBox_4"));
-        groupBox_4->setGeometry(QRect(270, 60, 241, 181));
+        groupBox_4->setGeometry(QRect(270, 110, 241, 181));
         label_5 = new QLabel(groupBox_4);
         label_5->setObjectName(QString::fromUtf8("label_5"));
         label_5->setGeometry(QRect(10, 20, 54, 21));
@@ -645,7 +648,7 @@ public:
 
         groupBox_5 = new QGroupBox(tab);
         groupBox_5->setObjectName(QString::fromUtf8("groupBox_5"));
-        groupBox_5->setGeometry(QRect(270, 240, 241, 91));
+        groupBox_5->setGeometry(QRect(270, 290, 241, 91));
         gridLayoutWidget_3 = new QWidget(groupBox_5);
         gridLayoutWidget_3->setObjectName(QString::fromUtf8("gridLayoutWidget_3"));
         gridLayoutWidget_3->setGeometry(QRect(10, 20, 141, 61));
@@ -679,7 +682,7 @@ public:
         btn_configWIFI->setGeometry(QRect(160, 30, 71, 41));
         groupBox_6 = new QGroupBox(tab);
         groupBox_6->setObjectName(QString::fromUtf8("groupBox_6"));
-        groupBox_6->setGeometry(QRect(270, 330, 241, 51));
+        groupBox_6->setGeometry(QRect(520, 240, 241, 51));
         btn_checkWifiStatus = new QPushButton(groupBox_6);
         btn_checkWifiStatus->setObjectName(QString::fromUtf8("btn_checkWifiStatus"));
         btn_checkWifiStatus->setGeometry(QRect(10, 20, 91, 23));
@@ -688,7 +691,7 @@ public:
         checkBox->setGeometry(QRect(120, 20, 91, 21));
         groupBox_7 = new QGroupBox(tab);
         groupBox_7->setObjectName(QString::fromUtf8("groupBox_7"));
-        groupBox_7->setGeometry(QRect(520, 0, 241, 291));
+        groupBox_7->setGeometry(QRect(520, 0, 241, 231));
         lineEdit_ID = new QLineEdit(groupBox_7);
         lineEdit_ID->setObjectName(QString::fromUtf8("lineEdit_ID"));
         lineEdit_ID->setGeometry(QRect(80, 20, 131, 20));
@@ -703,7 +706,7 @@ public:
         label_16->setGeometry(QRect(10, 80, 111, 20));
         plainTextEdit_ID = new QPlainTextEdit(groupBox_7);
         plainTextEdit_ID->setObjectName(QString::fromUtf8("plainTextEdit_ID"));
-        plainTextEdit_ID->setGeometry(QRect(10, 110, 221, 171));
+        plainTextEdit_ID->setGeometry(QRect(10, 110, 221, 111));
         btn_SetID = new QPushButton(groupBox_7);
         btn_SetID->setObjectName(QString::fromUtf8("btn_SetID"));
         btn_SetID->setGeometry(QRect(70, 50, 71, 23));
@@ -728,6 +731,15 @@ public:
         lineEdit_newPasswd = new QLineEdit(groupBox_8);
         lineEdit_newPasswd->setObjectName(QString::fromUtf8("lineEdit_newPasswd"));
         lineEdit_newPasswd->setGeometry(QRect(60, 45, 101, 20));
+        groupBox_12 = new QGroupBox(tab);
+        groupBox_12->setObjectName(QString::fromUtf8("groupBox_12"));
+        groupBox_12->setGeometry(QRect(270, 60, 241, 41));
+        btn_getTime_ECU = new QPushButton(groupBox_12);
+        btn_getTime_ECU->setObjectName(QString::fromUtf8("btn_getTime_ECU"));
+        btn_getTime_ECU->setGeometry(QRect(150, 15, 81, 23));
+        dateTimeEdit_ECU = new QDateTimeEdit(groupBox_12);
+        dateTimeEdit_ECU->setObjectName(QString::fromUtf8("dateTimeEdit_ECU"));
+        dateTimeEdit_ECU->setGeometry(QRect(10, 16, 131, 21));
         tabWidget->addTab(tab, QString());
         Tab_2 = new QWidget();
         Tab_2->setObjectName(QString::fromUtf8("Tab_2"));
@@ -875,7 +887,7 @@ public:
         label_MacAddress->setText(QString());
         label_WifiMac->setText(QString());
         groupBox_3->setTitle(QApplication::translate("MainWindow", "\346\227\266\351\227\264\350\256\276\347\275\256", 0, QApplication::UnicodeUTF8));
-        btn_getTime->setText(QApplication::translate("MainWindow", "\350\216\267\345\217\226\346\227\266\351\227\264", 0, QApplication::UnicodeUTF8));
+        btn_getTime->setText(QApplication::translate("MainWindow", "\350\216\267\345\217\226\346\234\254\346\234\272\346\227\266\351\227\264", 0, QApplication::UnicodeUTF8));
         btn_setTime->setText(QApplication::translate("MainWindow", "\350\256\276\347\275\256\346\227\266\351\227\264", 0, QApplication::UnicodeUTF8));
         groupBox_4->setTitle(QApplication::translate("MainWindow", "\346\234\211\347\272\277\347\275\221\347\273\234\350\256\276\347\275\256", 0, QApplication::UnicodeUTF8));
         label_5->setText(QApplication::translate("MainWindow", "IP\347\261\273\345\236\213", 0, QApplication::UnicodeUTF8));
@@ -927,6 +939,8 @@ public:
         label_18->setText(QApplication::translate("MainWindow", "\346\226\260\345\257\206\347\240\201\357\274\232", 0, QApplication::UnicodeUTF8));
         label_19->setText(QApplication::translate("MainWindow", "\345\216\237\345\257\206\347\240\201\357\274\232", 0, QApplication::UnicodeUTF8));
         btn_setPasswd->setText(QApplication::translate("MainWindow", "\350\256\276\347\275\256\345\257\206\347\240\201", 0, QApplication::UnicodeUTF8));
+        groupBox_12->setTitle(QApplication::translate("MainWindow", "\346\227\266\351\227\264\350\216\267\345\217\226", 0, QApplication::UnicodeUTF8));
+        btn_getTime_ECU->setText(QApplication::translate("MainWindow", "\350\216\267\345\217\226ECU\346\227\266\351\227\264", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindow", "\344\270\273\350\246\201\345\212\237\350\203\275", 0, QApplication::UnicodeUTF8));
         groupBox_9->setTitle(QApplication::translate("MainWindow", "\345\217\221\347\224\265\351\207\217\346\225\260\346\215\256", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem = tableWidget_RealData->horizontalHeaderItem(0);

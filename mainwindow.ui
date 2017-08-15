@@ -403,22 +403,22 @@ color:#FF0000;
       <widget class="QPushButton" name="btn_getTime">
        <property name="geometry">
         <rect>
-         <x>170</x>
+         <x>150</x>
          <y>10</y>
-         <width>61</width>
+         <width>81</width>
          <height>23</height>
         </rect>
        </property>
        <property name="text">
-        <string>获取时间</string>
+        <string>获取本机时间</string>
        </property>
       </widget>
       <widget class="QPushButton" name="btn_setTime">
        <property name="geometry">
         <rect>
-         <x>170</x>
+         <x>150</x>
          <y>36</y>
-         <width>61</width>
+         <width>81</width>
          <height>23</height>
         </rect>
        </property>
@@ -431,7 +431,7 @@ color:#FF0000;
         <rect>
          <x>10</x>
          <y>21</y>
-         <width>151</width>
+         <width>131</width>
          <height>21</height>
         </rect>
        </property>
@@ -441,7 +441,7 @@ color:#FF0000;
       <property name="geometry">
        <rect>
         <x>270</x>
-        <y>60</y>
+        <y>110</y>
         <width>241</width>
         <height>181</height>
        </rect>
@@ -712,7 +712,7 @@ color:#FF0000;
       <property name="geometry">
        <rect>
         <x>270</x>
-        <y>240</y>
+        <y>290</y>
         <width>241</width>
         <height>91</height>
        </rect>
@@ -778,8 +778,8 @@ color:#FF0000;
      <widget class="QGroupBox" name="groupBox_6">
       <property name="geometry">
        <rect>
-        <x>270</x>
-        <y>330</y>
+        <x>520</x>
+        <y>240</y>
         <width>241</width>
         <height>51</height>
        </rect>
@@ -820,7 +820,7 @@ color:#FF0000;
         <x>520</x>
         <y>0</y>
         <width>241</width>
-        <height>291</height>
+        <height>231</height>
        </rect>
       </property>
       <property name="title">
@@ -884,7 +884,7 @@ color:#FF0000;
          <x>10</x>
          <y>110</y>
          <width>221</width>
-         <height>171</height>
+         <height>111</height>
         </rect>
        </property>
        <property name="plainText">
@@ -986,6 +986,42 @@ color:#FF0000;
          <y>45</y>
          <width>101</width>
          <height>20</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_12">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>60</y>
+        <width>241</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>时间获取</string>
+      </property>
+      <widget class="QPushButton" name="btn_getTime_ECU">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>15</y>
+         <width>81</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>获取ECU时间</string>
+       </property>
+      </widget>
+      <widget class="QDateTimeEdit" name="dateTimeEdit_ECU">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>16</y>
+         <width>131</width>
+         <height>21</height>
         </rect>
        </property>
       </widget>
