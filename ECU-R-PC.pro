@@ -14,10 +14,12 @@ DESTDIR = $$PWD/Target/XP
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    communication.cpp
+    communication.cpp \
+    commudp.cpp
 
 HEADERS  += mainwindow.h \
-    communication.h
+    communication.h \
+    commudp.h
 
 FORMS    += mainwindow.ui
 

@@ -443,7 +443,7 @@ color:#FF0000;
         <x>270</x>
         <y>110</y>
         <width>241</width>
-        <height>181</height>
+        <height>151</height>
        </rect>
       </property>
       <property name="title">
@@ -500,7 +500,7 @@ color:#FF0000;
         <rect>
          <x>10</x>
          <y>50</y>
-         <width>221</width>
+         <width>254</width>
          <height>126</height>
         </rect>
        </property>
@@ -712,9 +712,9 @@ color:#FF0000;
       <property name="geometry">
        <rect>
         <x>270</x>
-        <y>290</y>
+        <y>260</y>
         <width>241</width>
-        <height>91</height>
+        <height>121</height>
        </rect>
       </property>
       <property name="title">
@@ -725,8 +725,8 @@ color:#FF0000;
         <rect>
          <x>10</x>
          <y>20</y>
-         <width>141</width>
-         <height>61</height>
+         <width>171</width>
+         <height>100</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_3">
@@ -737,7 +737,7 @@ color:#FF0000;
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
+        <item row="3" column="0">
          <widget class="QLabel" name="label_14">
           <property name="text">
            <string>密码：</string>
@@ -751,11 +751,78 @@ color:#FF0000;
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
+        <item row="3" column="1">
          <widget class="QLineEdit" name="lineEdit_Passwd">
           <property name="text">
            <string>123456789</string>
           </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_46">
+          <property name="text">
+           <string>认证模式</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_47">
+          <property name="text">
+           <string>加密算法</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="comboBox_Auth">
+          <item>
+           <property name="text">
+            <string>1.OPEN</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>2.SHARED</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>3.WPAPSK</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>4.WPA2PSK</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="comboBox_Encry">
+          <item>
+           <property name="text">
+            <string>1.NONE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>2.WEP-H</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>3.WEP-A</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>4.TKIP</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>5.AES</string>
+           </property>
+          </item>
          </widget>
         </item>
        </layout>
@@ -763,15 +830,17 @@ color:#FF0000;
       <widget class="QPushButton" name="btn_configWIFI">
        <property name="geometry">
         <rect>
-         <x>160</x>
+         <x>190</x>
          <y>30</y>
-         <width>71</width>
-         <height>41</height>
+         <width>41</width>
+         <height>61</height>
         </rect>
        </property>
        <property name="text">
-        <string>配置无线
-网络连接</string>
+        <string>配置
+无线
+网络
+连接</string>
        </property>
       </widget>
      </widget>
@@ -1170,7 +1239,7 @@ color:#FF0000;
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>251</width>
+        <width>231</width>
         <height>381</height>
        </rect>
       </property>
@@ -1195,7 +1264,7 @@ color:#FF0000;
         <rect>
          <x>10</x>
          <y>80</y>
-         <width>221</width>
+         <width>211</width>
          <height>291</height>
         </rect>
        </property>
@@ -1250,9 +1319,9 @@ color:#FF0000;
      <widget class="QGroupBox" name="groupBox_11">
       <property name="geometry">
        <rect>
-        <x>260</x>
+        <x>230</x>
         <y>0</y>
-        <width>331</width>
+        <width>241</width>
         <height>381</height>
        </rect>
       </property>
@@ -1262,10 +1331,10 @@ color:#FF0000;
       <widget class="QTableWidget" name="tableWidget_Energy">
        <property name="geometry">
         <rect>
-         <x>20</x>
-         <y>50</y>
-         <width>271</width>
-         <height>321</height>
+         <x>10</x>
+         <y>90</y>
+         <width>221</width>
+         <height>281</height>
         </rect>
        </property>
        <column>
@@ -1282,14 +1351,15 @@ color:#FF0000;
       <widget class="QPushButton" name="btn_getEnergy">
        <property name="geometry">
         <rect>
-         <x>210</x>
-         <y>20</y>
-         <width>101</width>
-         <height>21</height>
+         <x>20</x>
+         <y>50</y>
+         <width>61</width>
+         <height>31</height>
         </rect>
        </property>
        <property name="text">
-        <string>获取发电量信息</string>
+        <string>获取发电
+量信息</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_45">
@@ -1329,6 +1399,206 @@ color:#FF0000;
          <string>3.最近一年</string>
         </property>
        </item>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_13">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>0</y>
+        <width>281</width>
+        <height>211</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>获取信号</string>
+      </property>
+      <widget class="QPushButton" name="btn_getWIFI">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>75</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>获取WIFI信号</string>
+       </property>
+      </widget>
+      <widget class="QTableWidget" name="tableWidget_SSID">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>50</y>
+         <width>261</width>
+         <height>91</height>
+        </rect>
+       </property>
+       <column>
+        <property name="text">
+         <string>SSID</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>信号强度</string>
+        </property>
+       </column>
+      </widget>
+      <widget class="QLabel" name="label_49">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>150</y>
+         <width>31</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>SSID</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_50">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>180</y>
+         <width>31</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>密码</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btn_connect">
+       <property name="geometry">
+        <rect>
+         <x>190</x>
+         <y>170</y>
+         <width>51</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>连接</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_SSID_2">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>147</y>
+         <width>113</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>yuneng_ecu_test</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_PassWD">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>176</y>
+         <width>113</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>123456789</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_14">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>210</y>
+        <width>291</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>获取WIFI连接状态</string>
+      </property>
+      <widget class="QPushButton" name="pushButton">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>131</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>获取WIFI连接状态</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_LinkStatus">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>45</y>
+         <width>241</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_48">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>40</y>
+         <width>31</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>连接
+信号</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_15">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>320</y>
+        <width>291</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Flash剩余空间</string>
+      </property>
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>81</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>获取Flash空间</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_flashsize">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>20</y>
+         <width>113</width>
+         <height>20</height>
+        </rect>
+       </property>
       </widget>
      </widget>
     </widget>

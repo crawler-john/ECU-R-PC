@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Tue Aug 15 15:30:22 2017
+** Created: Fri Aug 25 14:27:22 2017
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -132,6 +132,10 @@ public:
     QLabel *label_14;
     QLineEdit *lineEdit_SSID;
     QLineEdit *lineEdit_Passwd;
+    QLabel *label_46;
+    QLabel *label_47;
+    QComboBox *comboBox_Auth;
+    QComboBox *comboBox_Encry;
     QPushButton *btn_configWIFI;
     QGroupBox *groupBox_6;
     QPushButton *btn_checkWifiStatus;
@@ -173,6 +177,21 @@ public:
     QPushButton *btn_getEnergy;
     QLabel *label_45;
     QComboBox *comboBox_2;
+    QGroupBox *groupBox_13;
+    QPushButton *btn_getWIFI;
+    QTableWidget *tableWidget_SSID;
+    QLabel *label_49;
+    QLabel *label_50;
+    QPushButton *btn_connect;
+    QLineEdit *lineEdit_SSID_2;
+    QLineEdit *lineEdit_PassWD;
+    QGroupBox *groupBox_14;
+    QPushButton *pushButton;
+    QLabel *label_LinkStatus;
+    QLabel *label_48;
+    QGroupBox *groupBox_15;
+    QPushButton *pushButton_2;
+    QLineEdit *lineEdit_flashsize;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -428,7 +447,7 @@ public:
         dateTimeEdit->setGeometry(QRect(10, 21, 131, 21));
         groupBox_4 = new QGroupBox(tab);
         groupBox_4->setObjectName(QString::fromUtf8("groupBox_4"));
-        groupBox_4->setGeometry(QRect(270, 110, 241, 181));
+        groupBox_4->setGeometry(QRect(270, 110, 241, 151));
         label_5 = new QLabel(groupBox_4);
         label_5->setObjectName(QString::fromUtf8("label_5"));
         label_5->setGeometry(QRect(10, 20, 54, 21));
@@ -440,7 +459,7 @@ public:
         btn_setNetwork->setGeometry(QRect(140, 20, 91, 23));
         gridLayoutWidget_2 = new QWidget(groupBox_4);
         gridLayoutWidget_2->setObjectName(QString::fromUtf8("gridLayoutWidget_2"));
-        gridLayoutWidget_2->setGeometry(QRect(10, 50, 221, 126));
+        gridLayoutWidget_2->setGeometry(QRect(10, 50, 254, 126));
         gridLayout_2 = new QGridLayout(gridLayoutWidget_2);
         gridLayout_2->setSpacing(6);
         gridLayout_2->setContentsMargins(11, 11, 11, 11);
@@ -648,10 +667,10 @@ public:
 
         groupBox_5 = new QGroupBox(tab);
         groupBox_5->setObjectName(QString::fromUtf8("groupBox_5"));
-        groupBox_5->setGeometry(QRect(270, 290, 241, 91));
+        groupBox_5->setGeometry(QRect(270, 260, 241, 121));
         gridLayoutWidget_3 = new QWidget(groupBox_5);
         gridLayoutWidget_3->setObjectName(QString::fromUtf8("gridLayoutWidget_3"));
-        gridLayoutWidget_3->setGeometry(QRect(10, 20, 141, 61));
+        gridLayoutWidget_3->setGeometry(QRect(10, 20, 171, 100));
         gridLayout_3 = new QGridLayout(gridLayoutWidget_3);
         gridLayout_3->setSpacing(6);
         gridLayout_3->setContentsMargins(11, 11, 11, 11);
@@ -665,7 +684,7 @@ public:
         label_14 = new QLabel(gridLayoutWidget_3);
         label_14->setObjectName(QString::fromUtf8("label_14"));
 
-        gridLayout_3->addWidget(label_14, 1, 0, 1, 1);
+        gridLayout_3->addWidget(label_14, 3, 0, 1, 1);
 
         lineEdit_SSID = new QLineEdit(gridLayoutWidget_3);
         lineEdit_SSID->setObjectName(QString::fromUtf8("lineEdit_SSID"));
@@ -675,11 +694,31 @@ public:
         lineEdit_Passwd = new QLineEdit(gridLayoutWidget_3);
         lineEdit_Passwd->setObjectName(QString::fromUtf8("lineEdit_Passwd"));
 
-        gridLayout_3->addWidget(lineEdit_Passwd, 1, 1, 1, 1);
+        gridLayout_3->addWidget(lineEdit_Passwd, 3, 1, 1, 1);
+
+        label_46 = new QLabel(gridLayoutWidget_3);
+        label_46->setObjectName(QString::fromUtf8("label_46"));
+
+        gridLayout_3->addWidget(label_46, 1, 0, 1, 1);
+
+        label_47 = new QLabel(gridLayoutWidget_3);
+        label_47->setObjectName(QString::fromUtf8("label_47"));
+
+        gridLayout_3->addWidget(label_47, 2, 0, 1, 1);
+
+        comboBox_Auth = new QComboBox(gridLayoutWidget_3);
+        comboBox_Auth->setObjectName(QString::fromUtf8("comboBox_Auth"));
+
+        gridLayout_3->addWidget(comboBox_Auth, 1, 1, 1, 1);
+
+        comboBox_Encry = new QComboBox(gridLayoutWidget_3);
+        comboBox_Encry->setObjectName(QString::fromUtf8("comboBox_Encry"));
+
+        gridLayout_3->addWidget(comboBox_Encry, 2, 1, 1, 1);
 
         btn_configWIFI = new QPushButton(groupBox_5);
         btn_configWIFI->setObjectName(QString::fromUtf8("btn_configWIFI"));
-        btn_configWIFI->setGeometry(QRect(160, 30, 71, 41));
+        btn_configWIFI->setGeometry(QRect(190, 30, 41, 61));
         groupBox_6 = new QGroupBox(tab);
         groupBox_6->setObjectName(QString::fromUtf8("groupBox_6"));
         groupBox_6->setGeometry(QRect(520, 240, 241, 51));
@@ -787,7 +826,7 @@ public:
         tab_2->setObjectName(QString::fromUtf8("tab_2"));
         groupBox_10 = new QGroupBox(tab_2);
         groupBox_10->setObjectName(QString::fromUtf8("groupBox_10"));
-        groupBox_10->setGeometry(QRect(0, 0, 251, 381));
+        groupBox_10->setGeometry(QRect(0, 0, 231, 381));
         btn_getPower = new QPushButton(groupBox_10);
         btn_getPower->setObjectName(QString::fromUtf8("btn_getPower"));
         btn_getPower->setGeometry(QRect(120, 50, 75, 21));
@@ -799,7 +838,7 @@ public:
         QTableWidgetItem *__qtablewidgetitem8 = new QTableWidgetItem();
         tableWidget_Power->setHorizontalHeaderItem(1, __qtablewidgetitem8);
         tableWidget_Power->setObjectName(QString::fromUtf8("tableWidget_Power"));
-        tableWidget_Power->setGeometry(QRect(10, 80, 221, 291));
+        tableWidget_Power->setGeometry(QRect(10, 80, 211, 291));
         label_44 = new QLabel(groupBox_10);
         label_44->setObjectName(QString::fromUtf8("label_44"));
         label_44->setGeometry(QRect(14, 16, 31, 21));
@@ -811,7 +850,7 @@ public:
         btn_getDate->setGeometry(QRect(20, 49, 91, 23));
         groupBox_11 = new QGroupBox(tab_2);
         groupBox_11->setObjectName(QString::fromUtf8("groupBox_11"));
-        groupBox_11->setGeometry(QRect(260, 0, 331, 381));
+        groupBox_11->setGeometry(QRect(230, 0, 241, 381));
         tableWidget_Energy = new QTableWidget(groupBox_11);
         if (tableWidget_Energy->columnCount() < 2)
             tableWidget_Energy->setColumnCount(2);
@@ -820,16 +859,67 @@ public:
         QTableWidgetItem *__qtablewidgetitem10 = new QTableWidgetItem();
         tableWidget_Energy->setHorizontalHeaderItem(1, __qtablewidgetitem10);
         tableWidget_Energy->setObjectName(QString::fromUtf8("tableWidget_Energy"));
-        tableWidget_Energy->setGeometry(QRect(20, 50, 271, 321));
+        tableWidget_Energy->setGeometry(QRect(10, 90, 221, 281));
         btn_getEnergy = new QPushButton(groupBox_11);
         btn_getEnergy->setObjectName(QString::fromUtf8("btn_getEnergy"));
-        btn_getEnergy->setGeometry(QRect(210, 20, 101, 21));
+        btn_getEnergy->setGeometry(QRect(20, 50, 61, 31));
         label_45 = new QLabel(groupBox_11);
         label_45->setObjectName(QString::fromUtf8("label_45"));
         label_45->setGeometry(QRect(20, 20, 71, 16));
         comboBox_2 = new QComboBox(groupBox_11);
         comboBox_2->setObjectName(QString::fromUtf8("comboBox_2"));
         comboBox_2->setGeometry(QRect(90, 21, 111, 21));
+        groupBox_13 = new QGroupBox(tab_2);
+        groupBox_13->setObjectName(QString::fromUtf8("groupBox_13"));
+        groupBox_13->setGeometry(QRect(470, 0, 281, 211));
+        btn_getWIFI = new QPushButton(groupBox_13);
+        btn_getWIFI->setObjectName(QString::fromUtf8("btn_getWIFI"));
+        btn_getWIFI->setGeometry(QRect(10, 20, 75, 23));
+        tableWidget_SSID = new QTableWidget(groupBox_13);
+        if (tableWidget_SSID->columnCount() < 2)
+            tableWidget_SSID->setColumnCount(2);
+        QTableWidgetItem *__qtablewidgetitem11 = new QTableWidgetItem();
+        tableWidget_SSID->setHorizontalHeaderItem(0, __qtablewidgetitem11);
+        QTableWidgetItem *__qtablewidgetitem12 = new QTableWidgetItem();
+        tableWidget_SSID->setHorizontalHeaderItem(1, __qtablewidgetitem12);
+        tableWidget_SSID->setObjectName(QString::fromUtf8("tableWidget_SSID"));
+        tableWidget_SSID->setGeometry(QRect(10, 50, 261, 91));
+        label_49 = new QLabel(groupBox_13);
+        label_49->setObjectName(QString::fromUtf8("label_49"));
+        label_49->setGeometry(QRect(10, 150, 31, 16));
+        label_50 = new QLabel(groupBox_13);
+        label_50->setObjectName(QString::fromUtf8("label_50"));
+        label_50->setGeometry(QRect(10, 180, 31, 16));
+        btn_connect = new QPushButton(groupBox_13);
+        btn_connect->setObjectName(QString::fromUtf8("btn_connect"));
+        btn_connect->setGeometry(QRect(190, 170, 51, 23));
+        lineEdit_SSID_2 = new QLineEdit(groupBox_13);
+        lineEdit_SSID_2->setObjectName(QString::fromUtf8("lineEdit_SSID_2"));
+        lineEdit_SSID_2->setGeometry(QRect(40, 147, 113, 20));
+        lineEdit_PassWD = new QLineEdit(groupBox_13);
+        lineEdit_PassWD->setObjectName(QString::fromUtf8("lineEdit_PassWD"));
+        lineEdit_PassWD->setGeometry(QRect(40, 176, 113, 20));
+        groupBox_14 = new QGroupBox(tab_2);
+        groupBox_14->setObjectName(QString::fromUtf8("groupBox_14"));
+        groupBox_14->setGeometry(QRect(470, 210, 291, 101));
+        pushButton = new QPushButton(groupBox_14);
+        pushButton->setObjectName(QString::fromUtf8("pushButton"));
+        pushButton->setGeometry(QRect(10, 20, 131, 23));
+        label_LinkStatus = new QLabel(groupBox_14);
+        label_LinkStatus->setObjectName(QString::fromUtf8("label_LinkStatus"));
+        label_LinkStatus->setGeometry(QRect(40, 45, 241, 51));
+        label_48 = new QLabel(groupBox_14);
+        label_48->setObjectName(QString::fromUtf8("label_48"));
+        label_48->setGeometry(QRect(10, 40, 31, 41));
+        groupBox_15 = new QGroupBox(tab_2);
+        groupBox_15->setObjectName(QString::fromUtf8("groupBox_15"));
+        groupBox_15->setGeometry(QRect(470, 320, 291, 61));
+        pushButton_2 = new QPushButton(groupBox_15);
+        pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
+        pushButton_2->setGeometry(QRect(20, 20, 81, 23));
+        lineEdit_flashsize = new QLineEdit(groupBox_15);
+        lineEdit_flashsize->setObjectName(QString::fromUtf8("lineEdit_flashsize"));
+        lineEdit_flashsize->setGeometry(QRect(120, 20, 113, 20));
         tabWidget->addTab(tab_2, QString());
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
@@ -922,8 +1012,27 @@ public:
         label_14->setText(QApplication::translate("MainWindow", "\345\257\206\347\240\201\357\274\232", 0, QApplication::UnicodeUTF8));
         lineEdit_SSID->setText(QApplication::translate("MainWindow", "yuneng_ecu_test", 0, QApplication::UnicodeUTF8));
         lineEdit_Passwd->setText(QApplication::translate("MainWindow", "123456789", 0, QApplication::UnicodeUTF8));
-        btn_configWIFI->setText(QApplication::translate("MainWindow", "\351\205\215\347\275\256\346\227\240\347\272\277\n"
-"\347\275\221\347\273\234\350\277\236\346\216\245", 0, QApplication::UnicodeUTF8));
+        label_46->setText(QApplication::translate("MainWindow", "\350\256\244\350\257\201\346\250\241\345\274\217", 0, QApplication::UnicodeUTF8));
+        label_47->setText(QApplication::translate("MainWindow", "\345\212\240\345\257\206\347\256\227\346\263\225", 0, QApplication::UnicodeUTF8));
+        comboBox_Auth->clear();
+        comboBox_Auth->insertItems(0, QStringList()
+         << QApplication::translate("MainWindow", "1.OPEN", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("MainWindow", "2.SHARED", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("MainWindow", "3.WPAPSK", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("MainWindow", "4.WPA2PSK", 0, QApplication::UnicodeUTF8)
+        );
+        comboBox_Encry->clear();
+        comboBox_Encry->insertItems(0, QStringList()
+         << QApplication::translate("MainWindow", "1.NONE", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("MainWindow", "2.WEP-H", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("MainWindow", "3.WEP-A", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("MainWindow", "4.TKIP", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("MainWindow", "5.AES", 0, QApplication::UnicodeUTF8)
+        );
+        btn_configWIFI->setText(QApplication::translate("MainWindow", "\351\205\215\347\275\256\n"
+"\346\227\240\347\272\277\n"
+"\347\275\221\347\273\234\n"
+"\350\277\236\346\216\245", 0, QApplication::UnicodeUTF8));
         groupBox_6->setTitle(QApplication::translate("MainWindow", "\346\227\240\347\272\277\347\275\221\347\273\234\350\277\236\346\216\245\347\212\266\346\200\201", 0, QApplication::UnicodeUTF8));
         btn_checkWifiStatus->setText(QApplication::translate("MainWindow", "\346\243\200\346\237\245\346\227\240\347\272\277\347\212\266\346\200\201", 0, QApplication::UnicodeUTF8));
         checkBox->setText(QApplication::translate("MainWindow", "\350\277\236\346\216\245", 0, QApplication::UnicodeUTF8));
@@ -976,7 +1085,8 @@ public:
         ___qtablewidgetitem9->setText(QApplication::translate("MainWindow", "\346\227\266\351\227\264\347\202\271", 0, QApplication::UnicodeUTF8));
         QTableWidgetItem *___qtablewidgetitem10 = tableWidget_Energy->horizontalHeaderItem(1);
         ___qtablewidgetitem10->setText(QApplication::translate("MainWindow", "\345\217\221\347\224\265\351\207\217", 0, QApplication::UnicodeUTF8));
-        btn_getEnergy->setText(QApplication::translate("MainWindow", "\350\216\267\345\217\226\345\217\221\347\224\265\351\207\217\344\277\241\346\201\257", 0, QApplication::UnicodeUTF8));
+        btn_getEnergy->setText(QApplication::translate("MainWindow", "\350\216\267\345\217\226\345\217\221\347\224\265\n"
+"\351\207\217\344\277\241\346\201\257", 0, QApplication::UnicodeUTF8));
         label_45->setText(QApplication::translate("MainWindow", "\350\216\267\345\217\226\346\227\266\351\227\264\346\256\265\357\274\232", 0, QApplication::UnicodeUTF8));
         comboBox_2->clear();
         comboBox_2->insertItems(0, QStringList()
@@ -984,6 +1094,24 @@ public:
          << QApplication::translate("MainWindow", "2.\346\234\200\350\277\221\344\270\200\346\234\210", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("MainWindow", "3.\346\234\200\350\277\221\344\270\200\345\271\264", 0, QApplication::UnicodeUTF8)
         );
+        groupBox_13->setTitle(QApplication::translate("MainWindow", "\350\216\267\345\217\226\344\277\241\345\217\267", 0, QApplication::UnicodeUTF8));
+        btn_getWIFI->setText(QApplication::translate("MainWindow", "\350\216\267\345\217\226WIFI\344\277\241\345\217\267", 0, QApplication::UnicodeUTF8));
+        QTableWidgetItem *___qtablewidgetitem11 = tableWidget_SSID->horizontalHeaderItem(0);
+        ___qtablewidgetitem11->setText(QApplication::translate("MainWindow", "SSID", 0, QApplication::UnicodeUTF8));
+        QTableWidgetItem *___qtablewidgetitem12 = tableWidget_SSID->horizontalHeaderItem(1);
+        ___qtablewidgetitem12->setText(QApplication::translate("MainWindow", "\344\277\241\345\217\267\345\274\272\345\272\246", 0, QApplication::UnicodeUTF8));
+        label_49->setText(QApplication::translate("MainWindow", "SSID", 0, QApplication::UnicodeUTF8));
+        label_50->setText(QApplication::translate("MainWindow", "\345\257\206\347\240\201", 0, QApplication::UnicodeUTF8));
+        btn_connect->setText(QApplication::translate("MainWindow", "\350\277\236\346\216\245", 0, QApplication::UnicodeUTF8));
+        lineEdit_SSID_2->setText(QApplication::translate("MainWindow", "yuneng_ecu_test", 0, QApplication::UnicodeUTF8));
+        lineEdit_PassWD->setText(QApplication::translate("MainWindow", "123456789", 0, QApplication::UnicodeUTF8));
+        groupBox_14->setTitle(QApplication::translate("MainWindow", "\350\216\267\345\217\226WIFI\350\277\236\346\216\245\347\212\266\346\200\201", 0, QApplication::UnicodeUTF8));
+        pushButton->setText(QApplication::translate("MainWindow", "\350\216\267\345\217\226WIFI\350\277\236\346\216\245\347\212\266\346\200\201", 0, QApplication::UnicodeUTF8));
+        label_LinkStatus->setText(QString());
+        label_48->setText(QApplication::translate("MainWindow", "\350\277\236\346\216\245\n"
+"\344\277\241\345\217\267", 0, QApplication::UnicodeUTF8));
+        groupBox_15->setTitle(QApplication::translate("MainWindow", "Flash\345\211\251\344\275\231\347\251\272\351\227\264", 0, QApplication::UnicodeUTF8));
+        pushButton_2->setText(QApplication::translate("MainWindow", "\350\216\267\345\217\226Flash\347\251\272\351\227\264", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "\345\212\237\347\216\207\343\200\201\345\217\221\347\224\265\351\207\217\346\233\262\347\272\277", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 

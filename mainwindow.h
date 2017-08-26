@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "communication.h"
 #include <QTableWidget>
+#include "commudp.h"
 
 typedef struct
 {
@@ -29,6 +30,12 @@ typedef struct
     char date[11];
     double energy;
 } YC600_EnergyData_t;
+
+typedef struct
+{
+    char SSID[50];
+    int  signalStrength;
+} SSID_t;
 
 
 namespace Ui {
@@ -84,15 +91,30 @@ private slots:
 
     void addPowerData(QTableWidget *table, QList<YC600_PowerData_t *> &List);
     void addEnergyData(QTableWidget *table, QList<YC600_EnergyData_t *> &List);
+    void addSSIDData(QTableWidget *table, QList<SSID_t *> &List);
     void on_btn_getTime_ECU_clicked();
+
+    void on_btn_getWIFI_clicked();
+
+    void on_pushButton_clicked();
+
+
+    void on_tableWidget_SSID_itemClicked(QTableWidgetItem *item);
+
+    void on_btn_connect_clicked();
+
+    void on_pushButton_2_clicked();
 
 private:
     Ui::MainWindow *ui;
     Communication *ECU_Client;
+    CommUDP *UDPClient1;
+    CommUDP *UDPClient2;
     char ECUID[13];
     QList<YC600_RealData_t *> YC600_RealData_List;
     QList<YC600_PowerData_t *> YC600_PowerData_List;
     QList<YC600_EnergyData_t *> YC600_EnergyData_List;
+    QList<SSID_t *> SSID_List;
 };
 
 #endif // MAINWINDOW_H

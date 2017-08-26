@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "QDebug.h"
 #include "QDateTime"
+#include <unistd.h>
 
 #define MAJOR_VERSION   1
 #define MINOR_VERSION   0
@@ -16,7 +17,13 @@ MainWindow::MainWindow(QWidget *parent) :
     IPInterfaceSataus(false);
     setWindowTitle(tr("ECU-R Test V%1.%2").arg(MAJOR_VERSION).arg(MINOR_VERSION));
     setFixedSize(781,440);
+    UDPClient1 = new CommUDP("10.10.100.254",49000);
+    UDPClient2 = new CommUDP("10.10.100.254",48899);
     ECU_Client = new Communication("10.10.100.254",8899);
+    ui->comboBox_Auth->setCurrentIndex(3);
+    ui->comboBox_Encry->setCurrentIndex(4);
+    ui->tableWidget_SSID->setColumnWidth(0,150);
+    ui->tableWidget_SSID->setColumnWidth(1,60);
 }
 
 MainWindow::~MainWindow()
@@ -185,7 +192,7 @@ void MainWindow::on_btn_baseInfo_clicked()
         ui->label_LastSystemPower->setText(QString::number(Last_System_Power));
         //当天发电量
         Generation_Current_Day = ((double)((Recvbuff[35]&0x000000ff)*(256*256*256) + (Recvbuff[36]&0x000000ff)*(256*256) + (Recvbuff[37]&0x000000ff)*256 + (Recvbuff[38]&0x000000ff)))/100;
-        qDebug("%x %x %x %x\n",Recvbuff[35],Recvbuff[36],Recvbuff[37],Recvbuff[38]);
+        //qDebug("%x %x %x %x\n",Recvbuff[35],Recvbuff[36],Recvbuff[37],Recvbuff[38]);
         ui->label_GenerationCurrentDay->setText(QString::number(Generation_Current_Day));
 
         //最后一次连接EMA时间
@@ -308,11 +315,11 @@ void MainWindow::on_btn_setNetwork_clicked()
         Sendbuff[48] = (unsigned char )ui->lineEdit_DNS23->text().toInt(); //DNS2 3
         Sendbuff[49] = (unsigned char )ui->lineEdit_DNS24->text().toInt(); //DNS2 4
 
-        qDebug("ip:%d.%d.%d.%d\n",Sendbuff[30],Sendbuff[31],Sendbuff[32],Sendbuff[33]);
-        qDebug("mask:%d.%d.%d.%d\n",Sendbuff[34],Sendbuff[35],Sendbuff[36],Sendbuff[37]);
-        qDebug("gate:%d.%d.%d.%d\n",Sendbuff[38],Sendbuff[39],Sendbuff[40],Sendbuff[41]);
-        qDebug("dns1:%d.%d.%d.%d\n",Sendbuff[42],Sendbuff[43],Sendbuff[44],Sendbuff[45]);
-        qDebug("dns2:%d.%d.%d.%d\n",Sendbuff[46],Sendbuff[47],Sendbuff[48],Sendbuff[49]);
+        //qDebug("ip:%d.%d.%d.%d\n",Sendbuff[30],Sendbuff[31],Sendbuff[32],Sendbuff[33]);
+        //qDebug("mask:%d.%d.%d.%d\n",Sendbuff[34],Sendbuff[35],Sendbuff[36],Sendbuff[37]);
+        //qDebug("gate:%d.%d.%d.%d\n",Sendbuff[38],Sendbuff[39],Sendbuff[40],Sendbuff[41]);
+        //qDebug("dns1:%d.%d.%d.%d\n",Sendbuff[42],Sendbuff[43],Sendbuff[44],Sendbuff[45]);
+        //qDebug("dns2:%d.%d.%d.%d\n",Sendbuff[46],Sendbuff[47],Sendbuff[48],Sendbuff[49]);
 
     }
 
@@ -431,6 +438,7 @@ void MainWindow::on_btn_configWIFI_clicked()
     bool flag = false;
     char Sendbuff[300];
     char Recvbuff[200] = {'\0'};
+    int Auth,Encry;
     int SSIDLen = 0;
     int PASSWDLen = 0;
     char SSID[100];
@@ -440,7 +448,7 @@ void MainWindow::on_btn_configWIFI_clicked()
     SSIDLen = ui->lineEdit_SSID->text().length();
     PASSWDLen = ui->lineEdit_Passwd->text().length();
 
-    if(SSIDLen < 3 || PASSWDLen < 8)
+    if(SSIDLen < 3)
     {
         statusBar()->showMessage(tr("size too short ..."), 2000);
         return;
@@ -450,8 +458,9 @@ void MainWindow::on_btn_configWIFI_clicked()
     memcpy(Passwd, ui->lineEdit_Passwd->text().toLatin1().data(),PASSWDLen);
     SSID[SSIDLen] = '\0';
     Passwd[PASSWDLen] = '\0';
-
-    sprintf(Sendbuff,"APS1100000008%sEND%03d%s%03d%sEND",ECUID,SSIDLen,SSID,PASSWDLen,Passwd);
+    Auth = ui->comboBox_Auth->currentIndex()+1;
+    Encry = ui->comboBox_Encry->currentIndex()+1;
+    sprintf(Sendbuff,"APS1100000008%sEND%03d%s%1d%1d%03d%sEND",ECUID,SSIDLen,SSID,Auth,Encry,PASSWDLen,Passwd);
     sprintf(length,"%04d",QString(Sendbuff).length());
     memcpy(&Sendbuff[5],length,4);
     memset(Recvbuff,0x00,200);
@@ -558,7 +567,7 @@ void MainWindow::on_btn_ECUImport_clicked()
             for(index = 0;index < optcount;index++)
             {
                 sprintf(ID,"%02x%02x%02x%02x%02x%02x",Recvbuff[length],Recvbuff[length+1],Recvbuff[length+2],Recvbuff[length+3],Recvbuff[length+4],Recvbuff[length+5]);
-                qDebug("%s\n",ID);
+                //qDebug("%s\n",ID);
                 ID[12] = '\0';
                 ui->plainTextEdit_ID->appendPlainText(ID);
                 length += 6;
@@ -682,6 +691,30 @@ void MainWindow::addEnergyData(QTableWidget *table, QList<YC600_EnergyData_t *> 
 
         item->setText((*iter)->date);
         item1->setText(QString::number((double)(*iter)->energy));
+
+        item->setBackgroundColor(QColor(0,238,0));
+        item1->setBackgroundColor(QColor(0,238,0));
+
+        table->setItem(row_count, 0, item);
+        table->setItem(row_count, 1, item1);
+    }
+}
+
+void MainWindow::addSSIDData(QTableWidget *table, QList<SSID_t *> &List)
+{
+    table->setRowCount(0);
+    //清空Table中内容
+    table->clearContents();
+
+    QList<SSID_t *>::Iterator iter = List.begin();
+    for ( ; iter != List.end(); iter++)  {
+        int row_count = table->rowCount(); //获取表单行数
+        table->insertRow(row_count); //插入新行
+        QTableWidgetItem *item = new QTableWidgetItem();
+        QTableWidgetItem *item1 = new QTableWidgetItem();
+
+        item->setText((*iter)->SSID);
+        item1->setText(QString::number((double)(*iter)->signalStrength));
 
         item->setBackgroundColor(QColor(0,238,0));
         item1->setBackgroundColor(QColor(0,238,0));
@@ -841,7 +874,7 @@ void MainWindow::on_btn_getEnergy_clicked()
     int select_item = ui->comboBox_2->currentIndex();
     memset(Recvbuff,0x00,4096);
     sprintf(Sendbuff,"APS1100330004%sEND%02dEND",ECUID,select_item);
-    qDebug("send:%s\n",Sendbuff);
+    //qDebug("send:%s\n",Sendbuff);
 
     flag = ECU_Client->ECU_Communication(Sendbuff,33,Recvbuff,&recvLen,2000);
     YC600_EnergyData_List.clear();
@@ -919,6 +952,222 @@ void MainWindow::on_btn_getTime_ECU_clicked()
             date = QDate::fromString(a,"yyyyMMdd");
             time = QTime::fromString(b,"hhmmss");
             ui->dateTimeEdit_ECU->setDateTime(QDateTime(date,time));
+        }
+
+
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+
+
+void MainWindow::on_btn_getWIFI_clicked()
+{
+    char send[100] = {'\0'};
+    char recv[4096] = {'\0'};
+    bool flag = false;
+    qint64 recvlen,length,num,index,j,SSIDLen;
+
+    send[0] = 0xFF;
+    send[1] = 0x00;
+    send[2] = 0x01;
+    send[3] = 0x01;
+    send[4] = 0x02;
+    UDPClient1->ECU_Connect();
+    flag =UDPClient1->ECU_CommUDP(send, 5, recv, &recvlen, 5000);
+    SSID_List.clear();
+    if(flag == true)
+    {    ui->tableWidget_SSID->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_SSID->clearContents();
+        num = recv[4];
+        //qDebug("num:%d\n",num);
+        length = 5;
+        //qDebug("SSID %s\n",&recv[5]);
+
+        for(index = 0;index < num;index++)
+        {
+            SSID_t *SSID = new SSID_t;
+            for(j = length;j<recvlen;j++)
+            {
+                if(recv[j] == 0x00)
+                {
+                    SSIDLen = j - length;
+                    //qDebug("SSID len:%d\n",SSIDLen);
+                    break;
+                }
+            }
+            memcpy(SSID->SSID,&recv[length],SSIDLen);
+            SSID->SSID[SSIDLen] = '\0';
+            //qDebug("SSID:%s\n",SSID->SSID);
+            SSID->signalStrength = recv[length+SSIDLen+1];
+            //qDebug("SSID:%d\n",SSID->signalStrength);
+            //qDebug("%x %x\n",recv[length+SSIDLen+2],recv[length+SSIDLen+3]);
+            SSID_List.push_back(SSID);
+            length += SSIDLen+4;
+        }
+        addSSIDData(ui->tableWidget_SSID,SSID_List);
+
+        QList<SSID_t *>::Iterator iter = SSID_List.begin();
+        for ( ; iter != SSID_List.end(); iter++)  {
+            delete (*iter);
+        }
+
+    }else
+    {
+        ui->tableWidget_Energy->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_Energy->clearContents();
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+    UDPClient1->ECU_Abrot();
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    char send[100] = "HF-A11ASSISTHREAD";
+    char recv[4096] = {'\0'};
+    bool flag = false;
+    qint64 sendlen,recvlen;
+    UDPClient2->ECU_Connect();
+    flag = UDPClient2->ECU_CommUDP(send, 17, recv, &recvlen, 2000);
+    if(flag == true)
+    {
+        //qDebug("%s\n",recv);
+        UDPClient2->ECU_SendUDP("+ok", 3);
+        memset(recv,'\0',4096);
+        flag = UDPClient2->ECU_CommUDP("AT+WSLK\n", 9, recv, &recvlen, 3000);
+        if(flag == true)
+        {
+            //qDebug("%s\n",recv);
+            ui->label_LinkStatus->setText(QString(&recv[4]));
+        }
+
+        UDPClient2->ECU_SendUDP("AT+Q\n", 5);
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+    UDPClient2->ECU_Abrot();
+
+}
+
+
+void MainWindow::on_tableWidget_SSID_itemClicked(QTableWidgetItem *item)
+{
+    QString SSID;
+    SSID = ui->tableWidget_SSID->item(item->row(),0)->text();
+    qDebug("%s\n",SSID.toLatin1().data());
+    ui->lineEdit_SSID_2->clear();
+    ui->lineEdit_SSID_2->setText(SSID.toLatin1().data());
+    ui->lineEdit_PassWD->clear();
+    if(!SSID.compare("yuneng_ecu_test"))
+    {
+        ui->lineEdit_PassWD->setText("123456789");
+    }else if(!SSID.compare("yuneng_wifi"))
+    {
+        ui->lineEdit_PassWD->setText("yunengaps2014");
+    }else if(!SSID.compare("yuneng_ecu"))
+    {
+        ui->lineEdit_PassWD->setText("yunengaps2014");
+    }else if(!SSID.compare("TP-LINK_CS"))
+    {
+        ui->lineEdit_PassWD->setText("yunengaps");
+    }else if(!SSID.compare("HUAWEI-6MTDB2"))
+    {
+        ui->lineEdit_PassWD->setText("shiyanshi2016");
+    }
+
+
+}
+
+void MainWindow::on_btn_connect_clicked()
+{
+    char send[300] = {'\0'};
+    char SSID[100] = {'\0'};
+    char PassWD[100] = {'\0'};
+    char recv[4096] = {'\0'};
+    bool flag = false;
+    qint64 recvlen,SSIDLen,PassWDLen,length = 0,i = 0,sum = 0;
+
+    SSIDLen = ui->lineEdit_SSID_2->text().length();
+    PassWDLen = ui->lineEdit_PassWD->text().length();
+    memcpy(SSID,ui->lineEdit_SSID_2->text().toLatin1().data(),SSIDLen);
+    SSID[SSIDLen] = '\0';
+    memcpy(PassWD,ui->lineEdit_PassWD->text().toLatin1().data(),PassWDLen);
+    PassWD[PassWDLen] = '\0';
+    send[length++] = 0xFF;
+    send[length++] = 0x00;
+    send[length++] = 0x01;
+    send[length++] = 0x02;
+    send[length++] = 0x00;
+    memcpy(&send[length],SSID,SSIDLen);
+    length += SSIDLen;
+    send[length++] = 0x0D;
+    send[length++] = 0x0A;
+    memcpy(&send[length],PassWD,PassWDLen);
+    length += PassWDLen;
+    send[1] = (length-3)/256;
+    send[2] = (length-3)%256;
+
+    for(i = 1;i<length;i++)
+    {
+        sum+=send[i];
+    }
+    send[length++] = sum;
+    UDPClient1->ECU_Connect();
+
+    flag = UDPClient1->ECU_CommUDP(send, length, recv, &recvlen, 3000);
+    if(flag == true)
+    {
+        if(recv[4] == 0x00)
+        {
+            statusBar()->showMessage(tr("DON'T Search WIFI SSID ..."), 2000);
+        }else
+        {
+            if(recv[5] == 0x00)
+            {
+                statusBar()->showMessage(tr("DON'T Password Mismatching ..."), 2000);
+            }else
+            {
+                statusBar()->showMessage(tr("Set Success ..."), 2000);
+            }
+        }
+
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+
+    UDPClient1->ECU_Abrot();
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Time[15] = {'\0'};
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[4096] = {'\0'};
+
+    memset(Recvbuff,0x00,4096);
+    sprintf(Sendbuff,"APS1100280013%sEND",ECUID);
+    flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,2000);
+    if(flag == true)
+    {
+        if(Recvbuff[14] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
+        }
+        else
+        {
+            unsigned int FlashSize = 0;
+            statusBar()->showMessage(tr("ECU Get Flash Size Success ..."), 2000);
+
+            FlashSize = (Recvbuff[15]&0x000000ff)*16777216+(Recvbuff[16]&0x000000ff)*65536+(Recvbuff[17]&0x000000ff)*256+(Recvbuff[18]&0x000000ff);
+            ui->lineEdit_flashsize->setText(QString::number(FlashSize));
         }
 
 
