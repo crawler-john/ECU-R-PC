@@ -105,6 +105,8 @@ private slots:
 
     void on_pushButton_2_clicked();
 
+    void on_btn_getNetwork_clicked();
+
 private:
     Ui::MainWindow *ui;
     Communication *ECU_Client;

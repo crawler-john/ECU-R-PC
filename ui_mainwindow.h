@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Fri Aug 25 14:27:22 2017
+** Created: Tue Aug 29 10:59:21 2017
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -125,6 +125,7 @@ public:
     QLineEdit *lineEdit_DNS22;
     QLineEdit *lineEdit_DNS23;
     QLineEdit *lineEdit_DNS24;
+    QPushButton *btn_getNetwork;
     QGroupBox *groupBox_5;
     QWidget *gridLayoutWidget_3;
     QGridLayout *gridLayout_3;
@@ -447,19 +448,19 @@ public:
         dateTimeEdit->setGeometry(QRect(10, 21, 131, 21));
         groupBox_4 = new QGroupBox(tab);
         groupBox_4->setObjectName(QString::fromUtf8("groupBox_4"));
-        groupBox_4->setGeometry(QRect(270, 110, 241, 151));
+        groupBox_4->setGeometry(QRect(270, 100, 241, 161));
         label_5 = new QLabel(groupBox_4);
         label_5->setObjectName(QString::fromUtf8("label_5"));
-        label_5->setGeometry(QRect(10, 20, 54, 21));
+        label_5->setGeometry(QRect(10, 20, 54, 16));
         comboBox = new QComboBox(groupBox_4);
         comboBox->setObjectName(QString::fromUtf8("comboBox"));
-        comboBox->setGeometry(QRect(60, 20, 69, 22));
+        comboBox->setGeometry(QRect(51, 16, 69, 21));
         btn_setNetwork = new QPushButton(groupBox_4);
         btn_setNetwork->setObjectName(QString::fromUtf8("btn_setNetwork"));
-        btn_setNetwork->setGeometry(QRect(140, 20, 91, 23));
+        btn_setNetwork->setGeometry(QRect(126, 15, 51, 23));
         gridLayoutWidget_2 = new QWidget(groupBox_4);
         gridLayoutWidget_2->setObjectName(QString::fromUtf8("gridLayoutWidget_2"));
-        gridLayoutWidget_2->setGeometry(QRect(10, 50, 254, 126));
+        gridLayoutWidget_2->setGeometry(QRect(10, 50, 221, 101));
         gridLayout_2 = new QGridLayout(gridLayoutWidget_2);
         gridLayout_2->setSpacing(6);
         gridLayout_2->setContentsMargins(11, 11, 11, 11);
@@ -665,6 +666,9 @@ public:
 
         gridLayout_2->addWidget(lineEdit_DNS24, 4, 7, 1, 1);
 
+        btn_getNetwork = new QPushButton(groupBox_4);
+        btn_getNetwork->setObjectName(QString::fromUtf8("btn_getNetwork"));
+        btn_getNetwork->setGeometry(QRect(182, 15, 51, 23));
         groupBox_5 = new QGroupBox(tab);
         groupBox_5->setObjectName(QString::fromUtf8("groupBox_5"));
         groupBox_5->setGeometry(QRect(270, 260, 241, 121));
@@ -775,10 +779,10 @@ public:
         groupBox_12->setGeometry(QRect(270, 60, 241, 41));
         btn_getTime_ECU = new QPushButton(groupBox_12);
         btn_getTime_ECU->setObjectName(QString::fromUtf8("btn_getTime_ECU"));
-        btn_getTime_ECU->setGeometry(QRect(150, 15, 81, 23));
+        btn_getTime_ECU->setGeometry(QRect(150, 11, 81, 23));
         dateTimeEdit_ECU = new QDateTimeEdit(groupBox_12);
         dateTimeEdit_ECU->setObjectName(QString::fromUtf8("dateTimeEdit_ECU"));
-        dateTimeEdit_ECU->setGeometry(QRect(10, 16, 131, 21));
+        dateTimeEdit_ECU->setGeometry(QRect(10, 12, 131, 21));
         tabWidget->addTab(tab, QString());
         Tab_2 = new QWidget();
         Tab_2->setObjectName(QString::fromUtf8("Tab_2"));
@@ -986,7 +990,7 @@ public:
          << QApplication::translate("MainWindow", "\345\212\250\346\200\201IP", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("MainWindow", "\351\235\231\346\200\201IP", 0, QApplication::UnicodeUTF8)
         );
-        btn_setNetwork->setText(QApplication::translate("MainWindow", "\351\205\215\347\275\256\346\234\211\347\272\277\347\275\221\347\273\234", 0, QApplication::UnicodeUTF8));
+        btn_setNetwork->setText(QApplication::translate("MainWindow", "\351\205\215\347\275\256", 0, QApplication::UnicodeUTF8));
         label_6->setText(QApplication::translate("MainWindow", "IP:", 0, QApplication::UnicodeUTF8));
         label_9->setText(QApplication::translate("MainWindow", "\346\216\251\347\240\201\357\274\232", 0, QApplication::UnicodeUTF8));
         label_10->setText(QApplication::translate("MainWindow", "\347\275\221\345\205\263\357\274\232", 0, QApplication::UnicodeUTF8));
@@ -1007,6 +1011,7 @@ public:
         label_39->setText(QApplication::translate("MainWindow", ".", 0, QApplication::UnicodeUTF8));
         label_40->setText(QApplication::translate("MainWindow", ".", 0, QApplication::UnicodeUTF8));
         label_41->setText(QApplication::translate("MainWindow", ".", 0, QApplication::UnicodeUTF8));
+        btn_getNetwork->setText(QApplication::translate("MainWindow", "\350\216\267\345\217\226", 0, QApplication::UnicodeUTF8));
         groupBox_5->setTitle(QApplication::translate("MainWindow", "\346\227\240\347\272\277\347\275\221\347\273\234\350\256\276\347\275\256", 0, QApplication::UnicodeUTF8));
         label_13->setText(QApplication::translate("MainWindow", "SSID", 0, QApplication::UnicodeUTF8));
         label_14->setText(QApplication::translate("MainWindow", "\345\257\206\347\240\201\357\274\232", 0, QApplication::UnicodeUTF8));

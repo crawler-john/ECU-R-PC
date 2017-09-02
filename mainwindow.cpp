@@ -389,6 +389,9 @@ void MainWindow::on_btn_setPasswd_clicked()
         if(Recvbuff[14] == '1')
         {//ECU ID²»Æ¥Åä
             statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
+        }else if(Recvbuff[14] == '2')
+        {
+            statusBar()->showMessage(tr("ECU Old Passwd Mismatching ..."), 2000);
         }
         else
         {
@@ -1119,6 +1122,11 @@ void MainWindow::on_btn_connect_clicked()
     send[length++] = sum;
     UDPClient1->ECU_Connect();
 
+    for(i = 1;i<length;i++)
+    {
+        qDebug("%x ",send[i]);
+    }
+
     flag = UDPClient1->ECU_CommUDP(send, length, recv, &recvlen, 3000);
     if(flag == true)
     {
@@ -1174,5 +1182,69 @@ void MainWindow::on_pushButton_2_clicked()
     }else
     {
         statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_getNetwork_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    unsigned char Sendbuff[200] = {'\0'};
+    unsigned char Recvbuff[4096] = {'\0'};
+    memset(Recvbuff,0x00,4096);
+
+    sprintf((char *)Sendbuff,"APS1100280014%sEND",ECUID);
+
+
+    flag = ECU_Client->ECU_Communication((char *)Sendbuff,28,(char *)Recvbuff,&recvLen,2000);
+    if(flag == true)
+    {
+        if(!memcmp(&Recvbuff[13],"00",2))
+        {
+            if(Recvbuff[16] == '0')
+            {
+                ui->comboBox->setCurrentIndex(0);
+                IPInterfaceSataus(false);
+            }else
+            {
+                ui->comboBox->setCurrentIndex(1);
+                IPInterfaceSataus(true);
+            }
+
+            ui->lineEdit_IPAddress->setText(QString::number(Recvbuff[17])); //IP 1
+            ui->lineEdit_IPAddress2->setText(QString::number(Recvbuff[18])); //IP 2
+            ui->lineEdit_IPAddress3->setText(QString::number(Recvbuff[19])); //IP 3
+            ui->lineEdit_IPAddress4->setText(QString::number(Recvbuff[20])); //IP 4
+
+            ui->lineEdit_Mask->setText(QString::number(Recvbuff[21])); //MASK 1
+            ui->lineEdit_Mask2->setText(QString::number(Recvbuff[22])); //MASK 2
+            ui->lineEdit_Mask3->setText(QString::number(Recvbuff[23])); //MASK 3
+            ui->lineEdit_Mask4->setText(QString::number(Recvbuff[24])); //MASK 4
+
+            ui->lineEdit_gate->setText(QString::number(Recvbuff[25])); //GATE 1
+            ui->lineEdit_gate2->setText(QString::number(Recvbuff[26])); //GATE 2
+            ui->lineEdit_gate3->setText(QString::number(Recvbuff[27])); //GATE 3
+            ui->lineEdit_gate4->setText(QString::number(Recvbuff[28])); //GATE 4
+
+            ui->lineEdit_DNS1->setText(QString::number(Recvbuff[29])); //DNS1 1
+            ui->lineEdit_DNS12->setText(QString::number(Recvbuff[30])); //DNS1 2
+            ui->lineEdit_DNS13->setText(QString::number(Recvbuff[31])); //DNS1 3
+            ui->lineEdit_DNS14->setText(QString::number(Recvbuff[32])); //DNS1 4
+
+            ui->lineEdit_DNS2->setText(QString::number(Recvbuff[33])); //DNS2 1
+            ui->lineEdit_DNS22->setText(QString::number(Recvbuff[34])); //DNS2 2
+            ui->lineEdit_DNS23->setText(QString::number(Recvbuff[35])); //DNS2 3
+            ui->lineEdit_DNS24->setText(QString::number(Recvbuff[36])); //DNS2 4
+
+
+            statusBar()->showMessage(tr("Get Network Success ..."), 1000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("Get Network Failed ..."), 1000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 1000);
     }
 }

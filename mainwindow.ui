@@ -441,9 +441,9 @@ color:#FF0000;
       <property name="geometry">
        <rect>
         <x>270</x>
-        <y>110</y>
+        <y>100</y>
         <width>241</width>
-        <height>151</height>
+        <height>161</height>
        </rect>
       </property>
       <property name="title">
@@ -455,7 +455,7 @@ color:#FF0000;
          <x>10</x>
          <y>20</y>
          <width>54</width>
-         <height>21</height>
+         <height>16</height>
         </rect>
        </property>
        <property name="text">
@@ -465,10 +465,10 @@ color:#FF0000;
       <widget class="QComboBox" name="comboBox">
        <property name="geometry">
         <rect>
-         <x>60</x>
-         <y>20</y>
+         <x>51</x>
+         <y>16</y>
          <width>69</width>
-         <height>22</height>
+         <height>21</height>
         </rect>
        </property>
        <item>
@@ -485,14 +485,14 @@ color:#FF0000;
       <widget class="QPushButton" name="btn_setNetwork">
        <property name="geometry">
         <rect>
-         <x>140</x>
-         <y>20</y>
-         <width>91</width>
+         <x>126</x>
+         <y>15</y>
+         <width>51</width>
          <height>23</height>
         </rect>
        </property>
        <property name="text">
-        <string>配置有线网络</string>
+        <string>配置</string>
        </property>
       </widget>
       <widget class="QWidget" name="gridLayoutWidget_2">
@@ -500,8 +500,8 @@ color:#FF0000;
         <rect>
          <x>10</x>
          <y>50</y>
-         <width>254</width>
-         <height>126</height>
+         <width>221</width>
+         <height>101</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
@@ -706,6 +706,19 @@ color:#FF0000;
          <widget class="QLineEdit" name="lineEdit_DNS24"/>
         </item>
        </layout>
+      </widget>
+      <widget class="QPushButton" name="btn_getNetwork">
+       <property name="geometry">
+        <rect>
+         <x>182</x>
+         <y>15</y>
+         <width>51</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>获取</string>
+       </property>
       </widget>
      </widget>
      <widget class="QGroupBox" name="groupBox_5">
@@ -1075,7 +1088,7 @@ color:#FF0000;
        <property name="geometry">
         <rect>
          <x>150</x>
-         <y>15</y>
+         <y>11</y>
          <width>81</width>
          <height>23</height>
         </rect>
@@ -1088,7 +1101,7 @@ color:#FF0000;
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>16</y>
+         <y>12</y>
          <width>131</width>
          <height>21</height>
         </rect>
