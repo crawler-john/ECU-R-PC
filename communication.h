@@ -12,7 +12,7 @@ public:
     Communication(QString ip,quint16 port);
     ~Communication();
 
-    bool ECU_Communication(char *Sendbuff,qint64 sendLen, char *Recvbuff,qint64 *recvLen,int timeout);
+    bool ECU_Communication(char *Sendbuff,qint64 sendLen, char *Recvbuff,qint64 *recvLen,int timeout,int *commtime);
 
 
 

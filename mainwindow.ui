@@ -500,13 +500,13 @@ color:#FF0000;
         <rect>
          <x>10</x>
          <y>50</y>
-         <width>221</width>
-         <height>101</height>
+         <width>231</width>
+         <height>111</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
-         <widget class="QLabel" name="label_6">
+         <widget class="QLabel" name="l_1">
           <property name="text">
            <string>IP:</string>
           </property>
@@ -516,133 +516,133 @@ color:#FF0000;
          <widget class="QLineEdit" name="lineEdit_IPAddress"/>
         </item>
         <item row="1" column="0">
-         <widget class="QLabel" name="label_9">
+         <widget class="QLabel" name="l_2">
           <property name="text">
            <string>掩码：</string>
           </property>
          </widget>
         </item>
         <item row="2" column="0">
-         <widget class="QLabel" name="label_10">
+         <widget class="QLabel" name="l_3">
           <property name="text">
            <string>网关：</string>
           </property>
          </widget>
         </item>
         <item row="3" column="0">
-         <widget class="QLabel" name="label_11">
+         <widget class="QLabel" name="l_4">
           <property name="text">
            <string>DNS1：</string>
           </property>
          </widget>
         </item>
         <item row="4" column="0">
-         <widget class="QLabel" name="label_12">
+         <widget class="QLabel" name="l_5">
           <property name="text">
            <string>DNS2：</string>
           </property>
          </widget>
         </item>
         <item row="0" column="2">
-         <widget class="QLabel" name="label_22">
+         <widget class="QLabel" name="l_6">
           <property name="text">
            <string>.</string>
           </property>
          </widget>
         </item>
         <item row="0" column="4">
-         <widget class="QLabel" name="label_24">
+         <widget class="QLabel" name="l_11">
           <property name="text">
            <string>.</string>
           </property>
          </widget>
         </item>
         <item row="1" column="2">
-         <widget class="QLabel" name="label_28">
+         <widget class="QLabel" name="l_7">
           <property name="text">
            <string>.</string>
           </property>
          </widget>
         </item>
         <item row="2" column="2">
-         <widget class="QLabel" name="label_31">
+         <widget class="QLabel" name="l_8">
           <property name="text">
            <string>.</string>
           </property>
          </widget>
         </item>
         <item row="3" column="2">
-         <widget class="QLabel" name="label_32">
+         <widget class="QLabel" name="l_9">
           <property name="text">
            <string>.</string>
           </property>
          </widget>
         </item>
         <item row="4" column="2">
-         <widget class="QLabel" name="label_33">
+         <widget class="QLabel" name="l_10">
           <property name="text">
            <string>.</string>
           </property>
          </widget>
         </item>
         <item row="1" column="4">
-         <widget class="QLabel" name="label_34">
+         <widget class="QLabel" name="l_12">
           <property name="text">
            <string>.</string>
           </property>
          </widget>
         </item>
         <item row="2" column="4">
-         <widget class="QLabel" name="label_35">
+         <widget class="QLabel" name="l_13">
           <property name="text">
            <string>.</string>
           </property>
          </widget>
         </item>
         <item row="3" column="4">
-         <widget class="QLabel" name="label_36">
+         <widget class="QLabel" name="l_14">
           <property name="text">
            <string>.</string>
           </property>
          </widget>
         </item>
         <item row="4" column="4">
-         <widget class="QLabel" name="label_37">
+         <widget class="QLabel" name="l_15">
           <property name="text">
            <string>.</string>
           </property>
          </widget>
         </item>
         <item row="1" column="6">
-         <widget class="QLabel" name="label_38">
+         <widget class="QLabel" name="l_17">
           <property name="text">
            <string>.</string>
           </property>
          </widget>
         </item>
         <item row="0" column="6">
-         <widget class="QLabel" name="label_26">
+         <widget class="QLabel" name="l_16">
           <property name="text">
            <string>.</string>
           </property>
          </widget>
         </item>
         <item row="2" column="6">
-         <widget class="QLabel" name="label_39">
+         <widget class="QLabel" name="l_18">
           <property name="text">
            <string>.</string>
           </property>
          </widget>
         </item>
         <item row="3" column="6">
-         <widget class="QLabel" name="label_40">
+         <widget class="QLabel" name="l_19">
           <property name="text">
            <string>.</string>
           </property>
          </widget>
         </item>
         <item row="4" column="6">
-         <widget class="QLabel" name="label_41">
+         <widget class="QLabel" name="l_20">
           <property name="text">
            <string>.</string>
           </property>

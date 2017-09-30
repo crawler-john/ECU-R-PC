@@ -37,28 +37,30 @@ void MainWindow::IPInterfaceSataus(bool status)
 {
     if(status == true)
     {
-        ui->label_6->show();
-        ui->label_9->show();
-        ui->label_10->show();
-        ui->label_11->show();
-        ui->label_12->show();
+        ui->l_1->show();
+        ui->l_2->show();
+        ui->l_3->show();
+        ui->l_4->show();
+        ui->l_5->show();
 
-        ui->label_22->show();
-        ui->label_24->show();
-        ui->label_26->show();
-        ui->label_28->show();
-        ui->label_31->show();
+        ui->l_6->show();
+        ui->l_7->show();
+        ui->l_8->show();
+        ui->l_9->show();
+        ui->l_10->show();
 
-        ui->label_32->show();
-        ui->label_33->show();
-        ui->label_34->show();
-        ui->label_35->show();
-        ui->label_36->show();
-        ui->label_37->show();
-        ui->label_38->show();
-        ui->label_39->show();
-        ui->label_40->show();
-        ui->label_41->show();
+        ui->l_11->show();
+        ui->l_12->show();
+        ui->l_13->show();
+        ui->l_14->show();
+        ui->l_15->show();
+
+        ui->l_16->show();
+        ui->l_17->show();
+        ui->l_18->show();
+        ui->l_19->show();
+        ui->l_20->show();
+
 
         ui->lineEdit_IPAddress->show();
         ui->lineEdit_Mask->show();
@@ -85,29 +87,29 @@ void MainWindow::IPInterfaceSataus(bool status)
         ui->lineEdit_DNS24->show();
     }else
     {
-        ui->label_6->hide();
-        ui->label_9->hide();
-        ui->label_10->hide();
-        ui->label_11->hide();
-        ui->label_12->hide();
+        ui->l_1->hide();
+        ui->l_2->hide();
+        ui->l_3->hide();
+        ui->l_4->hide();
+        ui->l_5->hide();
 
+        ui->l_6->hide();
+        ui->l_7->hide();
+        ui->l_8->hide();
+        ui->l_9->hide();
+        ui->l_10->hide();
 
-        ui->label_22->hide();
-        ui->label_24->hide();
-        ui->label_26->hide();
-        ui->label_28->hide();
-        ui->label_31->hide();
+        ui->l_11->hide();
+        ui->l_12->hide();
+        ui->l_13->hide();
+        ui->l_14->hide();
+        ui->l_15->hide();
 
-        ui->label_32->hide();
-        ui->label_33->hide();
-        ui->label_34->hide();
-        ui->label_35->hide();
-        ui->label_36->hide();
-        ui->label_37->hide();
-        ui->label_38->hide();
-        ui->label_39->hide();
-        ui->label_40->hide();
-        ui->label_41->hide();
+        ui->l_16->hide();
+        ui->l_17->hide();
+        ui->l_18->hide();
+        ui->l_19->hide();
+        ui->l_20->hide();
 
 
         ui->lineEdit_IPAddress->hide();
@@ -169,11 +171,11 @@ void MainWindow::on_btn_baseInfo_clicked()
     char Time_Zone[100];
     char MAC[18] = {'\0'};
     char WIFI_MAC[18] = {'\0'};
-
+    int commtime = 0;
     char Sendbuff[20] = "APS1100160001END";
     char Recvbuff[4096] = {'\0'};
     memset(Recvbuff,0x00,4096);
-    flag = ECU_Client->ECU_Communication(Sendbuff,16,Recvbuff,&recvLen,2000);
+    flag = ECU_Client->ECU_Communication(Sendbuff,16,Recvbuff,&recvLen,2000,&commtime);
     if(flag == true)
     {
         //保存ECUID
@@ -224,10 +226,10 @@ void MainWindow::on_btn_baseInfo_clicked()
         //WIFI MAC地址
         sprintf(WIFI_MAC,"%02x-%02x-%02x-%02x-%02x-%02x",Recvbuff[62+version_length+Time_length]&0x000000ff,Recvbuff[63+version_length+Time_length]&0x000000ff,Recvbuff[64+version_length+Time_length]&0x000000ff,Recvbuff[65+version_length+Time_length]&0x000000ff,Recvbuff[66+version_length+Time_length]&0x000000ff,Recvbuff[67+version_length+Time_length]&0x000000ff);
         ui->label_WifiMac->setText(WIFI_MAC);
-        statusBar()->showMessage(tr("Add Device Success ..."), 2000);
+        statusBar()->showMessage(tr("Add Device Success ... time:%1").arg(commtime), 2000);
     }else
     {
-        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+        statusBar()->showMessage(tr("Please verify WIFI Connect ... time:%1").arg(commtime), 2000);
     }
 }
 
@@ -251,20 +253,21 @@ void MainWindow::on_btn_setTime_clicked()
     int hour = ui->dateTimeEdit->dateTime().time().hour();
     int minute = ui->dateTimeEdit->dateTime().time().minute();
     int second = ui->dateTimeEdit->dateTime().time().second();
+    int commtime = 0;
     //设置ECU-R的时间
     sprintf(DateTime,"%04d%02d%02d%02d%02d%02d",year,month,day,hour,minute,second);
     DateTime[14] = '\0';
     sprintf(Sendbuff,"APS1100450006%sEND%sEND",ECUID,DateTime);
-    flag = ECU_Client->ECU_Communication(Sendbuff,45,Recvbuff,&recvLen,2000);
+    flag = ECU_Client->ECU_Communication(Sendbuff,45,Recvbuff,&recvLen,2000,&commtime);
     if(flag == true)
     {
         if(!memcmp(&Recvbuff[13],"00",2))
         {
-            statusBar()->showMessage(tr("Set Time Success ..."), 1000);
+            statusBar()->showMessage(tr("Set Time Success ... time:%1").arg(commtime), 1000);
         }
         else
         {
-            statusBar()->showMessage(tr("Set Time Failed ..."), 1000);
+            statusBar()->showMessage(tr("Set Time Failed ... time:%1").arg(commtime), 1000);
         }
     }else
     {
@@ -322,17 +325,17 @@ void MainWindow::on_btn_setNetwork_clicked()
         //qDebug("dns2:%d.%d.%d.%d\n",Sendbuff[46],Sendbuff[47],Sendbuff[48],Sendbuff[49]);
 
     }
-
-    flag = ECU_Client->ECU_Communication((char *)Sendbuff,53,(char *)Recvbuff,&recvLen,2000);
+    int commtime = 0;
+    flag = ECU_Client->ECU_Communication((char *)Sendbuff,53,(char *)Recvbuff,&recvLen,2000,&commtime);
     if(flag == true)
     {
         if(!memcmp(&Recvbuff[13],"00",2))
         {
-            statusBar()->showMessage(tr("Set Network Success ..."), 1000);
+            statusBar()->showMessage(tr("Set Network Success ... time:%1").arg(commtime), 1000);
         }
         else
         {
-            statusBar()->showMessage(tr("Set Network Failed ..."), 1000);
+            statusBar()->showMessage(tr("Set Network Failed ... time:%1").arg(commtime), 1000);
         }
     }else
     {
@@ -383,19 +386,20 @@ void MainWindow::on_btn_setPasswd_clicked()
     sprintf(length,"%04d",QString(Sendbuff).length());
     memcpy(&Sendbuff[5],length,4);
     memset(Recvbuff,0x00,200);
-    flag = ECU_Client->ECU_Communication(Sendbuff,QString(Sendbuff).length(),Recvbuff,&recvLen,2000);
+    int commtime = 0;
+    flag = ECU_Client->ECU_Communication(Sendbuff,QString(Sendbuff).length(),Recvbuff,&recvLen,2000,&commtime);
     if(flag == true)
     {
         if(Recvbuff[14] == '1')
         {//ECU ID不匹配
-            statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
         }else if(Recvbuff[14] == '2')
         {
-            statusBar()->showMessage(tr("ECU Old Passwd Mismatching ..."), 2000);
+            statusBar()->showMessage(tr("ECU Old Passwd Mismatching ... time:%1").arg(commtime), 2000);
         }
         else
         {
-            statusBar()->showMessage(tr("Set Password Success ..."), 2000);
+            statusBar()->showMessage(tr("Set Password Success ... time:%1").arg(commtime), 2000);
         }
     }else
     {
@@ -409,25 +413,25 @@ void MainWindow::on_btn_checkWifiStatus_clicked()
     bool flag = false;
     char Sendbuff[300];
     char Recvbuff[200] = {'\0'};
-
+    int commtime = 0;
     sprintf(Sendbuff,"APS1100280009%sEND",ECUID);
     memset(Recvbuff,0x00,200);
-    flag = ECU_Client->ECU_Communication(Sendbuff,QString(Sendbuff).length(),Recvbuff,&recvLen,2000);
+    flag = ECU_Client->ECU_Communication(Sendbuff,QString(Sendbuff).length(),Recvbuff,&recvLen,2000,&commtime);
     if(flag == true)
     {
         if(Recvbuff[14] == '2')
         {//ECU ID不匹配
-            statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
         }
         else if(Recvbuff[14] == '1')
         {
             ui->checkBox->setCheckState(Qt::Checked);
-            statusBar()->showMessage(tr("Check Connect Success ..."), 2000);
+            statusBar()->showMessage(tr("Check Connect Success ... time:%1").arg(commtime), 2000);
 
         }else
         {
             ui->checkBox->setCheckState(Qt::Unchecked);
-            statusBar()->showMessage(tr("Check Connect Success ..."), 2000);
+            statusBar()->showMessage(tr("Check Connect Success ... time:%1").arg(commtime), 2000);
         }
     }else
     {
@@ -447,7 +451,7 @@ void MainWindow::on_btn_configWIFI_clicked()
     char SSID[100];
     char Passwd[100];
     char length[5] = {'\0'};
-
+    int commtime =0;
     SSIDLen = ui->lineEdit_SSID->text().length();
     PASSWDLen = ui->lineEdit_Passwd->text().length();
 
@@ -467,16 +471,16 @@ void MainWindow::on_btn_configWIFI_clicked()
     sprintf(length,"%04d",QString(Sendbuff).length());
     memcpy(&Sendbuff[5],length,4);
     memset(Recvbuff,0x00,200);
-    flag = ECU_Client->ECU_Communication(Sendbuff,QString(Sendbuff).length(),Recvbuff,&recvLen,2000);
+    flag = ECU_Client->ECU_Communication(Sendbuff,QString(Sendbuff).length(),Recvbuff,&recvLen,2000,&commtime);
     if(flag == true)
     {
         if(Recvbuff[14] == '1')
         {//ECU ID不匹配
-            statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
         }
         else
         {
-            statusBar()->showMessage(tr("Set Config SSID Success ..."), 2000);
+            statusBar()->showMessage(tr("Set Config SSID Success ... time:%1").arg(commtime), 2000);
         }
     }else
     {
@@ -523,17 +527,17 @@ void MainWindow::on_btn_SetID_clicked()
     memcpy(&Sendbuff[5],packlength,4);
 
     memset(Recvbuff,0x00,200);
-
-    flag = ECU_Client->ECU_Communication(Sendbuff,(OPTCount*12+31),Recvbuff,&recvLen,3000);
+    int commtime = 0;
+    flag = ECU_Client->ECU_Communication(Sendbuff,(OPTCount*12+31),Recvbuff,&recvLen,3000,&commtime);
     if(flag == true)
     {
         if(Recvbuff[14] == '1')
         {//ECU ID不匹配
-            statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
         }
         else
         {
-            statusBar()->showMessage(tr("Set ID Success ..."), 2000);
+            statusBar()->showMessage(tr("Set ID Success ... time:%1").arg(commtime), 2000);
         }
     }else
     {
@@ -552,19 +556,19 @@ void MainWindow::on_btn_ECUImport_clicked()
     int optcount = 0;
     memset(Recvbuff,0x00,4096);
     sprintf(Sendbuff,"APS1100280011%sEND",ECUID);
-
-    flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,2000);
+    int commtime = 0;
+    flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,2000,&commtime);
     ui->plainTextEdit_ID->clear();
     if(flag == true)
     {
 
         if(Recvbuff[14] == '1')
         {   //ECU ID不匹配
-            statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
         }
         else
         {
-            statusBar()->showMessage(tr("ECU Import ID Success ..."), 2000);
+            statusBar()->showMessage(tr("ECU Import ID Success ... time:%1").arg(commtime), 2000);
             optcount = (recvLen-18)/6;
             length = 15;
             for(index = 0;index < optcount;index++)
@@ -736,9 +740,10 @@ void MainWindow::on_btn_getRealData_clicked()
     int length = 0,index = 0;
     char dateTime[15] = {'\0'};
     int optcount = 0;
+    int commtime = 0;
     memset(Recvbuff,0x00,4096);
     sprintf(Sendbuff,"APS1100280002%sEND",ECUID);
-    flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,2000);
+    flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,2000,&commtime);
     YC600_RealData_List.clear();
 
     if(flag == true)
@@ -748,15 +753,15 @@ void MainWindow::on_btn_getRealData_clicked()
         ui->tableWidget_RealData->clearContents();
         if(Recvbuff[14] == '1')
         {   //ECU ID不匹配
-            statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
         }
         else if(Recvbuff[14] == '2')
         {
-            statusBar()->showMessage(tr("ECU Have No Data ..."), 2000);
+            statusBar()->showMessage(tr("ECU Have No Data ... time:%1").arg(commtime), 2000);
         }
         else
         {
-            statusBar()->showMessage(tr("ECU Get Real Data Success ..."), 2000);
+            statusBar()->showMessage(tr("ECU Get Real Data Success ... time:%1").arg(commtime), 2000);
             optcount = (recvLen-27)/19;
             length = 24;
             for(index = 0;index < optcount;index++)
@@ -813,13 +818,14 @@ void MainWindow::on_btn_getPower_clicked()
     char Recvbuff[4096] = {'\0'};
     int length = 0,index = 0;
     int num = 0;
+    int commtime = 0;
     int year = ui->dateEdit->date().year();
     int month = ui->dateEdit->date().month();
     int day = ui->dateEdit->date().day();
     memset(Recvbuff,0x00,4096);
     sprintf(Sendbuff,"APS1100390003%sEND%02d%02d%02dEND",ECUID,year,month,day);
 
-    flag = ECU_Client->ECU_Communication(Sendbuff,39,Recvbuff,&recvLen,2000);
+    flag = ECU_Client->ECU_Communication(Sendbuff,39,Recvbuff,&recvLen,2000,&commtime);
     YC600_PowerData_List.clear();
 
     if(flag == true)
@@ -829,11 +835,11 @@ void MainWindow::on_btn_getPower_clicked()
         ui->tableWidget_Power->clearContents();
         if(Recvbuff[14] == '1')
         {   //ECU ID不匹配
-            statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
         }
         else
         {
-            statusBar()->showMessage(tr("ECU Get Power Data Success ..."), 2000);
+            statusBar()->showMessage(tr("ECU Get Power Data Success ... time:%1").arg(commtime), 2000);
             num = (recvLen-18)/4;
             length = 15;
             for(index = 0;index < num;index++)
@@ -874,12 +880,13 @@ void MainWindow::on_btn_getEnergy_clicked()
     char Recvbuff[4096] = {'\0'};
     int length = 0,index = 0;
     int num = 0;
+    int commtime = 0;
     int select_item = ui->comboBox_2->currentIndex();
     memset(Recvbuff,0x00,4096);
     sprintf(Sendbuff,"APS1100330004%sEND%02dEND",ECUID,select_item);
     //qDebug("send:%s\n",Sendbuff);
 
-    flag = ECU_Client->ECU_Communication(Sendbuff,33,Recvbuff,&recvLen,2000);
+    flag = ECU_Client->ECU_Communication(Sendbuff,33,Recvbuff,&recvLen,2000,&commtime);
     YC600_EnergyData_List.clear();
 
     if(flag == true)
@@ -889,11 +896,11 @@ void MainWindow::on_btn_getEnergy_clicked()
         ui->tableWidget_Energy->clearContents();
         if(Recvbuff[14] == '1')
         {   //ECU ID不匹配
-            statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
         }
         else
         {
-            statusBar()->showMessage(tr("ECU Get Energy Data Success ..."), 2000);
+            statusBar()->showMessage(tr("ECU Get Energy Data Success ... time:%1").arg(commtime), 2000);
             num = (recvLen-20)/6;
             length = 17;
             for(index = 0;index < num;index++)
@@ -931,21 +938,21 @@ void MainWindow::on_btn_getTime_ECU_clicked()
     char Time[15] = {'\0'};
     char Sendbuff[200] = {'\0'};
     char Recvbuff[4096] = {'\0'};
-
+    int commtime = 0;
     memset(Recvbuff,0x00,4096);
     sprintf(Sendbuff,"APS1100280012%sEND",ECUID);
-    flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,2000);
+    flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,2000,&commtime);
     ui->plainTextEdit_ID->clear();
     if(flag == true)
     {
         if(Recvbuff[14] == '1')
         {   //ECU ID不匹配
-            statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
         }
         else
         {
 
-            statusBar()->showMessage(tr("ECU Get Time Success ..."), 2000);
+            statusBar()->showMessage(tr("ECU Get Time Success ... time:%1").arg(commtime), 2000);
             memcpy(&Time,&Recvbuff[15],14);
             Time[14] = '\0';
             QDate date;
@@ -1156,23 +1163,22 @@ void MainWindow::on_pushButton_2_clicked()
 {
     qint64 recvLen=0;
     bool flag = false;
-    char Time[15] = {'\0'};
     char Sendbuff[200] = {'\0'};
     char Recvbuff[4096] = {'\0'};
-
+    int commtime = 0;
     memset(Recvbuff,0x00,4096);
     sprintf(Sendbuff,"APS1100280013%sEND",ECUID);
-    flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,2000);
+    flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,2000,&commtime);
     if(flag == true)
     {
         if(Recvbuff[14] == '1')
         {   //ECU ID不匹配
-            statusBar()->showMessage(tr("ECU ID Mismatching ..."), 2000);
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
         }
         else
         {
             unsigned int FlashSize = 0;
-            statusBar()->showMessage(tr("ECU Get Flash Size Success ..."), 2000);
+            statusBar()->showMessage(tr("ECU Get Flash Size Success ... time:%1").arg(commtime), 2000);
 
             FlashSize = (Recvbuff[15]&0x000000ff)*16777216+(Recvbuff[16]&0x000000ff)*65536+(Recvbuff[17]&0x000000ff)*256+(Recvbuff[18]&0x000000ff);
             ui->lineEdit_flashsize->setText(QString::number(FlashSize));
@@ -1191,12 +1197,13 @@ void MainWindow::on_btn_getNetwork_clicked()
     bool flag = false;
     unsigned char Sendbuff[200] = {'\0'};
     unsigned char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
     memset(Recvbuff,0x00,4096);
 
     sprintf((char *)Sendbuff,"APS1100280014%sEND",ECUID);
 
 
-    flag = ECU_Client->ECU_Communication((char *)Sendbuff,28,(char *)Recvbuff,&recvLen,2000);
+    flag = ECU_Client->ECU_Communication((char *)Sendbuff,28,(char *)Recvbuff,&recvLen,2000,&commtime);
     if(flag == true)
     {
         if(!memcmp(&Recvbuff[13],"00",2))
@@ -1237,11 +1244,11 @@ void MainWindow::on_btn_getNetwork_clicked()
             ui->lineEdit_DNS24->setText(QString::number(Recvbuff[36])); //DNS2 4
 
 
-            statusBar()->showMessage(tr("Get Network Success ..."), 1000);
+            statusBar()->showMessage(tr("Get Network Success ... time:%1").arg(commtime), 1000);
         }
         else
         {
-            statusBar()->showMessage(tr("Get Network Failed ..."), 1000);
+            statusBar()->showMessage(tr("Get Network Failed ... time:%1").arg(commtime), 1000);
         }
     }else
     {
