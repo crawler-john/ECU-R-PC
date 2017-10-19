@@ -16,12 +16,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     IPInterfaceSataus(false);
     setWindowTitle(tr("ECU-R Test V%1.%2").arg(MAJOR_VERSION).arg(MINOR_VERSION));
-    setFixedSize(781,440);
+    setFixedSize(801,480);
     UDPClient1 = new CommUDP("10.10.100.254",49000);
     UDPClient2 = new CommUDP("10.10.100.254",48899);
     ECU_Client = new Communication("10.10.100.254",8899);
-    ui->comboBox_Auth->setCurrentIndex(3);
-    ui->comboBox_Encry->setCurrentIndex(4);
     ui->tableWidget_SSID->setColumnWidth(0,150);
     ui->tableWidget_SSID->setColumnWidth(1,60);
 }
@@ -174,58 +172,122 @@ void MainWindow::on_btn_baseInfo_clicked()
     int commtime = 0;
     char Sendbuff[20] = "APS1100160001END";
     char Recvbuff[4096] = {'\0'};
+    char channel[3];
+    char level[4];
+    char rsdType[2];
     memset(Recvbuff,0x00,4096);
     flag = ECU_Client->ECU_Communication(Sendbuff,16,Recvbuff,&recvLen,2000,&commtime);
     if(flag == true)
     {
-        //保存ECUID
-        memcpy(ECUID,&Recvbuff[13],12);
-        ECUID[12]  = '\0';
-        ui->lineEdit_ECUID->setText(ECUID);
-        memcpy(ECU_Model,&Recvbuff[25],2);
-        ECU_Model[2] = '\0';
-        ui->label_ECUModel->setText(ECU_Model);
-        //系统发电量
-        Lifttime_Energy = ((double)((Recvbuff[27]&0x000000ff)*(256*256*256) + (Recvbuff[28]&0x000000ff)*(256*256) + (Recvbuff[29]&0x000000ff)*256 + (Recvbuff[30]&0x000000ff)))/10;
-        ui->label_LifttimeEnergy->setText(QString::number(Lifttime_Energy));
+        if(recvLen == 68)
+        {
+            //保存ECUID
+            memcpy(ECUID,&Recvbuff[13],12);
+            ECUID[12]  = '\0';
+            ui->lineEdit_ECUID->setText(ECUID);
+            memcpy(ECU_Model,&Recvbuff[25],2);
+            ECU_Model[2] = '\0';
+            ui->label_ECUModel->setText(ECU_Model);
+            //系统发电量
+            Lifttime_Energy = ((double)((Recvbuff[27]&0x000000ff)*(256*256*256) + (Recvbuff[28]&0x000000ff)*(256*256) + (Recvbuff[29]&0x000000ff)*256 + (Recvbuff[30]&0x000000ff)))/10;
+            ui->label_LifttimeEnergy->setText(QString::number(Lifttime_Energy));
 
-        //当前系统功率
-        Last_System_Power = ((Recvbuff[31]&0x000000ff)*(256*256*256) + (Recvbuff[32]&0x000000ff)*(256*256) + (Recvbuff[33]&0x000000ff)*256 + (Recvbuff[34]&0x000000ff));
-        ui->label_LastSystemPower->setText(QString::number(Last_System_Power));
-        //当天发电量
-        Generation_Current_Day = ((double)((Recvbuff[35]&0x000000ff)*(256*256*256) + (Recvbuff[36]&0x000000ff)*(256*256) + (Recvbuff[37]&0x000000ff)*256 + (Recvbuff[38]&0x000000ff)))/100;
-        //qDebug("%x %x %x %x\n",Recvbuff[35],Recvbuff[36],Recvbuff[37],Recvbuff[38]);
-        ui->label_GenerationCurrentDay->setText(QString::number(Generation_Current_Day));
+            //当前系统功率
+            Last_System_Power = ((Recvbuff[31]&0x000000ff)*(256*256*256) + (Recvbuff[32]&0x000000ff)*(256*256) + (Recvbuff[33]&0x000000ff)*256 + (Recvbuff[34]&0x000000ff));
+            ui->label_LastSystemPower->setText(QString::number(Last_System_Power));
+            //当天发电量
+            Generation_Current_Day = ((double)((Recvbuff[35]&0x000000ff)*(256*256*256) + (Recvbuff[36]&0x000000ff)*(256*256) + (Recvbuff[37]&0x000000ff)*256 + (Recvbuff[38]&0x000000ff)))/100;
+            //qDebug("%x %x %x %x\n",Recvbuff[35],Recvbuff[36],Recvbuff[37],Recvbuff[38]);
+            ui->label_GenerationCurrentDay->setText(QString::number(Generation_Current_Day));
 
-        //最后一次连接EMA时间
-        sprintf(Last_To_EMA,"%02x%02x%02x%02x%02x%02x%02x",Recvbuff[39]&0x000000ff,Recvbuff[40]&0x000000ff,Recvbuff[41]&0x000000ff,Recvbuff[42]&0x000000ff,Recvbuff[43]&0x000000ff,Recvbuff[44]&0x000000ff,Recvbuff[45]&0x000000ff);
-        ui->label_LastToEMA->setText(QString(Last_To_EMA));
+            //逆变器总台数
+            Number_Inverters = ((Recvbuff[39]&0x000000ff)*256 + (Recvbuff[40]&0x000000ff));
+            ui->label_NumberInverters->setText(QString::number(Number_Inverters));
 
-        //逆变器总台数
-        Number_Inverters = ((Recvbuff[46]&0x000000ff)*256 + (Recvbuff[47]&0x000000ff));
-        ui->label_NumberInverters->setText(QString::number(Number_Inverters));
+            //当前逆变器连接台数
+            Last_Number_Inverters = ((Recvbuff[41]&0x000000ff)*256 + (Recvbuff[42]&0x000000ff));
+            ui->label_LastNumberInverters->setText(QString::number(Last_Number_Inverters));
 
-        //当前逆变器连接台数
-        Last_Number_Inverters = ((Recvbuff[48]&0x000000ff)*256 + (Recvbuff[49]&0x000000ff));
-        ui->label_LastNumberInverters->setText(QString::number(Last_Number_Inverters));
+            memcpy(level,&Recvbuff[43],3);
+            ui->label_level->setText(level);
+            memcpy(channel,&Recvbuff[46],2);
+            channel[2] = '\0';
+            ui->label_channel->setText(channel);
 
-        //软件版本
-        version_length = ((Recvbuff[50]&0x000000ff)-'0')*100 + ((Recvbuff[51]&0x000000ff)-'0')*10 + ((Recvbuff[52]&0x000000ff)-'0');
-        memcpy(Version,&Recvbuff[53],version_length);
-        Version[version_length] = '\0';
-        ui->label_Version->setText(Version);
+            rsdType[0] = Recvbuff[48];
+            rsdType[1] = '\0';
+            ui->label_rsdType->setText(rsdType);
 
-        //时区
-        Time_length = (Recvbuff[53+version_length]-'0')*100 + (Recvbuff[54+version_length]-'0')*10 + (Recvbuff[55+version_length]-'0');
-        memcpy(Time_Zone,&Recvbuff[56+version_length],Time_length);
-        Time_Zone[Time_length] = '\0';
-        ui->label_TimeZone->setText(Time_Zone);
-        //MAC地址
-        sprintf(MAC,"%02x-%02x-%02x-%02x-%02x-%02x",Recvbuff[56+version_length+Time_length]&0x000000ff,Recvbuff[57+version_length+Time_length]&0x000000ff,Recvbuff[58+version_length+Time_length]&0x000000ff,Recvbuff[59+version_length+Time_length]&0x000000ff,Recvbuff[60+version_length+Time_length]&0x000000ff,Recvbuff[61+version_length+Time_length]&0x000000ff);
-        ui->label_MacAddress->setText(MAC);
-        //WIFI MAC地址
-        sprintf(WIFI_MAC,"%02x-%02x-%02x-%02x-%02x-%02x",Recvbuff[62+version_length+Time_length]&0x000000ff,Recvbuff[63+version_length+Time_length]&0x000000ff,Recvbuff[64+version_length+Time_length]&0x000000ff,Recvbuff[65+version_length+Time_length]&0x000000ff,Recvbuff[66+version_length+Time_length]&0x000000ff,Recvbuff[67+version_length+Time_length]&0x000000ff);
-        ui->label_WifiMac->setText(WIFI_MAC);
+
+            //软件版本
+            version_length = ((Recvbuff[49]&0x000000ff)-'0')*100 + ((Recvbuff[50]&0x000000ff)-'0')*10 + ((Recvbuff[51]&0x000000ff)-'0');
+            memcpy(Version,&Recvbuff[52],version_length);
+            Version[version_length] = '\0';
+            ui->label_Version->setText(Version);
+
+            ui->label_LastToEMA->clear();
+            ui->label_TimeZone->clear();
+
+            ui->label_MacAddress->clear();
+            ui->label_WifiMac->clear();
+        }
+        if(recvLen == 92)
+        {
+            //保存ECUID
+            memcpy(ECUID,&Recvbuff[13],12);
+            ECUID[12]  = '\0';
+            ui->lineEdit_ECUID->setText(ECUID);
+            memcpy(ECU_Model,&Recvbuff[25],2);
+            ECU_Model[2] = '\0';
+            ui->label_ECUModel->setText(ECU_Model);
+            //系统发电量
+            Lifttime_Energy = ((double)((Recvbuff[27]&0x000000ff)*(256*256*256) + (Recvbuff[28]&0x000000ff)*(256*256) + (Recvbuff[29]&0x000000ff)*256 + (Recvbuff[30]&0x000000ff)))/10;
+            ui->label_LifttimeEnergy->setText(QString::number(Lifttime_Energy));
+
+            //当前系统功率
+            Last_System_Power = ((Recvbuff[31]&0x000000ff)*(256*256*256) + (Recvbuff[32]&0x000000ff)*(256*256) + (Recvbuff[33]&0x000000ff)*256 + (Recvbuff[34]&0x000000ff));
+            ui->label_LastSystemPower->setText(QString::number(Last_System_Power));
+            //当天发电量
+            Generation_Current_Day = ((double)((Recvbuff[35]&0x000000ff)*(256*256*256) + (Recvbuff[36]&0x000000ff)*(256*256) + (Recvbuff[37]&0x000000ff)*256 + (Recvbuff[38]&0x000000ff)))/100;
+            //qDebug("%x %x %x %x\n",Recvbuff[35],Recvbuff[36],Recvbuff[37],Recvbuff[38]);
+            ui->label_GenerationCurrentDay->setText(QString::number(Generation_Current_Day));
+
+            //最后一次连接EMA时间
+            sprintf(Last_To_EMA,"%02x%02x%02x%02x%02x%02x%02x",Recvbuff[39]&0x000000ff,Recvbuff[40]&0x000000ff,Recvbuff[41]&0x000000ff,Recvbuff[42]&0x000000ff,Recvbuff[43]&0x000000ff,Recvbuff[44]&0x000000ff,Recvbuff[45]&0x000000ff);
+            ui->label_LastToEMA->setText(QString(Last_To_EMA));
+
+            //逆变器总台数
+            Number_Inverters = ((Recvbuff[46]&0x000000ff)*256 + (Recvbuff[47]&0x000000ff));
+            ui->label_NumberInverters->setText(QString::number(Number_Inverters));
+
+            //当前逆变器连接台数
+            Last_Number_Inverters = ((Recvbuff[48]&0x000000ff)*256 + (Recvbuff[49]&0x000000ff));
+            ui->label_LastNumberInverters->setText(QString::number(Last_Number_Inverters));
+
+            memcpy(channel,&Recvbuff[50],2);
+            channel[2] = '\0';
+            ui->label_channel->setText(channel);
+            //软件版本
+            version_length = ((Recvbuff[52]&0x000000ff)-'0')*100 + ((Recvbuff[53]&0x000000ff)-'0')*10 + ((Recvbuff[54]&0x000000ff)-'0');
+            memcpy(Version,&Recvbuff[55],version_length);
+            Version[version_length] = '\0';
+            ui->label_Version->setText(Version);
+
+            //时区
+            Time_length = (Recvbuff[55+version_length]-'0')*100 + (Recvbuff[56+version_length]-'0')*10 + (Recvbuff[57+version_length]-'0');
+            memcpy(Time_Zone,&Recvbuff[58+version_length],Time_length);
+            Time_Zone[Time_length] = '\0';
+            ui->label_TimeZone->setText(Time_Zone);
+            //MAC地址
+            sprintf(MAC,"%02x-%02x-%02x-%02x-%02x-%02x",Recvbuff[58+version_length+Time_length]&0x000000ff,Recvbuff[59+version_length+Time_length]&0x000000ff,Recvbuff[60+version_length+Time_length]&0x000000ff,Recvbuff[61+version_length+Time_length]&0x000000ff,Recvbuff[62+version_length+Time_length]&0x000000ff,Recvbuff[63+version_length+Time_length]&0x000000ff);
+            ui->label_MacAddress->setText(MAC);
+            //WIFI MAC地址
+            sprintf(WIFI_MAC,"%02x-%02x-%02x-%02x-%02x-%02x",Recvbuff[64+version_length+Time_length]&0x000000ff,Recvbuff[65+version_length+Time_length]&0x000000ff,Recvbuff[66+version_length+Time_length]&0x000000ff,Recvbuff[67+version_length+Time_length]&0x000000ff,Recvbuff[68+version_length+Time_length]&0x000000ff,Recvbuff[69+version_length+Time_length]&0x000000ff);
+            ui->label_WifiMac->setText(WIFI_MAC);
+            ui->label_level->clear();
+            ui->label_rsdType->clear();
+        }
+
         statusBar()->showMessage(tr("Add Device Success ... time:%1").arg(commtime), 2000);
     }else
     {
@@ -400,87 +462,6 @@ void MainWindow::on_btn_setPasswd_clicked()
         else
         {
             statusBar()->showMessage(tr("Set Password Success ... time:%1").arg(commtime), 2000);
-        }
-    }else
-    {
-        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
-    }
-}
-
-void MainWindow::on_btn_checkWifiStatus_clicked()
-{
-    qint64 recvLen=0;
-    bool flag = false;
-    char Sendbuff[300];
-    char Recvbuff[200] = {'\0'};
-    int commtime = 0;
-    sprintf(Sendbuff,"APS1100280009%sEND",ECUID);
-    memset(Recvbuff,0x00,200);
-    flag = ECU_Client->ECU_Communication(Sendbuff,QString(Sendbuff).length(),Recvbuff,&recvLen,2000,&commtime);
-    if(flag == true)
-    {
-        if(Recvbuff[14] == '2')
-        {//ECU ID不匹配
-            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
-        }
-        else if(Recvbuff[14] == '1')
-        {
-            ui->checkBox->setCheckState(Qt::Checked);
-            statusBar()->showMessage(tr("Check Connect Success ... time:%1").arg(commtime), 2000);
-
-        }else
-        {
-            ui->checkBox->setCheckState(Qt::Unchecked);
-            statusBar()->showMessage(tr("Check Connect Success ... time:%1").arg(commtime), 2000);
-        }
-    }else
-    {
-        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
-    }
-}
-
-void MainWindow::on_btn_configWIFI_clicked()
-{
-    qint64 recvLen=0;
-    bool flag = false;
-    char Sendbuff[300];
-    char Recvbuff[200] = {'\0'};
-    int Auth,Encry;
-    int SSIDLen = 0;
-    int PASSWDLen = 0;
-    char SSID[100];
-    char Passwd[100];
-    char length[5] = {'\0'};
-    int commtime =0;
-    SSIDLen = ui->lineEdit_SSID->text().length();
-    PASSWDLen = ui->lineEdit_Passwd->text().length();
-
-    if(SSIDLen < 3)
-    {
-        statusBar()->showMessage(tr("size too short ..."), 2000);
-        return;
-    }
-
-    memcpy(SSID, ui->lineEdit_SSID->text().toLatin1().data(),SSIDLen);
-    memcpy(Passwd, ui->lineEdit_Passwd->text().toLatin1().data(),PASSWDLen);
-    SSID[SSIDLen] = '\0';
-    Passwd[PASSWDLen] = '\0';
-    Auth = ui->comboBox_Auth->currentIndex()+1;
-    Encry = ui->comboBox_Encry->currentIndex()+1;
-    sprintf(Sendbuff,"APS1100000008%sEND%03d%s%1d%1d%03d%sEND",ECUID,SSIDLen,SSID,Auth,Encry,PASSWDLen,Passwd);
-    sprintf(length,"%04d",QString(Sendbuff).length());
-    memcpy(&Sendbuff[5],length,4);
-    memset(Recvbuff,0x00,200);
-    flag = ECU_Client->ECU_Communication(Sendbuff,QString(Sendbuff).length(),Recvbuff,&recvLen,2000,&commtime);
-    if(flag == true)
-    {
-        if(Recvbuff[14] == '1')
-        {//ECU ID不匹配
-            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
-        }
-        else
-        {
-            statusBar()->showMessage(tr("Set Config SSID Success ... time:%1").arg(commtime), 2000);
         }
     }else
     {
@@ -706,6 +687,126 @@ void MainWindow::addEnergyData(QTableWidget *table, QList<YC600_EnergyData_t *> 
         table->setItem(row_count, 1, item1);
     }
 }
+void MainWindow::addTableData(QTableWidget *table, QList<OPT700_RS *> &List)
+{
+    table->setRowCount(0);
+    //清空Table中内容
+    table->clearContents();
+
+    QList<OPT700_RS *>::Iterator iter = List.begin();
+    for ( ; iter != List.end(); iter++)  {
+        int row_count = table->rowCount(); //获取表单行数
+        table->insertRow(row_count); //插入新行
+        QTableWidgetItem *item = new QTableWidgetItem();
+        QTableWidgetItem *item1 = new QTableWidgetItem();
+        QTableWidgetItem *item2 = new QTableWidgetItem();
+        QTableWidgetItem *item3 = new QTableWidgetItem();
+        QTableWidgetItem *item4 = new QTableWidgetItem();
+        QTableWidgetItem *item5 = new QTableWidgetItem();
+        QTableWidgetItem *item6 = new QTableWidgetItem();
+        QTableWidgetItem *item7 = new QTableWidgetItem();
+        QTableWidgetItem *item8 = new QTableWidgetItem();
+        QTableWidgetItem *item9 = new QTableWidgetItem();
+        QTableWidgetItem *item10 = new QTableWidgetItem();
+        QTableWidgetItem *item11 = new QTableWidgetItem();
+        QTableWidgetItem *item12 = new QTableWidgetItem();
+        QTableWidgetItem *item13 = new QTableWidgetItem();
+        QTableWidgetItem *item14 = new QTableWidgetItem();
+        QTableWidgetItem *item15 = new QTableWidgetItem();
+        QTableWidgetItem *item16 = new QTableWidgetItem();
+        QTableWidgetItem *item17 = new QTableWidgetItem();
+        QTableWidgetItem *item18 = new QTableWidgetItem();
+        QTableWidgetItem *item19 = new QTableWidgetItem();
+        QTableWidgetItem *item20 = new QTableWidgetItem();
+        QTableWidgetItem *item21 = new QTableWidgetItem();
+        QTableWidgetItem *item22 = new QTableWidgetItem();
+        QTableWidgetItem *item23 = new QTableWidgetItem();
+
+
+
+        item->setText((*iter)->ID);
+        item1->setText(QString::number((*iter)->Equipment_Status));
+        item2->setText(QString::number((*iter)->Mos_Status));
+
+        item3->setText(QString::number((*iter)->Function_Status));
+        item4->setText(QString::number((*iter)->PV1_Protect));
+        item5->setText(QString::number((*iter)->PV2_Protect));
+        item6->setText(QString::number((*iter)->Heart_Rate));
+        item7->setText(QString::number((*iter)->Off_Times));
+        item8->setText(QString::number((*iter)->Shutdown_Num));
+        item9->setText(QString::number((*iter)->PV1));
+        item10->setText(QString::number((*iter)->PV2));
+        item11->setText(QString::number((*iter)->PI));
+        item12->setText(QString::number((*iter)->PI2));
+
+        item13->setText(QString::number((*iter)->Power1));
+        item14->setText(QString::number((*iter)->Power2));
+        item15->setText(QString::number((*iter)->Output_PV));
+        item16->setText(QString::number((*iter)->PI_Output));
+        item17->setText(QString::number((*iter)->Power_Output));
+        item18->setText(QString::number((*iter)->RSSI));
+
+        item19->setText(QString::number((*iter)->PV1_ENERGY));
+        item20->setText(QString::number((*iter)->PV2_ENERGY));
+        item21->setText(QString::number((*iter)->PV_Output_ENERGY));
+        item22->setText(QString::number((*iter)->MOS_CLOSE_NUM));
+        item23->setText(QString::number((*iter)->version));
+
+
+        if((*iter)->Mos_Status == 1)
+        {
+            item->setBackgroundColor(QColor(0,238,0));
+            item1->setBackgroundColor(QColor(0,238,0));
+            item2->setBackgroundColor(QColor(0,238,0));
+            item3->setBackgroundColor(QColor(0,238,0));
+            item4->setBackgroundColor(QColor(0,238,0));
+            item5->setBackgroundColor(QColor(0,238,0));
+            item6->setBackgroundColor(QColor(0,238,0));
+            item7->setBackgroundColor(QColor(0,238,0));
+            item8->setBackgroundColor(QColor(0,238,0));
+            item9->setBackgroundColor(QColor(0,238,0));
+            item10->setBackgroundColor(QColor(0,238,0));
+            item11->setBackgroundColor(QColor(0,238,0));
+            item12->setBackgroundColor(QColor(0,238,0));
+            item13->setBackgroundColor(QColor(0,238,0));
+            item14->setBackgroundColor(QColor(0,238,0));
+            item15->setBackgroundColor(QColor(0,238,0));
+            item16->setBackgroundColor(QColor(0,238,0));
+            item17->setBackgroundColor(QColor(0,238,0));
+            item18->setBackgroundColor(QColor(0,238,0));
+            item19->setBackgroundColor(QColor(0,238,0));
+            item20->setBackgroundColor(QColor(0,238,0));
+            item21->setBackgroundColor(QColor(0,238,0));
+            item22->setBackgroundColor(QColor(0,238,0));
+            item23->setBackgroundColor(QColor(0,238,0));
+        }
+
+        table->setItem(row_count, 0, item);
+        table->setItem(row_count, 1, item1);
+        table->setItem(row_count, 2, item2);
+        table->setItem(row_count, 3, item3);
+        table->setItem(row_count, 4, item4);
+        table->setItem(row_count, 5, item5);
+        table->setItem(row_count, 6, item6);
+        table->setItem(row_count, 7, item7);
+        table->setItem(row_count, 8, item8);
+        table->setItem(row_count, 9, item9);
+        table->setItem(row_count, 10, item10);
+        table->setItem(row_count, 11, item11);
+        table->setItem(row_count, 12, item12);
+        table->setItem(row_count, 13, item13);
+        table->setItem(row_count, 14, item14);
+        table->setItem(row_count, 15, item15);
+        table->setItem(row_count, 16, item16);
+        table->setItem(row_count, 17, item17);
+        table->setItem(row_count, 18, item18);
+        table->setItem(row_count, 19, item19);
+        table->setItem(row_count, 20, item20);
+        table->setItem(row_count, 21, item21);
+        table->setItem(row_count, 22, item22);
+        table->setItem(row_count, 23, item23);
+    }
+}
 
 void MainWindow::addSSIDData(QTableWidget *table, QList<SSID_t *> &List)
 {
@@ -731,26 +832,29 @@ void MainWindow::addSSIDData(QTableWidget *table, QList<SSID_t *> &List)
     }
 }
 
+
+
+
 void MainWindow::on_btn_getRealData_clicked()
 {
+    unsigned char status;
     qint64 recvLen=0;
+    int openCount = 0,closeCount = 0;
     bool flag = false;
     char Sendbuff[200] = {'\0'};
-    char Recvbuff[4096] = {'\0'};
+    char Recvbuff[8192] = {'\0'};
     int length = 0,index = 0;
     char dateTime[15] = {'\0'};
     int optcount = 0;
     int commtime = 0;
-    memset(Recvbuff,0x00,4096);
+    memset(Recvbuff,0x00,8192);
     sprintf(Sendbuff,"APS1100280002%sEND",ECUID);
     flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,2000,&commtime);
     YC600_RealData_List.clear();
-
+    OPT700_RSList.clear();
+    clr_tableWidget_RealData_Item();
     if(flag == true)
     {
-        ui->tableWidget_RealData->setRowCount(0);
-        //清空Table中内容
-        ui->tableWidget_RealData->clearContents();
         if(Recvbuff[14] == '1')
         {   //ECU ID不匹配
             statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
@@ -761,34 +865,113 @@ void MainWindow::on_btn_getRealData_clicked()
         }
         else
         {
-            statusBar()->showMessage(tr("ECU Get Real Data Success ... time:%1").arg(commtime), 2000);
-            optcount = (recvLen-27)/19;
-            length = 24;
-            for(index = 0;index < optcount;index++)
-            {
-                YC600_RealData_t *YC600_RealData = new YC600_RealData_t;
+            //分辨是YC600还是RSD
+            if(!memcmp(&Recvbuff[15],"01",2))
+            {   //YC600
+                set_tableWidget_RealData_View(1);
+                statusBar()->showMessage(tr("ECU Get Real Data Success ... time:%1").arg(commtime), 2000);
+                optcount = (recvLen-29)/19;
+                length = 26;
+                for(index = 0;index < optcount;index++)
+                {
+                    YC600_RealData_t *YC600_RealData = new YC600_RealData_t;
 
-                sprintf(YC600_RealData->ID,"%02x%02x%02x%02x%02x%02x",(Recvbuff[length] & 0x000000ff),(Recvbuff[length+1] & 0x000000ff),(Recvbuff[length+2] & 0x000000ff),(Recvbuff[length+3] & 0x000000ff),(Recvbuff[length+4] & 0x000000ff),(Recvbuff[length+5] & 0x000000ff));
-                YC600_RealData->flag =(Recvbuff[length+6] & 0x000000ff);
-                YC600_RealData->Grid_Frequency = (Recvbuff[length+7] & 0x000000ff)*256 + (Recvbuff[length+8] & 0x000000ff);
-                YC600_RealData->Temperature = (Recvbuff[length+9] & 0x000000ff)*256 + (Recvbuff[length+10] & 0x000000ff);
-                YC600_RealData->Inverter_Power = (Recvbuff[length+11] & 0x000000ff)*256 + (Recvbuff[length+12] & 0x000000ff);
-                YC600_RealData->Grid_Voltage = (Recvbuff[length+13] & 0x000000ff)*256 + (Recvbuff[length+14] & 0x000000ff);
-                YC600_RealData->Inverter_Power_B = (Recvbuff[length+15] & 0x000000ff)*256 + (Recvbuff[length+16] & 0x000000ff);
-                YC600_RealData->Grid_Voltage_B = (Recvbuff[length+17] & 0x000000ff)*256 + (Recvbuff[length+18] & 0x000000ff);
+                    sprintf(YC600_RealData->ID,"%02x%02x%02x%02x%02x%02x",(Recvbuff[length] & 0x000000ff),(Recvbuff[length+1] & 0x000000ff),(Recvbuff[length+2] & 0x000000ff),(Recvbuff[length+3] & 0x000000ff),(Recvbuff[length+4] & 0x000000ff),(Recvbuff[length+5] & 0x000000ff));
+                    YC600_RealData->flag =(Recvbuff[length+6] & 0x000000ff);
+                    YC600_RealData->Grid_Frequency = (Recvbuff[length+7] & 0x000000ff)*256 + (Recvbuff[length+8] & 0x000000ff);
+                    YC600_RealData->Temperature = (Recvbuff[length+9] & 0x000000ff)*256 + (Recvbuff[length+10] & 0x000000ff);
+                    YC600_RealData->Inverter_Power = (Recvbuff[length+11] & 0x000000ff)*256 + (Recvbuff[length+12] & 0x000000ff);
+                    YC600_RealData->Grid_Voltage = (Recvbuff[length+13] & 0x000000ff)*256 + (Recvbuff[length+14] & 0x000000ff);
+                    YC600_RealData->Inverter_Power_B = (Recvbuff[length+15] & 0x000000ff)*256 + (Recvbuff[length+16] & 0x000000ff);
+                    YC600_RealData->Grid_Voltage_B = (Recvbuff[length+17] & 0x000000ff)*256 + (Recvbuff[length+18] & 0x000000ff);
 
-                YC600_RealData_List.push_back(YC600_RealData);
-                length += 19;
+                    YC600_RealData_List.push_back(YC600_RealData);
+                    length += 19;
+
+                }
+                addRealData(ui->tableWidget_RealData,YC600_RealData_List);
+                sprintf(dateTime,"%02x%02x%02x%02x%02x%02x%02x",Recvbuff[19],Recvbuff[20],Recvbuff[21],Recvbuff[22],Recvbuff[23],Recvbuff[24],Recvbuff[25]);
+                ui->label_all->setText(QString::number(optcount));
+                ui->label_time->setText(dateTime);
+                QList<YC600_RealData_t *>::Iterator iter = YC600_RealData_List.begin();
+                for ( ; iter != YC600_RealData_List.end(); iter++)  {
+                    delete (*iter);
+                }
+
+            }else if(!memcmp(&Recvbuff[15],"02",2))
+            {   //RSD
+                set_tableWidget_RealData_View(2);
+
+                optcount = Recvbuff[17]*256 + Recvbuff[18];
+                qDebug("optcount:%d\n",optcount);
+                length = 26;
+
+                for(index = 0;index < optcount;index++)
+                {
+                    OPT700_RS *opt700_rs = new OPT700_RS;
+
+                    sprintf(opt700_rs->ID,"%02x%02x%02x%02x%02x%02x",(Recvbuff[length] & 0x000000ff),(Recvbuff[length+1] & 0x000000ff),(Recvbuff[length+2] & 0x000000ff),(Recvbuff[length+3] & 0x000000ff),(Recvbuff[length+4] & 0x000000ff),(Recvbuff[length+5] & 0x000000ff));
+                    ui->comboBox_UID->insertItem(index,opt700_rs->ID);
+                    opt700_rs->ID[12] = '\0';
+                    opt700_rs->Equipment_Status = Recvbuff[length + 6];
+
+                    status = Recvbuff[length+7] & 0x000000ff;
+
+                    opt700_rs->Mos_Status = status & (int)1;
+                    opt700_rs->Function_Status = ((status & (int)(1<<1)) >> 1);
+                    opt700_rs->PV1_Protect = ((status&(int)(1<<2)) >> 2);
+                    opt700_rs->PV2_Protect = ((status&(int)(1<<3)) >> 3);
+
+                    opt700_rs->Heart_Rate = (Recvbuff[length+8] & 0x000000ff)*256+(Recvbuff[length+9] & 0x000000ff);
+                    opt700_rs->Off_Times = (Recvbuff[length+10] & 0x000000ff)*256+(Recvbuff[length+11] & 0x000000ff);
+                    opt700_rs->Shutdown_Num = (Recvbuff[length+12] & 0x000000ff);
+                    opt700_rs->PV1 = (Recvbuff[length+13] & 0x000000ff)*256+(Recvbuff[length+14] & 0x000000ff);
+                    opt700_rs->PV2 = (Recvbuff[length+15] & 0x000000ff)*256+(Recvbuff[length+16] & 0x000000ff);
+                    opt700_rs->PI = (Recvbuff[length+17] & 0x000000ff)*256 +  (Recvbuff[length+18] & 0x000000ff);
+                    opt700_rs->PI2 = (Recvbuff[length+19] & 0x000000ff)*256 +  (Recvbuff[length+20] & 0x000000ff);
+
+                    opt700_rs->Power1 = (Recvbuff[length+21] & 0x000000ff)*256+(Recvbuff[length+22] & 0x000000ff);
+                    opt700_rs->Power2 = (Recvbuff[length+23] & 0x000000ff)*256+(Recvbuff[length+24] & 0x000000ff);
+                    opt700_rs->Output_PV = (Recvbuff[length+25] & 0x000000ff)*256+(Recvbuff[length+26] & 0x000000ff);
+                    opt700_rs->PI_Output = (Recvbuff[length+27] & 0x000000ff)*256+(Recvbuff[length+28] & 0x000000ff);
+                    opt700_rs->Power_Output = (Recvbuff[length+29] & 0x000000ff)*256+(Recvbuff[length+30] & 0x000000ff);
+
+
+                    opt700_rs->RSSI = (Recvbuff[length+31]  & 0x000000ff);
+
+                    opt700_rs->PV1_ENERGY =  (Recvbuff[length+32] & 0x000000ff)*256*256*256+(Recvbuff[length+33] & 0x000000ff)*256*256 + (Recvbuff[length+34] & 0x000000ff)*256+(Recvbuff[length+35] & 0x000000ff);
+                    opt700_rs->PV2_ENERGY = (Recvbuff[length+36] & 0x000000ff)*256*256*256+(Recvbuff[length+37] & 0x000000ff)*256*256 + (Recvbuff[length+38] & 0x000000ff)*256+(Recvbuff[length+39] & 0x000000ff);
+                    opt700_rs->PV_Output_ENERGY = (Recvbuff[length+40] & 0x000000ff)*256*256*256+(Recvbuff[length+41] & 0x000000ff)*256*256 + (Recvbuff[length+42] & 0x000000ff)*256+(Recvbuff[length+43] & 0x000000ff);
+
+                    opt700_rs->MOS_CLOSE_NUM = (Recvbuff[length+44] & 0x000000ff);
+                    opt700_rs->version = (Recvbuff[length+45] & 0x000000ff)*256+(Recvbuff[length+46] & 0x000000ff);
+                    OPT700_RSList.push_back(opt700_rs);
+
+                    length += 57;
+
+                    if(opt700_rs->Mos_Status == 1)
+                    {
+                        openCount++;
+                    }else
+                    {
+                        closeCount++;
+                    }
+                }
+
+                statusBar()->showMessage(tr("Get System Info Success ... time:%1 ms").arg(commtime), 2000);
+                ui->label_all->setText(QString::number(optcount));
+                sprintf(dateTime,"%02x%02x%02x%02x%02x%02x%02x",Recvbuff[19],Recvbuff[20],Recvbuff[21],Recvbuff[22],Recvbuff[23],Recvbuff[24],Recvbuff[25]);
+                ui->label_time->setText(dateTime);
+                addTableData(ui->tableWidget_RealData,OPT700_RSList);
+                QList<OPT700_RS *>::Iterator iter = OPT700_RSList.begin();
+                for ( ; iter != OPT700_RSList.end(); iter++)  {
+                    delete (*iter);
+                }
 
             }
-            addRealData(ui->tableWidget_RealData,YC600_RealData_List);
-            sprintf(dateTime,"%02x%02x%02x%02x%02x%02x%02x",Recvbuff[17],Recvbuff[18],Recvbuff[19],Recvbuff[20],Recvbuff[21],Recvbuff[22],Recvbuff[23]);
-            ui->label_all->setText(QString::number(optcount));
-            ui->label_time->setText(dateTime);
-            QList<YC600_RealData_t *>::Iterator iter = YC600_RealData_List.begin();
-            for ( ; iter != YC600_RealData_List.end(); iter++)  {
-                delete (*iter);
-            }
+
+
+
 
 
 
@@ -931,6 +1114,121 @@ void MainWindow::on_btn_getEnergy_clicked()
 
 }
 
+void MainWindow::set_tableWidget_RealData_View(int item)
+{
+    int i = 0,columnNum=0;
+    ui->tableWidget_RealData->clear();
+    ui->tableWidget_RealData->setRowCount(0);
+    //清空Table中内容
+    ui->tableWidget_RealData->clearContents();
+
+    if(item == 1)
+    {
+        columnNum = ui->tableWidget_RealData->columnCount();
+        for(i=0;i<columnNum;i++)
+        {
+            delete 	ui->tableWidget_RealData->horizontalHeaderItem(i);
+        }
+
+        ui->tableWidget_RealData->setColumnCount(7);
+
+        ui->tableWidget_RealData->setHorizontalHeaderItem(0,new QTableWidgetItem(tr("ID")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(1,new QTableWidgetItem(tr("frequency")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(2,new QTableWidgetItem(tr("temperature")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(3,new QTableWidgetItem(tr("A power")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(4,new QTableWidgetItem(tr("A voltage")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(5,new QTableWidgetItem(tr("B power")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(6,new QTableWidgetItem(tr("B voltage")));
+        ui->tableWidget_RealData->setColumnWidth(0,100);
+        ui->tableWidget_RealData->setColumnWidth(1,120);
+        ui->tableWidget_RealData->setColumnWidth(2,120);
+        ui->tableWidget_RealData->setColumnWidth(3,60);
+        ui->tableWidget_RealData->setColumnWidth(4,80);
+        ui->tableWidget_RealData->setColumnWidth(5,80);
+        ui->tableWidget_RealData->setColumnWidth(6,70);
+        ui->tableWidget_RealData->setColumnWidth(7,60);
+
+    }else if(item == 2)
+    {
+        columnNum = ui->tableWidget_RealData->columnCount();
+        for(i=0;i<columnNum;i++)
+        {
+            if(ui->tableWidget_RealData->horizontalHeaderItem(i))
+                delete 	ui->tableWidget_RealData->horizontalHeaderItem(i);
+        }
+
+        ui->tableWidget_RealData->setColumnCount(24);
+
+
+        ui->tableWidget_RealData->setHorizontalHeaderItem(0,new QTableWidgetItem(tr("ID")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(1,new QTableWidgetItem(tr("status")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(2,new QTableWidgetItem(tr("OnOff")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(3,new QTableWidgetItem(tr("function")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(4,new QTableWidgetItem(tr("PV1 status")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(5,new QTableWidgetItem(tr("PV2 status")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(6,new QTableWidgetItem(tr("heart Time")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(7,new QTableWidgetItem(tr("off Time")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(8,new QTableWidgetItem(tr("today Close Time ")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(9,new QTableWidgetItem(tr("PV1")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(10,new QTableWidgetItem(tr("PV2")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(11,new QTableWidgetItem(tr("PI1")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(12,new QTableWidgetItem(tr("PI2")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(13,new QTableWidgetItem(tr("Power1")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(14,new QTableWidgetItem(tr("Power2")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(15,new QTableWidgetItem(tr("PV Out")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(16,new QTableWidgetItem(tr("PI Out")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(17,new QTableWidgetItem(tr("Power Out")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(18,new QTableWidgetItem(tr("RSSI")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(19,new QTableWidgetItem(tr("PV1 Energy")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(20,new QTableWidgetItem(tr("PV2 Energy")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(21,new QTableWidgetItem(tr("PV Out Energy")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(22,new QTableWidgetItem(tr("MOS Close Num")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(23,new QTableWidgetItem(tr("Version")));
+
+        ui->tableWidget_RealData->setColumnWidth(0,100);
+        ui->tableWidget_RealData->setColumnWidth(1,60);
+        ui->tableWidget_RealData->setColumnWidth(2,50);
+        ui->tableWidget_RealData->setColumnWidth(3,60);
+        ui->tableWidget_RealData->setColumnWidth(4,80);
+        ui->tableWidget_RealData->setColumnWidth(5,80);
+        ui->tableWidget_RealData->setColumnWidth(6,70);
+        ui->tableWidget_RealData->setColumnWidth(7,60);
+        ui->tableWidget_RealData->setColumnWidth(8,120);
+        ui->tableWidget_RealData->setColumnWidth(9,60);
+        ui->tableWidget_RealData->setColumnWidth(10,60);
+        ui->tableWidget_RealData->setColumnWidth(11,60);
+        ui->tableWidget_RealData->setColumnWidth(12,60);
+        ui->tableWidget_RealData->setColumnWidth(13,60);
+        ui->tableWidget_RealData->setColumnWidth(14,80);
+        ui->tableWidget_RealData->setColumnWidth(15,80);
+        ui->tableWidget_RealData->setColumnWidth(16,80);
+        ui->tableWidget_RealData->setColumnWidth(17,80);
+        ui->tableWidget_RealData->setColumnWidth(18,60);
+        ui->tableWidget_RealData->setColumnWidth(19,80);
+        ui->tableWidget_RealData->setColumnWidth(20,80);
+        ui->tableWidget_RealData->setColumnWidth(21,100);
+        ui->tableWidget_RealData->setColumnWidth(22,120);
+        ui->tableWidget_RealData->setColumnWidth(23,80);
+    }
+
+}
+
+void MainWindow::clr_tableWidget_RealData_Item()
+{
+    int i = 0,columnNum=0,j = 0,rowNum = 0;
+    columnNum = ui->tableWidget_RealData->columnCount();
+    rowNum = ui->tableWidget_RealData->rowCount();
+    qDebug("%d %d",columnNum,rowNum);
+    for(i = 0;i<columnNum;i++)
+    {
+        for(j = 0;j<rowNum;j++)
+        {
+            if(ui->tableWidget_RealData->item(j,i))
+                delete ui->tableWidget_RealData->item(j,i);
+        }
+    }
+}
+
 void MainWindow::on_btn_getTime_ECU_clicked()
 {
     qint64 recvLen=0;
@@ -942,7 +1240,7 @@ void MainWindow::on_btn_getTime_ECU_clicked()
     memset(Recvbuff,0x00,4096);
     sprintf(Sendbuff,"APS1100280012%sEND",ECUID);
     flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,2000,&commtime);
-    ui->plainTextEdit_ID->clear();
+    //ui->plainTextEdit_ID->clear();
     if(flag == true)
     {
         if(Recvbuff[14] == '1')
@@ -1253,5 +1551,220 @@ void MainWindow::on_btn_getNetwork_clicked()
     }else
     {
         statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 1000);
+    }
+}
+
+void MainWindow::on_btn_SetChannel_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    int commtime = 0;
+    char Sendbuff[50];
+    char Recvbuff[200] = {'\0'};
+    char SIGNAL_LEVEL[4];
+    char SIGNAL_CHANNEL[3];
+    char oldChannel[3];
+    char setChannel[3];
+    memcpy(oldChannel,ui->comboBox_OldChannel->currentText().toLatin1().data(),2);
+    oldChannel[2] = '\0';
+    memcpy(setChannel,ui->comboBox_SetChannel->currentText().toLatin1().data(),2);
+    setChannel[2] = '\0';
+
+    qDebug("%s  %s\n",oldChannel,setChannel);
+    sprintf(Sendbuff,"APS1100350015%sEND%s%sEND\n",ECUID,oldChannel,setChannel);
+    qDebug("%s\n",Sendbuff);
+    memset(Recvbuff,0x00,200);
+    flag = ECU_Client->ECU_Communication(Sendbuff,35,Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        if(Recvbuff[14] == '1')
+        {//ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1 ms").arg(commtime), 2000);
+        }
+        else
+        {
+            memcpy(SIGNAL_CHANNEL,&Recvbuff[15],2);
+            SIGNAL_CHANNEL[2]  = '\0';
+            ui->label_CurrentChannel->setText(SIGNAL_CHANNEL);
+
+            memcpy(SIGNAL_LEVEL,&Recvbuff[17],3);
+            SIGNAL_LEVEL[3]  = '\0';
+            ui->label_Stren->setText(SIGNAL_LEVEL);
+            statusBar()->showMessage(tr("Set Channel Success ... time:%1 ms").arg(commtime), 2000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+
+}
+
+void MainWindow::on_btn_setFunction_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    int commtime = 0;
+    unsigned char Sendbuff[200] = {'\0'};
+    unsigned char Recvbuff[8192] = {'\0'};
+    int select_item = 0;
+    memset(Recvbuff,0x00,8192);
+
+    select_item = ui->comboBox_SetFunction->currentIndex();
+    //先判断是关闭  还是开启
+    if(select_item == 0)
+    {   //关闭RSD功能
+        sprintf((char *)Sendbuff,"APS1100290016%s0END",ECUID);
+    }else if(select_item == 1)
+    {   //开启RSD功能
+        sprintf((char *)Sendbuff,"APS1100290016%s1END",ECUID);
+    }
+
+    flag = ECU_Client->ECU_Communication((char *)Sendbuff,29,(char *)Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        if(!memcmp(&Recvbuff[13],"00",2))
+        {
+            statusBar()->showMessage(tr("Set RSD Function Success ... time:%1 ms").arg(commtime), 1000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("Set RSD Function Failed ... time:%1 ms").arg(commtime), 1000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 1000);
+    }
+}
+
+void MainWindow::addINFOTableData(QTableWidget *table, QList<OPT700_RS_INFO *> &List)
+{
+    table->setRowCount(0);
+    //清空Table中内容
+    table->clearContents();
+
+    QList<OPT700_RS_INFO *>::Iterator iter = List.begin();
+    for ( ; iter != List.end(); iter++)  {
+        int row_count = table->rowCount(); //获取表单行数
+        table->insertRow(row_count); //插入新行
+        QTableWidgetItem *item = new QTableWidgetItem();
+        QTableWidgetItem *item1 = new QTableWidgetItem();
+        QTableWidgetItem *item2 = new QTableWidgetItem();
+        QTableWidgetItem *item3 = new QTableWidgetItem();
+        QTableWidgetItem *item4 = new QTableWidgetItem();
+        QTableWidgetItem *item5 = new QTableWidgetItem();
+        QTableWidgetItem *item6 = new QTableWidgetItem();
+
+
+        item->setText((*iter)->time);
+        item1->setText(QString::number((*iter)->PV1));
+        item2->setText(QString::number((*iter)->PI1));
+
+        item3->setText(QString::number((*iter)->Power1));
+        item4->setText(QString::number((*iter)->PV2));
+        item5->setText(QString::number((*iter)->PI2));
+        item6->setText(QString::number((*iter)->Power2));
+
+
+        item->setBackgroundColor(QColor(0,238,0));
+        item1->setBackgroundColor(QColor(0,238,0));
+        item2->setBackgroundColor(QColor(0,238,0));
+        item3->setBackgroundColor(QColor(0,238,0));
+        item4->setBackgroundColor(QColor(0,238,0));
+        item5->setBackgroundColor(QColor(0,238,0));
+        item6->setBackgroundColor(QColor(0,238,0));
+
+        table->setItem(row_count, 0, item);
+        table->setItem(row_count, 1, item1);
+        table->setItem(row_count, 2, item2);
+        table->setItem(row_count, 3, item3);
+        table->setItem(row_count, 4, item4);
+        table->setItem(row_count, 5, item5);
+        table->setItem(row_count, 6, item6);
+    }
+}
+
+void MainWindow::on_btn_getDate_2_clicked()
+{
+    //获取当前的时间
+    ui->dateEdit_2->setDate(QDate::currentDate());
+}
+
+void MainWindow::on_btn_getInfo_clicked()
+{
+    qint64 recvLen=0;
+    char uid_str[13] = {'\0'};
+    char uid[7] = {'\0'};
+    bool flag = false;
+    int commtime = 0;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[8192] = {'\0'};
+    int optcount = 0;
+    int length = 0,index = 0;
+    int year = ui->dateEdit_2->date().year();
+    int month = ui->dateEdit_2->date().month();
+    int day = ui->dateEdit_2->date().day();
+
+    memset(Recvbuff,0x00,200);
+    sprintf(Sendbuff,"APS1100450017%sEND%04d%02d%02d000000END",ECUID,year,month,day);
+    memcpy(uid_str,ui->comboBox_UID->currentText().toLatin1().data(),12);
+    uid[0] = (uid_str[0] - '0')*0x10 + (uid_str[1] - '0');
+    uid[1] = (uid_str[2] - '0')*0x10 + (uid_str[3] - '0');
+    uid[2] = (uid_str[4] - '0')*0x10 + (uid_str[5] - '0');
+    uid[3] = (uid_str[6] - '0')*0x10 + (uid_str[7] - '0');
+    uid[4] = (uid_str[8] - '0')*0x10 + (uid_str[9] - '0');
+    uid[5] = (uid_str[10] - '0')*0x10 + (uid_str[11] - '0');
+    memcpy(&Sendbuff[34],uid,6);
+
+    flag = ECU_Client->ECU_Communication(Sendbuff,45,Recvbuff,&recvLen,15000,&commtime);
+    OPT700_RS_INFOList.clear();
+
+    if(flag == true)
+    {
+        if(Recvbuff[14] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1 ms").arg(commtime), 2000);
+        }else if(Recvbuff[14] == '2')
+        {
+            statusBar()->showMessage(tr("ECU Don't Have Data ... time:%1 ms").arg(commtime), 2000);
+        }
+        else
+        {
+            optcount = (recvLen - 32)/12;
+            qDebug("optcount:%d\n",optcount);
+            length = 29;
+
+            for(index = 0;index < optcount;index++)
+            {
+                OPT700_RS_INFO *opt700_rs_info = new OPT700_RS_INFO;
+                sprintf(opt700_rs_info->time,"%02x:%02x",Recvbuff[length],Recvbuff[length+1]);
+                opt700_rs_info->PV1 = Recvbuff[length+2]*256+Recvbuff[length+3];
+                opt700_rs_info->PI1 = Recvbuff[length+4];
+                opt700_rs_info->Power1 = Recvbuff[length+5]*256+Recvbuff[length+6];
+                opt700_rs_info->PV2 = Recvbuff[length+7]*256+Recvbuff[length+8];
+                opt700_rs_info->PI2 = Recvbuff[length+9];
+                opt700_rs_info->Power2 = Recvbuff[length+10]*256+Recvbuff[length+11];
+                OPT700_RS_INFOList.push_back(opt700_rs_info);
+
+                length += 12;
+
+            }
+
+            statusBar()->showMessage(tr("Get RSD Info Success ... time:%1 ms").arg(commtime), 2000);
+
+            addINFOTableData(ui->tableWidget_Info,OPT700_RS_INFOList);
+            QList<OPT700_RS_INFO *>::Iterator iter = OPT700_RS_INFOList.begin();
+            for ( ; iter != OPT700_RS_INFOList.end(); iter++)  {
+                delete (*iter);
+            }
+
+        }
+
+
+    }else
+    {
+        ui->tableWidget_Info->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_Info->clearContents();
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
     }
 }

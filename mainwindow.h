@@ -21,6 +21,37 @@ typedef struct
 
 typedef struct
 {
+    char ID[13];
+    unsigned char Equipment_Status;
+    unsigned char Mos_Status;
+    unsigned char Function_Status;
+    unsigned char PV1_Protect;
+    unsigned char PV2_Protect;
+    unsigned long Heart_Rate;
+    unsigned short Off_Times;
+    unsigned char Shutdown_Num;
+    unsigned short PV1;
+    unsigned short PV2;
+    unsigned short PI;
+    unsigned short PI2;
+    unsigned short Power1;
+    unsigned short Power2;
+    unsigned short Output_PV;
+    unsigned short PI_Output;
+    unsigned short Power_Output;
+    unsigned char RSSI;
+    unsigned int PV1_ENERGY;    //10 -6次方度
+    unsigned int PV2_ENERGY;    //10 -6次方度
+    unsigned int PV_Output_ENERGY;    //10 -6次方度
+    unsigned char MOS_CLOSE_NUM;
+    unsigned short version;
+
+} OPT700_RS;
+
+
+
+typedef struct
+{
     char time[6];
     int power;
 } YC600_PowerData_t;
@@ -36,6 +67,18 @@ typedef struct
     char SSID[50];
     int  signalStrength;
 } SSID_t;
+
+
+typedef struct
+{
+    char time[6];
+    unsigned short PV1;
+    unsigned char PI1;
+    unsigned short Power1;
+    unsigned short PV2;
+    unsigned char PI2;
+    unsigned short Power2;
+} OPT700_RS_INFO;
 
 
 namespace Ui {
@@ -67,10 +110,6 @@ private slots:
 
     void on_btn_setPasswd_clicked();
 
-    void on_btn_checkWifiStatus_clicked();
-
-    void on_btn_configWIFI_clicked();
-
     void on_btn_addID_clicked();
 
     void on_btn_SetID_clicked();
@@ -86,7 +125,9 @@ private slots:
     void on_btn_getPower_clicked();
 
     void on_btn_getEnergy_clicked();
-
+    void set_tableWidget_RealData_View(int item);
+    void clr_tableWidget_RealData_Item();
+    void addTableData(QTableWidget *table, QList<OPT700_RS *> &List);
     void addRealData(QTableWidget *table, QList<YC600_RealData_t *> &List);
 
     void addPowerData(QTableWidget *table, QList<YC600_PowerData_t *> &List);
@@ -107,6 +148,14 @@ private slots:
 
     void on_btn_getNetwork_clicked();
 
+    void on_btn_SetChannel_clicked();
+
+    void on_btn_setFunction_clicked();
+    void addINFOTableData(QTableWidget *table, QList<OPT700_RS_INFO *> &List);
+    void on_btn_getDate_2_clicked();
+
+    void on_btn_getInfo_clicked();
+
 private:
     Ui::MainWindow *ui;
     Communication *ECU_Client;
@@ -114,9 +163,11 @@ private:
     CommUDP *UDPClient2;
     char ECUID[13];
     QList<YC600_RealData_t *> YC600_RealData_List;
+    QList<OPT700_RS *> OPT700_RSList;
     QList<YC600_PowerData_t *> YC600_PowerData_List;
     QList<YC600_EnergyData_t *> YC600_EnergyData_List;
     QList<SSID_t *> SSID_List;
+    QList<OPT700_RS_INFO *> OPT700_RS_INFOList;
 };
 
 #endif // MAINWINDOW_H
