@@ -22,6 +22,13 @@ typedef struct
 typedef struct
 {
     char ID[13];
+    unsigned short shortAddr;
+} ShortAddr_t;
+
+
+typedef struct
+{
+    char ID[13];
     unsigned char Equipment_Status;
     unsigned char Mos_Status;
     unsigned char Function_Status;
@@ -123,6 +130,7 @@ private slots:
     void on_btn_getDate_clicked();
 
     void on_btn_getPower_clicked();
+    void addShortAddrData(QTableWidget *table, QList<ShortAddr_t *> &List);
 
     void on_btn_getEnergy_clicked();
     void set_tableWidget_RealData_View(int item);
@@ -156,6 +164,8 @@ private slots:
 
     void on_btn_getInfo_clicked();
 
+    void on_btn_getshortAddr_clicked();
+
 private:
     Ui::MainWindow *ui;
     Communication *ECU_Client;
@@ -163,6 +173,7 @@ private:
     CommUDP *UDPClient2;
     char ECUID[13];
     QList<YC600_RealData_t *> YC600_RealData_List;
+    QList<ShortAddr_t *> ShortAddr_List;
     QList<OPT700_RS *> OPT700_RSList;
     QList<YC600_PowerData_t *> YC600_PowerData_List;
     QList<YC600_EnergyData_t *> YC600_EnergyData_List;

@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ECU_Client = new Communication("10.10.100.254",8899);
     ui->tableWidget_SSID->setColumnWidth(0,150);
     ui->tableWidget_SSID->setColumnWidth(1,60);
+    ui->progressBar->setValue(0);
 }
 
 MainWindow::~MainWindow()
@@ -326,6 +327,9 @@ void MainWindow::on_btn_setTime_clicked()
         if(!memcmp(&Recvbuff[13],"00",2))
         {
             statusBar()->showMessage(tr("Set Time Success ... time:%1").arg(commtime), 1000);
+        }else if(!memcmp(&Recvbuff[13],"01",2))
+        {
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
         }
         else
         {
@@ -397,7 +401,7 @@ void MainWindow::on_btn_setNetwork_clicked()
         }
         else
         {
-            statusBar()->showMessage(tr("Set Network Failed ... time:%1").arg(commtime), 1000);
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
         }
     }else
     {
@@ -554,7 +558,7 @@ void MainWindow::on_btn_ECUImport_clicked()
             length = 15;
             for(index = 0;index < optcount;index++)
             {
-                sprintf(ID,"%02x%02x%02x%02x%02x%02x",Recvbuff[length],Recvbuff[length+1],Recvbuff[length+2],Recvbuff[length+3],Recvbuff[length+4],Recvbuff[length+5]);
+                sprintf(ID,"%02x%02x%02x%02x%02x%02x",(Recvbuff[length]& 0x000000ff),(Recvbuff[length+1]& 0x000000ff),(Recvbuff[length+2]& 0x000000ff),(Recvbuff[length+3]& 0x000000ff),(Recvbuff[length+4]& 0x000000ff),(Recvbuff[length+5]& 0x000000ff));
                 //qDebug("%s\n",ID);
                 ID[12] = '\0';
                 ui->plainTextEdit_ID->appendPlainText(ID);
@@ -687,6 +691,31 @@ void MainWindow::addEnergyData(QTableWidget *table, QList<YC600_EnergyData_t *> 
         table->setItem(row_count, 1, item1);
     }
 }
+void MainWindow::addShortAddrData(QTableWidget *table, QList<ShortAddr_t *> &List)
+{
+    table->setRowCount(0);
+    //清空Table中内容
+    table->clearContents();
+
+    QList<ShortAddr_t *>::Iterator iter = List.begin();
+    for ( ; iter != List.end(); iter++)  {
+        int row_count = table->rowCount(); //获取表单行数
+        table->insertRow(row_count); //插入新行
+        QTableWidgetItem *item = new QTableWidgetItem();
+        QTableWidgetItem *item1 = new QTableWidgetItem();
+
+        item->setText((*iter)->ID);
+        item1->setText(QString::number((unsigned short)(*iter)->shortAddr));
+
+        item->setBackgroundColor(QColor(0,238,0));
+        item1->setBackgroundColor(QColor(0,238,0));
+
+        table->setItem(row_count, 0, item);
+        table->setItem(row_count, 1, item1);
+    }
+}
+
+
 void MainWindow::addTableData(QTableWidget *table, QList<OPT700_RS *> &List)
 {
     table->setRowCount(0);
@@ -1546,7 +1575,7 @@ void MainWindow::on_btn_getNetwork_clicked()
         }
         else
         {
-            statusBar()->showMessage(tr("Get Network Failed ... time:%1").arg(commtime), 1000);
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
         }
     }else
     {
@@ -1765,6 +1794,63 @@ void MainWindow::on_btn_getInfo_clicked()
         ui->tableWidget_Info->setRowCount(0);
         //清空Table中内容
         ui->tableWidget_Info->clearContents();
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_getshortAddr_clicked()
+{
+    unsigned char status;
+    unsigned char rateOfProgress = 0;
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[8192] = {'\0'};
+    int length = 0,index = 0;
+    int num = 0;
+    int commtime = 0;
+    memset(Recvbuff,0x00,8192);
+    sprintf(Sendbuff,"APS1100280018%sEND",ECUID);
+    flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,2000,&commtime);
+    ShortAddr_List.clear();
+    if(flag == true)
+    {
+        ui->tableWidget_shortAddr->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_shortAddr->clearContents();
+        if(Recvbuff[14] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("ECU Get ShortAddr Data Success ... time:%1").arg(commtime), 2000);
+            rateOfProgress = (Recvbuff[15] & 0x000000ff);
+            num = (recvLen-20)/8;
+            length = 16;
+            for(index = 0;index < num;index++)
+            {
+                ShortAddr_t *shortAddr = new ShortAddr_t;
+                sprintf(shortAddr->ID,"%02x%02x%02x%02x%02x%02x",(Recvbuff[length]& 0x000000ff),(Recvbuff[length+1]& 0x000000ff),(Recvbuff[length+2]& 0x000000ff),(Recvbuff[length+3]& 0x000000ff),(Recvbuff[length+4]& 0x000000ff),(Recvbuff[length+5]& 0x000000ff));
+                shortAddr->shortAddr = (((Recvbuff[length+6] & 0x000000ff)*256 + (Recvbuff[length+7] & 0x000000ff)));
+                ShortAddr_List.push_back(shortAddr);
+                length += 8;
+            }
+            ui->progressBar->setValue((int)rateOfProgress);
+            addShortAddrData(ui->tableWidget_shortAddr,ShortAddr_List);
+
+            QList<ShortAddr_t *>::Iterator iter = ShortAddr_List.begin();
+            for ( ; iter != ShortAddr_List.end(); iter++)  {
+                delete (*iter);
+            }
+        }
+
+
+    }else
+    {
+        ui->tableWidget_Energy->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_Energy->clearContents();
         statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
     }
 }

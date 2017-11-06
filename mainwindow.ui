@@ -485,7 +485,7 @@ color:#FF0000;
         <x>270</x>
         <y>100</y>
         <width>271</width>
-        <height>191</height>
+        <height>181</height>
        </rect>
       </property>
       <property name="title">
@@ -871,9 +871,9 @@ color:#FF0000;
       <property name="geometry">
        <rect>
         <x>280</x>
-        <y>300</y>
+        <y>290</y>
         <width>261</width>
-        <height>81</height>
+        <height>71</height>
        </rect>
       </property>
       <property name="title">
@@ -981,7 +981,7 @@ color:#FF0000;
         <x>550</x>
         <y>230</y>
         <width>241</width>
-        <height>111</height>
+        <height>121</height>
        </rect>
       </property>
       <property name="title">
@@ -1270,7 +1270,7 @@ color:#FF0000;
         <x>550</x>
         <y>360</y>
         <width>241</width>
-        <height>51</height>
+        <height>61</height>
        </rect>
       </property>
       <property name="title">
@@ -1310,6 +1310,42 @@ color:#FF0000;
        </item>
       </widget>
      </widget>
+     <widget class="QGroupBox" name="groupBox_15">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>360</y>
+        <width>261</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Flash剩余空间</string>
+      </property>
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>81</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>获取Flash空间</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_flashsize">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>20</y>
+         <width>113</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
     </widget>
     <widget class="QWidget" name="Tab_2">
      <attribute name="title">
@@ -1320,7 +1356,7 @@ color:#FF0000;
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>761</width>
+        <width>791</width>
         <height>381</height>
        </rect>
       </property>
@@ -1332,7 +1368,7 @@ color:#FF0000;
         <rect>
          <x>10</x>
          <y>40</y>
-         <width>741</width>
+         <width>771</width>
          <height>331</height>
         </rect>
        </property>
@@ -1412,7 +1448,7 @@ color:#FF0000;
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
-      <string>功率、发电量曲线</string>
+      <string>功率、发电量曲线、无线信号</string>
      </attribute>
      <widget class="QGroupBox" name="groupBox_10">
       <property name="geometry">
@@ -1586,7 +1622,7 @@ color:#FF0000;
        <rect>
         <x>470</x>
         <y>0</y>
-        <width>281</width>
+        <width>291</width>
         <height>211</height>
        </rect>
       </property>
@@ -1745,39 +1781,80 @@ color:#FF0000;
        </property>
       </widget>
      </widget>
-     <widget class="QGroupBox" name="groupBox_15">
+    </widget>
+    <widget class="QWidget" name="tab_4">
+     <attribute name="title">
+      <string>获取短地址</string>
+     </attribute>
+     <widget class="QGroupBox" name="groupBox_16">
       <property name="geometry">
        <rect>
-        <x>470</x>
-        <y>320</y>
-        <width>291</width>
-        <height>61</height>
+        <x>10</x>
+        <y>0</y>
+        <width>251</width>
+        <height>411</height>
        </rect>
       </property>
       <property name="title">
-       <string>Flash剩余空间</string>
+       <string>获取短地址</string>
       </property>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QTableWidget" name="tableWidget_shortAddr">
        <property name="geometry">
         <rect>
-         <x>20</x>
-         <y>20</y>
-         <width>81</width>
-         <height>23</height>
+         <x>10</x>
+         <y>80</y>
+         <width>231</width>
+         <height>321</height>
+        </rect>
+       </property>
+       <column>
+        <property name="text">
+         <string>ID</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>短地址</string>
+        </property>
+       </column>
+      </widget>
+      <widget class="QPushButton" name="btn_getshortAddr">
+       <property name="geometry">
+        <rect>
+         <x>15</x>
+         <y>19</y>
+         <width>91</width>
+         <height>21</height>
         </rect>
        </property>
        <property name="text">
-        <string>获取Flash空间</string>
+        <string>获取短地址</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_flashsize">
+      <widget class="QProgressBar" name="progressBar">
        <property name="geometry">
         <rect>
-         <x>120</x>
-         <y>20</y>
-         <width>113</width>
-         <height>20</height>
+         <x>90</x>
+         <y>46</y>
+         <width>151</width>
+         <height>23</height>
         </rect>
+       </property>
+       <property name="value">
+        <number>24</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_6">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>50</y>
+         <width>51</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>当前进度：</string>
        </property>
       </widget>
      </widget>
@@ -1791,7 +1868,7 @@ color:#FF0000;
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>781</width>
+        <width>791</width>
         <height>411</height>
        </rect>
       </property>
@@ -1849,7 +1926,7 @@ color:#FF0000;
         <rect>
          <x>10</x>
          <y>50</y>
-         <width>731</width>
+         <width>771</width>
          <height>361</height>
         </rect>
        </property>
@@ -1918,8 +1995,6 @@ color:#FF0000;
      </widget>
     </widget>
    </widget>
-   <zorder>tabWidget</zorder>
-   <zorder>label_33</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Thu Oct 19 17:01:24 2017
+** Created: Mon Nov 6 15:32:25 2017
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -25,6 +25,7 @@
 #include <QtGui/QMainWindow>
 #include <QtGui/QMenuBar>
 #include <QtGui/QPlainTextEdit>
+#include <QtGui/QProgressBar>
 #include <QtGui/QPushButton>
 #include <QtGui/QStatusBar>
 #include <QtGui/QTabWidget>
@@ -161,6 +162,9 @@ public:
     QGroupBox *groupBox_27;
     QPushButton *btn_setFunction;
     QComboBox *comboBox_SetFunction;
+    QGroupBox *groupBox_15;
+    QPushButton *pushButton_2;
+    QLineEdit *lineEdit_flashsize;
     QWidget *Tab_2;
     QGroupBox *groupBox_9;
     QTableWidget *tableWidget_RealData;
@@ -193,9 +197,12 @@ public:
     QPushButton *pushButton;
     QLabel *label_LinkStatus;
     QLabel *label_48;
-    QGroupBox *groupBox_15;
-    QPushButton *pushButton_2;
-    QLineEdit *lineEdit_flashsize;
+    QWidget *tab_4;
+    QGroupBox *groupBox_16;
+    QTableWidget *tableWidget_shortAddr;
+    QPushButton *btn_getshortAddr;
+    QProgressBar *progressBar;
+    QLabel *label_6;
     QWidget *tab_3;
     QGroupBox *groupBox_6;
     QComboBox *comboBox_UID;
@@ -490,7 +497,7 @@ public:
         dateTimeEdit->setGeometry(QRect(10, 21, 141, 21));
         groupBox_4 = new QGroupBox(tab);
         groupBox_4->setObjectName(QString::fromUtf8("groupBox_4"));
-        groupBox_4->setGeometry(QRect(270, 100, 271, 191));
+        groupBox_4->setGeometry(QRect(270, 100, 271, 181));
         label_5 = new QLabel(groupBox_4);
         label_5->setObjectName(QString::fromUtf8("label_5"));
         label_5->setGeometry(QRect(10, 20, 54, 16));
@@ -737,7 +744,7 @@ public:
         btn_ECUImport->setGeometry(QRect(150, 50, 75, 23));
         groupBox_8 = new QGroupBox(tab);
         groupBox_8->setObjectName(QString::fromUtf8("groupBox_8"));
-        groupBox_8->setGeometry(QRect(280, 300, 261, 81));
+        groupBox_8->setGeometry(QRect(280, 290, 261, 71));
         lineEdit_oldPasswd = new QLineEdit(groupBox_8);
         lineEdit_oldPasswd->setObjectName(QString::fromUtf8("lineEdit_oldPasswd"));
         lineEdit_oldPasswd->setGeometry(QRect(60, 19, 101, 20));
@@ -764,7 +771,7 @@ public:
         dateTimeEdit_ECU->setGeometry(QRect(10, 12, 141, 21));
         groupBox_5 = new QGroupBox(tab);
         groupBox_5->setObjectName(QString::fromUtf8("groupBox_5"));
-        groupBox_5->setGeometry(QRect(550, 230, 241, 111));
+        groupBox_5->setGeometry(QRect(550, 230, 241, 121));
         comboBox_SetChannel = new QComboBox(groupBox_5);
         comboBox_SetChannel->setObjectName(QString::fromUtf8("comboBox_SetChannel"));
         comboBox_SetChannel->setGeometry(QRect(70, 49, 69, 22));
@@ -794,22 +801,31 @@ public:
         comboBox_OldChannel->setGeometry(QRect(70, 20, 69, 22));
         groupBox_27 = new QGroupBox(tab);
         groupBox_27->setObjectName(QString::fromUtf8("groupBox_27"));
-        groupBox_27->setGeometry(QRect(550, 360, 241, 51));
+        groupBox_27->setGeometry(QRect(550, 360, 241, 61));
         btn_setFunction = new QPushButton(groupBox_27);
         btn_setFunction->setObjectName(QString::fromUtf8("btn_setFunction"));
         btn_setFunction->setGeometry(QRect(110, 20, 81, 23));
         comboBox_SetFunction = new QComboBox(groupBox_27);
         comboBox_SetFunction->setObjectName(QString::fromUtf8("comboBox_SetFunction"));
         comboBox_SetFunction->setGeometry(QRect(20, 20, 69, 22));
+        groupBox_15 = new QGroupBox(tab);
+        groupBox_15->setObjectName(QString::fromUtf8("groupBox_15"));
+        groupBox_15->setGeometry(QRect(280, 360, 261, 61));
+        pushButton_2 = new QPushButton(groupBox_15);
+        pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
+        pushButton_2->setGeometry(QRect(20, 20, 81, 23));
+        lineEdit_flashsize = new QLineEdit(groupBox_15);
+        lineEdit_flashsize->setObjectName(QString::fromUtf8("lineEdit_flashsize"));
+        lineEdit_flashsize->setGeometry(QRect(120, 20, 113, 20));
         tabWidget->addTab(tab, QString());
         Tab_2 = new QWidget();
         Tab_2->setObjectName(QString::fromUtf8("Tab_2"));
         groupBox_9 = new QGroupBox(Tab_2);
         groupBox_9->setObjectName(QString::fromUtf8("groupBox_9"));
-        groupBox_9->setGeometry(QRect(0, 0, 761, 381));
+        groupBox_9->setGeometry(QRect(0, 0, 791, 381));
         tableWidget_RealData = new QTableWidget(groupBox_9);
         tableWidget_RealData->setObjectName(QString::fromUtf8("tableWidget_RealData"));
-        tableWidget_RealData->setGeometry(QRect(10, 40, 741, 331));
+        tableWidget_RealData->setGeometry(QRect(10, 40, 771, 331));
         btn_getRealData = new QPushButton(groupBox_9);
         btn_getRealData->setObjectName(QString::fromUtf8("btn_getRealData"));
         btn_getRealData->setGeometry(QRect(15, 19, 91, 21));
@@ -877,7 +893,7 @@ public:
         comboBox_2->setGeometry(QRect(90, 21, 111, 21));
         groupBox_13 = new QGroupBox(tab_2);
         groupBox_13->setObjectName(QString::fromUtf8("groupBox_13"));
-        groupBox_13->setGeometry(QRect(470, 0, 281, 211));
+        groupBox_13->setGeometry(QRect(470, 0, 291, 211));
         btn_getWIFI = new QPushButton(groupBox_13);
         btn_getWIFI->setObjectName(QString::fromUtf8("btn_getWIFI"));
         btn_getWIFI->setGeometry(QRect(10, 20, 75, 23));
@@ -917,21 +933,37 @@ public:
         label_48 = new QLabel(groupBox_14);
         label_48->setObjectName(QString::fromUtf8("label_48"));
         label_48->setGeometry(QRect(10, 40, 31, 41));
-        groupBox_15 = new QGroupBox(tab_2);
-        groupBox_15->setObjectName(QString::fromUtf8("groupBox_15"));
-        groupBox_15->setGeometry(QRect(470, 320, 291, 61));
-        pushButton_2 = new QPushButton(groupBox_15);
-        pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
-        pushButton_2->setGeometry(QRect(20, 20, 81, 23));
-        lineEdit_flashsize = new QLineEdit(groupBox_15);
-        lineEdit_flashsize->setObjectName(QString::fromUtf8("lineEdit_flashsize"));
-        lineEdit_flashsize->setGeometry(QRect(120, 20, 113, 20));
         tabWidget->addTab(tab_2, QString());
+        tab_4 = new QWidget();
+        tab_4->setObjectName(QString::fromUtf8("tab_4"));
+        groupBox_16 = new QGroupBox(tab_4);
+        groupBox_16->setObjectName(QString::fromUtf8("groupBox_16"));
+        groupBox_16->setGeometry(QRect(10, 0, 251, 411));
+        tableWidget_shortAddr = new QTableWidget(groupBox_16);
+        if (tableWidget_shortAddr->columnCount() < 2)
+            tableWidget_shortAddr->setColumnCount(2);
+        QTableWidgetItem *__qtablewidgetitem6 = new QTableWidgetItem();
+        tableWidget_shortAddr->setHorizontalHeaderItem(0, __qtablewidgetitem6);
+        QTableWidgetItem *__qtablewidgetitem7 = new QTableWidgetItem();
+        tableWidget_shortAddr->setHorizontalHeaderItem(1, __qtablewidgetitem7);
+        tableWidget_shortAddr->setObjectName(QString::fromUtf8("tableWidget_shortAddr"));
+        tableWidget_shortAddr->setGeometry(QRect(10, 80, 231, 321));
+        btn_getshortAddr = new QPushButton(groupBox_16);
+        btn_getshortAddr->setObjectName(QString::fromUtf8("btn_getshortAddr"));
+        btn_getshortAddr->setGeometry(QRect(15, 19, 91, 21));
+        progressBar = new QProgressBar(groupBox_16);
+        progressBar->setObjectName(QString::fromUtf8("progressBar"));
+        progressBar->setGeometry(QRect(90, 46, 151, 23));
+        progressBar->setValue(24);
+        label_6 = new QLabel(groupBox_16);
+        label_6->setObjectName(QString::fromUtf8("label_6"));
+        label_6->setGeometry(QRect(20, 50, 51, 16));
+        tabWidget->addTab(tab_4, QString());
         tab_3 = new QWidget();
         tab_3->setObjectName(QString::fromUtf8("tab_3"));
         groupBox_6 = new QGroupBox(tab_3);
         groupBox_6->setObjectName(QString::fromUtf8("groupBox_6"));
-        groupBox_6->setGeometry(QRect(0, 0, 781, 411));
+        groupBox_6->setGeometry(QRect(0, 0, 791, 411));
         comboBox_UID = new QComboBox(groupBox_6);
         comboBox_UID->setObjectName(QString::fromUtf8("comboBox_UID"));
         comboBox_UID->setGeometry(QRect(90, 20, 191, 21));
@@ -947,22 +979,22 @@ public:
         tableWidget_Info = new QTableWidget(groupBox_6);
         if (tableWidget_Info->columnCount() < 7)
             tableWidget_Info->setColumnCount(7);
-        QTableWidgetItem *__qtablewidgetitem6 = new QTableWidgetItem();
-        tableWidget_Info->setHorizontalHeaderItem(0, __qtablewidgetitem6);
-        QTableWidgetItem *__qtablewidgetitem7 = new QTableWidgetItem();
-        tableWidget_Info->setHorizontalHeaderItem(1, __qtablewidgetitem7);
         QTableWidgetItem *__qtablewidgetitem8 = new QTableWidgetItem();
-        tableWidget_Info->setHorizontalHeaderItem(2, __qtablewidgetitem8);
+        tableWidget_Info->setHorizontalHeaderItem(0, __qtablewidgetitem8);
         QTableWidgetItem *__qtablewidgetitem9 = new QTableWidgetItem();
-        tableWidget_Info->setHorizontalHeaderItem(3, __qtablewidgetitem9);
+        tableWidget_Info->setHorizontalHeaderItem(1, __qtablewidgetitem9);
         QTableWidgetItem *__qtablewidgetitem10 = new QTableWidgetItem();
-        tableWidget_Info->setHorizontalHeaderItem(4, __qtablewidgetitem10);
+        tableWidget_Info->setHorizontalHeaderItem(2, __qtablewidgetitem10);
         QTableWidgetItem *__qtablewidgetitem11 = new QTableWidgetItem();
-        tableWidget_Info->setHorizontalHeaderItem(5, __qtablewidgetitem11);
+        tableWidget_Info->setHorizontalHeaderItem(3, __qtablewidgetitem11);
         QTableWidgetItem *__qtablewidgetitem12 = new QTableWidgetItem();
-        tableWidget_Info->setHorizontalHeaderItem(6, __qtablewidgetitem12);
+        tableWidget_Info->setHorizontalHeaderItem(4, __qtablewidgetitem12);
+        QTableWidgetItem *__qtablewidgetitem13 = new QTableWidgetItem();
+        tableWidget_Info->setHorizontalHeaderItem(5, __qtablewidgetitem13);
+        QTableWidgetItem *__qtablewidgetitem14 = new QTableWidgetItem();
+        tableWidget_Info->setHorizontalHeaderItem(6, __qtablewidgetitem14);
         tableWidget_Info->setObjectName(QString::fromUtf8("tableWidget_Info"));
-        tableWidget_Info->setGeometry(QRect(10, 50, 731, 361));
+        tableWidget_Info->setGeometry(QRect(10, 50, 771, 361));
         btn_getInfo = new QPushButton(groupBox_6);
         btn_getInfo->setObjectName(QString::fromUtf8("btn_getInfo"));
         btn_getInfo->setGeometry(QRect(630, 20, 91, 21));
@@ -971,8 +1003,6 @@ public:
         btn_getDate_2->setGeometry(QRect(510, 20, 91, 23));
         tabWidget->addTab(tab_3, QString());
         MainWindow->setCentralWidget(centralWidget);
-        tabWidget->raise();
-        label_33->raise();
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
         menuBar->setGeometry(QRect(0, 0, 807, 23));
@@ -1133,6 +1163,8 @@ public:
          << QApplication::translate("MainWindow", "00\357\274\232\345\205\263", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("MainWindow", "01\357\274\232\345\274\200", 0, QApplication::UnicodeUTF8)
         );
+        groupBox_15->setTitle(QApplication::translate("MainWindow", "Flash\345\211\251\344\275\231\347\251\272\351\227\264", 0, QApplication::UnicodeUTF8));
+        pushButton_2->setText(QApplication::translate("MainWindow", "\350\216\267\345\217\226Flash\347\251\272\351\227\264", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindow", "\344\270\273\350\246\201\345\212\237\350\203\275", 0, QApplication::UnicodeUTF8));
         groupBox_9->setTitle(QApplication::translate("MainWindow", "\345\217\221\347\224\265\351\207\217\346\225\260\346\215\256", 0, QApplication::UnicodeUTF8));
         btn_getRealData->setText(QApplication::translate("MainWindow", "\350\216\267\345\217\226\345\217\221\347\224\265\351\207\217\346\225\260\346\215\256", 0, QApplication::UnicodeUTF8));
@@ -1179,26 +1211,32 @@ public:
         label_LinkStatus->setText(QString());
         label_48->setText(QApplication::translate("MainWindow", "\350\277\236\346\216\245\n"
 "\344\277\241\345\217\267", 0, QApplication::UnicodeUTF8));
-        groupBox_15->setTitle(QApplication::translate("MainWindow", "Flash\345\211\251\344\275\231\347\251\272\351\227\264", 0, QApplication::UnicodeUTF8));
-        pushButton_2->setText(QApplication::translate("MainWindow", "\350\216\267\345\217\226Flash\347\251\272\351\227\264", 0, QApplication::UnicodeUTF8));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "\345\212\237\347\216\207\343\200\201\345\217\221\347\224\265\351\207\217\346\233\262\347\272\277", 0, QApplication::UnicodeUTF8));
+        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "\345\212\237\347\216\207\343\200\201\345\217\221\347\224\265\351\207\217\346\233\262\347\272\277\343\200\201\346\227\240\347\272\277\344\277\241\345\217\267", 0, QApplication::UnicodeUTF8));
+        groupBox_16->setTitle(QApplication::translate("MainWindow", "\350\216\267\345\217\226\347\237\255\345\234\260\345\235\200", 0, QApplication::UnicodeUTF8));
+        QTableWidgetItem *___qtablewidgetitem6 = tableWidget_shortAddr->horizontalHeaderItem(0);
+        ___qtablewidgetitem6->setText(QApplication::translate("MainWindow", "ID", 0, QApplication::UnicodeUTF8));
+        QTableWidgetItem *___qtablewidgetitem7 = tableWidget_shortAddr->horizontalHeaderItem(1);
+        ___qtablewidgetitem7->setText(QApplication::translate("MainWindow", "\347\237\255\345\234\260\345\235\200", 0, QApplication::UnicodeUTF8));
+        btn_getshortAddr->setText(QApplication::translate("MainWindow", "\350\216\267\345\217\226\347\237\255\345\234\260\345\235\200", 0, QApplication::UnicodeUTF8));
+        label_6->setText(QApplication::translate("MainWindow", "\345\275\223\345\211\215\350\277\233\345\272\246\357\274\232", 0, QApplication::UnicodeUTF8));
+        tabWidget->setTabText(tabWidget->indexOf(tab_4), QApplication::translate("MainWindow", "\350\216\267\345\217\226\347\237\255\345\234\260\345\235\200", 0, QApplication::UnicodeUTF8));
         groupBox_6->setTitle(QApplication::translate("MainWindow", "17 \345\215\225\345\217\260\347\233\270\345\205\263\346\233\262\347\272\277", 0, QApplication::UnicodeUTF8));
         label_73->setText(QApplication::translate("MainWindow", "\351\234\200\350\246\201\350\216\267\345\217\226\347\232\204ID\345\217\267", 0, QApplication::UnicodeUTF8));
         label_74->setText(QApplication::translate("MainWindow", "\346\227\266\351\227\264\357\274\232", 0, QApplication::UnicodeUTF8));
-        QTableWidgetItem *___qtablewidgetitem6 = tableWidget_Info->horizontalHeaderItem(0);
-        ___qtablewidgetitem6->setText(QApplication::translate("MainWindow", "\346\227\266\351\227\264\347\202\271", 0, QApplication::UnicodeUTF8));
-        QTableWidgetItem *___qtablewidgetitem7 = tableWidget_Info->horizontalHeaderItem(1);
-        ___qtablewidgetitem7->setText(QApplication::translate("MainWindow", "PV1\347\224\265\345\216\213", 0, QApplication::UnicodeUTF8));
-        QTableWidgetItem *___qtablewidgetitem8 = tableWidget_Info->horizontalHeaderItem(2);
-        ___qtablewidgetitem8->setText(QApplication::translate("MainWindow", "PV1\347\224\265\346\265\201", 0, QApplication::UnicodeUTF8));
-        QTableWidgetItem *___qtablewidgetitem9 = tableWidget_Info->horizontalHeaderItem(3);
-        ___qtablewidgetitem9->setText(QApplication::translate("MainWindow", "PV1\345\212\237\347\216\207", 0, QApplication::UnicodeUTF8));
-        QTableWidgetItem *___qtablewidgetitem10 = tableWidget_Info->horizontalHeaderItem(4);
-        ___qtablewidgetitem10->setText(QApplication::translate("MainWindow", "PV2\347\224\265\345\216\213", 0, QApplication::UnicodeUTF8));
-        QTableWidgetItem *___qtablewidgetitem11 = tableWidget_Info->horizontalHeaderItem(5);
-        ___qtablewidgetitem11->setText(QApplication::translate("MainWindow", "PV2\347\224\265\346\265\201", 0, QApplication::UnicodeUTF8));
-        QTableWidgetItem *___qtablewidgetitem12 = tableWidget_Info->horizontalHeaderItem(6);
-        ___qtablewidgetitem12->setText(QApplication::translate("MainWindow", "PV2\345\212\237\347\216\207", 0, QApplication::UnicodeUTF8));
+        QTableWidgetItem *___qtablewidgetitem8 = tableWidget_Info->horizontalHeaderItem(0);
+        ___qtablewidgetitem8->setText(QApplication::translate("MainWindow", "\346\227\266\351\227\264\347\202\271", 0, QApplication::UnicodeUTF8));
+        QTableWidgetItem *___qtablewidgetitem9 = tableWidget_Info->horizontalHeaderItem(1);
+        ___qtablewidgetitem9->setText(QApplication::translate("MainWindow", "PV1\347\224\265\345\216\213", 0, QApplication::UnicodeUTF8));
+        QTableWidgetItem *___qtablewidgetitem10 = tableWidget_Info->horizontalHeaderItem(2);
+        ___qtablewidgetitem10->setText(QApplication::translate("MainWindow", "PV1\347\224\265\346\265\201", 0, QApplication::UnicodeUTF8));
+        QTableWidgetItem *___qtablewidgetitem11 = tableWidget_Info->horizontalHeaderItem(3);
+        ___qtablewidgetitem11->setText(QApplication::translate("MainWindow", "PV1\345\212\237\347\216\207", 0, QApplication::UnicodeUTF8));
+        QTableWidgetItem *___qtablewidgetitem12 = tableWidget_Info->horizontalHeaderItem(4);
+        ___qtablewidgetitem12->setText(QApplication::translate("MainWindow", "PV2\347\224\265\345\216\213", 0, QApplication::UnicodeUTF8));
+        QTableWidgetItem *___qtablewidgetitem13 = tableWidget_Info->horizontalHeaderItem(5);
+        ___qtablewidgetitem13->setText(QApplication::translate("MainWindow", "PV2\347\224\265\346\265\201", 0, QApplication::UnicodeUTF8));
+        QTableWidgetItem *___qtablewidgetitem14 = tableWidget_Info->horizontalHeaderItem(6);
+        ___qtablewidgetitem14->setText(QApplication::translate("MainWindow", "PV2\345\212\237\347\216\207", 0, QApplication::UnicodeUTF8));
         btn_getInfo->setText(QApplication::translate("MainWindow", "\350\216\267\345\217\226\345\215\225\345\217\260\346\233\262\347\272\277", 0, QApplication::UnicodeUTF8));
         btn_getDate_2->setText(QApplication::translate("MainWindow", "\350\216\267\345\217\226\345\275\223\345\211\215\346\227\245\346\234\237", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("MainWindow", "\345\215\225\345\217\260RSD\344\277\241\346\201\257", 0, QApplication::UnicodeUTF8));
