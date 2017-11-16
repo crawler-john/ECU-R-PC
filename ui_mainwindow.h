@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Mon Nov 6 15:32:25 2017
+** Created: Thu Nov 16 14:36:47 2017
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -203,6 +203,10 @@ public:
     QPushButton *btn_getshortAddr;
     QProgressBar *progressBar;
     QLabel *label_6;
+    QGroupBox *groupBox_17;
+    QPushButton *btn_gethardware;
+    QLabel *label_12;
+    QLabel *label_wifiType;
     QWidget *tab_3;
     QGroupBox *groupBox_6;
     QComboBox *comboBox_UID;
@@ -958,6 +962,18 @@ public:
         label_6 = new QLabel(groupBox_16);
         label_6->setObjectName(QString::fromUtf8("label_6"));
         label_6->setGeometry(QRect(20, 50, 51, 16));
+        groupBox_17 = new QGroupBox(tab_4);
+        groupBox_17->setObjectName(QString::fromUtf8("groupBox_17"));
+        groupBox_17->setGeometry(QRect(270, 0, 261, 171));
+        btn_gethardware = new QPushButton(groupBox_17);
+        btn_gethardware->setObjectName(QString::fromUtf8("btn_gethardware"));
+        btn_gethardware->setGeometry(QRect(20, 20, 91, 21));
+        label_12 = new QLabel(groupBox_17);
+        label_12->setObjectName(QString::fromUtf8("label_12"));
+        label_12->setGeometry(QRect(10, 60, 81, 21));
+        label_wifiType = new QLabel(groupBox_17);
+        label_wifiType->setObjectName(QString::fromUtf8("label_wifiType"));
+        label_wifiType->setGeometry(QRect(110, 60, 131, 21));
         tabWidget->addTab(tab_4, QString());
         tab_3 = new QWidget();
         tab_3->setObjectName(QString::fromUtf8("tab_3"));
@@ -1219,6 +1235,10 @@ public:
         ___qtablewidgetitem7->setText(QApplication::translate("MainWindow", "\347\237\255\345\234\260\345\235\200", 0, QApplication::UnicodeUTF8));
         btn_getshortAddr->setText(QApplication::translate("MainWindow", "\350\216\267\345\217\226\347\237\255\345\234\260\345\235\200", 0, QApplication::UnicodeUTF8));
         label_6->setText(QApplication::translate("MainWindow", "\345\275\223\345\211\215\350\277\233\345\272\246\357\274\232", 0, QApplication::UnicodeUTF8));
+        groupBox_17->setTitle(QApplication::translate("MainWindow", "\350\216\267\345\217\226ECU\347\241\254\344\273\266\345\236\213\345\217\267", 0, QApplication::UnicodeUTF8));
+        btn_gethardware->setText(QApplication::translate("MainWindow", "\350\216\267\345\217\226\347\241\254\344\273\266\345\236\213\345\217\267", 0, QApplication::UnicodeUTF8));
+        label_12->setText(QApplication::translate("MainWindow", "WIFI\346\250\241\345\235\227\345\236\213\345\217\267\357\274\232", 0, QApplication::UnicodeUTF8));
+        label_wifiType->setText(QString());
         tabWidget->setTabText(tabWidget->indexOf(tab_4), QApplication::translate("MainWindow", "\350\216\267\345\217\226\347\237\255\345\234\260\345\235\200", 0, QApplication::UnicodeUTF8));
         groupBox_6->setTitle(QApplication::translate("MainWindow", "17 \345\215\225\345\217\260\347\233\270\345\205\263\346\233\262\347\272\277", 0, QApplication::UnicodeUTF8));
         label_73->setText(QApplication::translate("MainWindow", "\351\234\200\350\246\201\350\216\267\345\217\226\347\232\204ID\345\217\267", 0, QApplication::UnicodeUTF8));

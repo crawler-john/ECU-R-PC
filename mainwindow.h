@@ -166,6 +166,8 @@ private slots:
 
     void on_btn_getshortAddr_clicked();
 
+    void on_btn_gethardware_clicked();
+
 private:
     Ui::MainWindow *ui;
     Communication *ECU_Client;

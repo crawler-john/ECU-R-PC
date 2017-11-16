@@ -1854,3 +1854,38 @@ void MainWindow::on_btn_getshortAddr_clicked()
         statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
     }
 }
+
+void MainWindow::on_btn_gethardware_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
+    memset(Recvbuff,0x00,4096);
+    sprintf(Sendbuff,"APS1100280008%sEND",ECUID);
+    flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        if(Recvbuff[14] == '1')
+        {   //ECU ID²»Æ¥Åä
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("ECU Get Hardware status Success ... time:%1").arg(commtime), 2000);
+            if(!memcmp(&Recvbuff[15],"00",2))
+            {
+                ui->label_wifiType->setText("00:USR MODULE");
+            }else if(!memcmp(&Recvbuff[15],"01",2))
+            {
+                ui->label_wifiType->setText("01:RAK475 MODULE");
+            }
+        }
+
+
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}

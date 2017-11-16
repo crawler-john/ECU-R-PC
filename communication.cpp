@@ -53,7 +53,7 @@ bool Communication::ECU_Communication(char *Sendbuff, qint64 sendLen, char *Recv
 
            if(Recvbuff[(length-1)] == '\n')
            {
-               *recvLen =length;
+               *recvLen = length;
                 break;
            }
        }
