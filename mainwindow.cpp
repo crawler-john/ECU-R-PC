@@ -513,7 +513,7 @@ void MainWindow::on_btn_SetID_clicked()
 
     memset(Recvbuff,0x00,200);
     int commtime = 0;
-    flag = ECU_Client->ECU_Communication(Sendbuff,(OPTCount*12+31),Recvbuff,&recvLen,3000,&commtime);
+    flag = ECU_Client->ECU_Communication(Sendbuff,(OPTCount*6+31),Recvbuff,&recvLen,3000,&commtime);
     if(flag == true)
     {
         if(Recvbuff[14] == '1')
