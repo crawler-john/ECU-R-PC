@@ -601,34 +601,101 @@ void MainWindow::addRealData(QTableWidget *table, QList<YC600_RealData_t *> &Lis
         QTableWidgetItem *item4 = new QTableWidgetItem();
         QTableWidgetItem *item5 = new QTableWidgetItem();
         QTableWidgetItem *item6 = new QTableWidgetItem();
+        QTableWidgetItem *item7 = new QTableWidgetItem();
+        QTableWidgetItem *item8 = new QTableWidgetItem();
+        QTableWidgetItem *item9 = new QTableWidgetItem();
+        QTableWidgetItem *item10 = new QTableWidgetItem();
 
         item->setText((*iter)->ID);
-        if((*iter)->flag == 1)
-        {
-            item1->setText(QString::number((double)((*iter)->Grid_Frequency/10)));
-            item2->setText(QString::number(((*iter)->Temperature - 100)));
-            item3->setText(QString::number((*iter)->Inverter_Power));
-            item4->setText(QString::number((*iter)->Grid_Voltage));
-            item5->setText(QString::number((*iter)->Inverter_Power_B));
-            item6->setText(QString::number((*iter)->Grid_Voltage_B));
-
-            item->setBackgroundColor(QColor(0,238,0));
-            item1->setBackgroundColor(QColor(0,238,0));
-            item2->setBackgroundColor(QColor(0,238,0));
-            item3->setBackgroundColor(QColor(0,238,0));
-            item4->setBackgroundColor(QColor(0,238,0));
-            item5->setBackgroundColor(QColor(0,238,0));
-            item6->setBackgroundColor(QColor(0,238,0));
-
-        }else if ((*iter)->flag == 0)
-        {
-            item1->setText("-");
+        if((*iter)->inverter_type == 0){
+            item1->setText("UNKNOWN");
             item2->setText("-");
             item3->setText("-");
             item4->setText("-");
             item5->setText("-");
             item6->setText("-");
+            item7->setText("-");
+            item8->setText("-");
+            item9->setText("-");
+            item10->setText("-");
+        }else if((*iter)->inverter_type == 1){
+            item1->setText("YC600");
+            if((*iter)->flag == 1)
+            {
+                item2->setText(QString::number((double)((*iter)->Grid_Frequency/10)));
+                item3->setText(QString::number(((*iter)->Temperature - 100)));
+                item4->setText(QString::number((*iter)->Inverter_Power));
+                item5->setText(QString::number((*iter)->Grid_Voltage));
+                item6->setText(QString::number((*iter)->Inverter_Power_B));
+                item7->setText(QString::number((*iter)->Grid_Voltage_B));
+                item8->setText("-");
+                item9->setText("-");
+                item10->setText("-");
+
+                item->setBackgroundColor(QColor(0,238,0));
+                item1->setBackgroundColor(QColor(0,238,0));
+                item2->setBackgroundColor(QColor(0,238,0));
+                item3->setBackgroundColor(QColor(0,238,0));
+                item4->setBackgroundColor(QColor(0,238,0));
+                item5->setBackgroundColor(QColor(0,238,0));
+                item6->setBackgroundColor(QColor(0,238,0));
+                item7->setBackgroundColor(QColor(0,238,0));
+                item8->setBackgroundColor(QColor(0,238,0));
+                item9->setBackgroundColor(QColor(0,238,0));
+                item10->setBackgroundColor(QColor(0,238,0));
+
+            }else if ((*iter)->flag == 0)
+            {
+                item2->setText("-");
+                item3->setText("-");
+                item4->setText("-");
+                item5->setText("-");
+                item6->setText("-");
+                item7->setText("-");
+                item8->setText("-");
+                item9->setText("-");
+                item10->setText("-");
+            }
+        }else if((*iter)->inverter_type == 2){
+            item1->setText("YC1000");
+            if((*iter)->flag == 1)
+            {
+                item2->setText(QString::number((double)((*iter)->Grid_Frequency/10)));
+                item3->setText(QString::number(((*iter)->Temperature - 100)));
+                item4->setText(QString::number((*iter)->Inverter_Power));
+                item5->setText(QString::number((*iter)->Grid_Voltage));
+                item6->setText(QString::number((*iter)->Inverter_Power_B));
+                item7->setText(QString::number((*iter)->Grid_Voltage_B));
+                item8->setText(QString::number((*iter)->Inverter_Power_C));
+                item9->setText(QString::number((*iter)->Grid_Voltage_C));
+                item10->setText(QString::number((*iter)->Inverter_Power_D));
+
+                item->setBackgroundColor(QColor(0,238,0));
+                item1->setBackgroundColor(QColor(0,238,0));
+                item2->setBackgroundColor(QColor(0,238,0));
+                item3->setBackgroundColor(QColor(0,238,0));
+                item4->setBackgroundColor(QColor(0,238,0));
+                item5->setBackgroundColor(QColor(0,238,0));
+                item6->setBackgroundColor(QColor(0,238,0));
+                item7->setBackgroundColor(QColor(0,238,0));
+                item8->setBackgroundColor(QColor(0,238,0));
+                item9->setBackgroundColor(QColor(0,238,0));
+                item10->setBackgroundColor(QColor(0,238,0));
+
+            }else if ((*iter)->flag == 0)
+            {
+                item2->setText("-");
+                item3->setText("-");
+                item4->setText("-");
+                item5->setText("-");
+                item6->setText("-");
+                item7->setText("-");
+                item8->setText("-");
+                item9->setText("-");
+                item10->setText("-");
+            }
         }
+
 
 
 
@@ -639,6 +706,10 @@ void MainWindow::addRealData(QTableWidget *table, QList<YC600_RealData_t *> &Lis
         table->setItem(row_count, 4, item4);
         table->setItem(row_count, 5, item5);
         table->setItem(row_count, 6, item6);
+        table->setItem(row_count, 7, item7);
+        table->setItem(row_count, 8, item8);
+        table->setItem(row_count, 9, item9);
+        table->setItem(row_count, 10, item10);
 
     }
 
@@ -894,28 +965,51 @@ void MainWindow::on_btn_getRealData_clicked()
         }
         else
         {
-            //分辨是YC600还是RSD
+            //分辨是YC600YC1000    还是 RSD
             if(!memcmp(&Recvbuff[15],"01",2))
             {   //YC600
                 set_tableWidget_RealData_View(1);
                 statusBar()->showMessage(tr("ECU Get Real Data Success ... time:%1").arg(commtime), 2000);
-                optcount = (recvLen-29)/19;
+
+                optcount = (Recvbuff[17]& 0x000000ff)*256+(Recvbuff[18]& 0x000000ff);
                 length = 26;
                 for(index = 0;index < optcount;index++)
                 {
                     YC600_RealData_t *YC600_RealData = new YC600_RealData_t;
 
                     sprintf(YC600_RealData->ID,"%02x%02x%02x%02x%02x%02x",(Recvbuff[length] & 0x000000ff),(Recvbuff[length+1] & 0x000000ff),(Recvbuff[length+2] & 0x000000ff),(Recvbuff[length+3] & 0x000000ff),(Recvbuff[length+4] & 0x000000ff),(Recvbuff[length+5] & 0x000000ff));
-                    YC600_RealData->flag =(Recvbuff[length+6] & 0x000000ff);
-                    YC600_RealData->Grid_Frequency = (Recvbuff[length+7] & 0x000000ff)*256 + (Recvbuff[length+8] & 0x000000ff);
-                    YC600_RealData->Temperature = (Recvbuff[length+9] & 0x000000ff)*256 + (Recvbuff[length+10] & 0x000000ff);
-                    YC600_RealData->Inverter_Power = (Recvbuff[length+11] & 0x000000ff)*256 + (Recvbuff[length+12] & 0x000000ff);
-                    YC600_RealData->Grid_Voltage = (Recvbuff[length+13] & 0x000000ff)*256 + (Recvbuff[length+14] & 0x000000ff);
-                    YC600_RealData->Inverter_Power_B = (Recvbuff[length+15] & 0x000000ff)*256 + (Recvbuff[length+16] & 0x000000ff);
-                    YC600_RealData->Grid_Voltage_B = (Recvbuff[length+17] & 0x000000ff)*256 + (Recvbuff[length+18] & 0x000000ff);
+                    YC600_RealData->flag = (Recvbuff[length+6] & 0x000000ff);
+                    YC600_RealData->inverter_type = ((Recvbuff[length+7]-'0') & 0x000000ff)*10 + ((Recvbuff[length+8]-'0') & 0x000000ff);
+                    if(YC600_RealData->inverter_type == 0)
+                    {
+                        length += 9;
+                    }else if(YC600_RealData->inverter_type == 1)
+                    {
+                        YC600_RealData->Grid_Frequency = (Recvbuff[length+9] & 0x000000ff)*256 + (Recvbuff[length+10] & 0x000000ff);
+                        YC600_RealData->Temperature = (Recvbuff[length+11] & 0x000000ff)*256 + (Recvbuff[length+12] & 0x000000ff);
+                        YC600_RealData->Inverter_Power = (Recvbuff[length+13] & 0x000000ff)*256 + (Recvbuff[length+14] & 0x000000ff);
+                        YC600_RealData->Grid_Voltage = (Recvbuff[length+15] & 0x000000ff)*256 + (Recvbuff[length+16] & 0x000000ff);
+                        YC600_RealData->Inverter_Power_B = (Recvbuff[length+17] & 0x000000ff)*256 + (Recvbuff[length+18] & 0x000000ff);
+                        YC600_RealData->Grid_Voltage_B = (Recvbuff[length+19] & 0x000000ff)*256 + (Recvbuff[length+20] & 0x000000ff);
+                        length += 21;
+
+
+                    }else if(YC600_RealData->inverter_type == 2)
+                    {
+                        YC600_RealData->Grid_Frequency = (Recvbuff[length+9] & 0x000000ff)*256 + (Recvbuff[length+10] & 0x000000ff);
+                        YC600_RealData->Temperature = (Recvbuff[length+11] & 0x000000ff)*256 + (Recvbuff[length+12] & 0x000000ff);
+                        YC600_RealData->Inverter_Power = (Recvbuff[length+13] & 0x000000ff)*256 + (Recvbuff[length+14] & 0x000000ff);
+                        YC600_RealData->Grid_Voltage = (Recvbuff[length+15] & 0x000000ff)*256 + (Recvbuff[length+16] & 0x000000ff);
+                        YC600_RealData->Inverter_Power_B = (Recvbuff[length+17] & 0x000000ff)*256 + (Recvbuff[length+18] & 0x000000ff);
+                        YC600_RealData->Grid_Voltage_B = (Recvbuff[length+19] & 0x000000ff)*256 + (Recvbuff[length+20] & 0x000000ff);
+                        YC600_RealData->Inverter_Power_C = (Recvbuff[length+21] & 0x000000ff)*256 + (Recvbuff[length+22] & 0x000000ff);
+                        YC600_RealData->Grid_Voltage_C = (Recvbuff[length+23] & 0x000000ff)*256 + (Recvbuff[length+24] & 0x000000ff);
+                        YC600_RealData->Inverter_Power_D = (Recvbuff[length+25] & 0x000000ff)*256 + (Recvbuff[length+26] & 0x000000ff);
+                        length += 27;
+                    }
+
 
                     YC600_RealData_List.push_back(YC600_RealData);
-                    length += 19;
 
                 }
                 addRealData(ui->tableWidget_RealData,YC600_RealData_List);
@@ -1159,23 +1253,31 @@ void MainWindow::set_tableWidget_RealData_View(int item)
             delete 	ui->tableWidget_RealData->horizontalHeaderItem(i);
         }
 
-        ui->tableWidget_RealData->setColumnCount(7);
+        ui->tableWidget_RealData->setColumnCount(11);
 
         ui->tableWidget_RealData->setHorizontalHeaderItem(0,new QTableWidgetItem(tr("ID")));
-        ui->tableWidget_RealData->setHorizontalHeaderItem(1,new QTableWidgetItem(tr("frequency")));
-        ui->tableWidget_RealData->setHorizontalHeaderItem(2,new QTableWidgetItem(tr("temperature")));
-        ui->tableWidget_RealData->setHorizontalHeaderItem(3,new QTableWidgetItem(tr("A power")));
-        ui->tableWidget_RealData->setHorizontalHeaderItem(4,new QTableWidgetItem(tr("A voltage")));
-        ui->tableWidget_RealData->setHorizontalHeaderItem(5,new QTableWidgetItem(tr("B power")));
-        ui->tableWidget_RealData->setHorizontalHeaderItem(6,new QTableWidgetItem(tr("B voltage")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(1,new QTableWidgetItem(tr("Type")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(2,new QTableWidgetItem(tr("frequency")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(3,new QTableWidgetItem(tr("temperature")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(4,new QTableWidgetItem(tr("A power")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(5,new QTableWidgetItem(tr("A voltage")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(6,new QTableWidgetItem(tr("B power")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(7,new QTableWidgetItem(tr("B voltage")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(8,new QTableWidgetItem(tr("C power")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(9,new QTableWidgetItem(tr("C voltage")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(10,new QTableWidgetItem(tr("D power")));
         ui->tableWidget_RealData->setColumnWidth(0,100);
-        ui->tableWidget_RealData->setColumnWidth(1,120);
-        ui->tableWidget_RealData->setColumnWidth(2,120);
-        ui->tableWidget_RealData->setColumnWidth(3,60);
-        ui->tableWidget_RealData->setColumnWidth(4,80);
-        ui->tableWidget_RealData->setColumnWidth(5,80);
-        ui->tableWidget_RealData->setColumnWidth(6,70);
+        ui->tableWidget_RealData->setColumnWidth(1,50);
+        ui->tableWidget_RealData->setColumnWidth(2,60);
+        ui->tableWidget_RealData->setColumnWidth(3,72);
+        ui->tableWidget_RealData->setColumnWidth(4,55);
+        ui->tableWidget_RealData->setColumnWidth(5,60);
+        ui->tableWidget_RealData->setColumnWidth(6,60);
         ui->tableWidget_RealData->setColumnWidth(7,60);
+        ui->tableWidget_RealData->setColumnWidth(8,60);
+        ui->tableWidget_RealData->setColumnWidth(9,60);
+        ui->tableWidget_RealData->setColumnWidth(10,60);
+
 
     }else if(item == 2)
     {
@@ -1215,29 +1317,29 @@ void MainWindow::set_tableWidget_RealData_View(int item)
         ui->tableWidget_RealData->setHorizontalHeaderItem(23,new QTableWidgetItem(tr("Version")));
 
         ui->tableWidget_RealData->setColumnWidth(0,100);
-        ui->tableWidget_RealData->setColumnWidth(1,60);
+        ui->tableWidget_RealData->setColumnWidth(1,40);
         ui->tableWidget_RealData->setColumnWidth(2,50);
         ui->tableWidget_RealData->setColumnWidth(3,60);
-        ui->tableWidget_RealData->setColumnWidth(4,80);
-        ui->tableWidget_RealData->setColumnWidth(5,80);
+        ui->tableWidget_RealData->setColumnWidth(4,70);
+        ui->tableWidget_RealData->setColumnWidth(5,70);
         ui->tableWidget_RealData->setColumnWidth(6,70);
         ui->tableWidget_RealData->setColumnWidth(7,60);
-        ui->tableWidget_RealData->setColumnWidth(8,120);
-        ui->tableWidget_RealData->setColumnWidth(9,60);
-        ui->tableWidget_RealData->setColumnWidth(10,60);
-        ui->tableWidget_RealData->setColumnWidth(11,60);
-        ui->tableWidget_RealData->setColumnWidth(12,60);
-        ui->tableWidget_RealData->setColumnWidth(13,60);
-        ui->tableWidget_RealData->setColumnWidth(14,80);
-        ui->tableWidget_RealData->setColumnWidth(15,80);
-        ui->tableWidget_RealData->setColumnWidth(16,80);
-        ui->tableWidget_RealData->setColumnWidth(17,80);
+        ui->tableWidget_RealData->setColumnWidth(8,100);
+        ui->tableWidget_RealData->setColumnWidth(9,30);
+        ui->tableWidget_RealData->setColumnWidth(10,30);
+        ui->tableWidget_RealData->setColumnWidth(11,30);
+        ui->tableWidget_RealData->setColumnWidth(12,30);
+        ui->tableWidget_RealData->setColumnWidth(13,40);
+        ui->tableWidget_RealData->setColumnWidth(14,40);
+        ui->tableWidget_RealData->setColumnWidth(15,40);
+        ui->tableWidget_RealData->setColumnWidth(16,40);
+        ui->tableWidget_RealData->setColumnWidth(17,40);
         ui->tableWidget_RealData->setColumnWidth(18,60);
-        ui->tableWidget_RealData->setColumnWidth(19,80);
-        ui->tableWidget_RealData->setColumnWidth(20,80);
-        ui->tableWidget_RealData->setColumnWidth(21,100);
-        ui->tableWidget_RealData->setColumnWidth(22,120);
-        ui->tableWidget_RealData->setColumnWidth(23,80);
+        ui->tableWidget_RealData->setColumnWidth(19,60);
+        ui->tableWidget_RealData->setColumnWidth(20,60);
+        ui->tableWidget_RealData->setColumnWidth(21,80);
+        ui->tableWidget_RealData->setColumnWidth(22,80);
+        ui->tableWidget_RealData->setColumnWidth(23,50);
     }
 
 }

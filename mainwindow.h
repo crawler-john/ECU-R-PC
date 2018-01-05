@@ -10,13 +10,16 @@ typedef struct
 {
     char ID[13];
     unsigned char flag;
+    unsigned char inverter_type;
     unsigned short Grid_Frequency;
     unsigned short Temperature;
     unsigned short Inverter_Power;
     unsigned short Grid_Voltage;
     unsigned short Inverter_Power_B;
     unsigned short Grid_Voltage_B;
-
+    unsigned short Inverter_Power_C;
+    unsigned short Grid_Voltage_C;
+    unsigned short Inverter_Power_D;
 } YC600_RealData_t;
 
 typedef struct
