@@ -16,10 +16,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     IPInterfaceSataus(false);
     setWindowTitle(tr("ECU-R Test V%1.%2").arg(MAJOR_VERSION).arg(MINOR_VERSION));
-    setFixedSize(801,480);
+    setFixedSize(801,510);
     UDPClient1 = new CommUDP("10.10.100.254",49000);
     UDPClient2 = new CommUDP("10.10.100.254",48899);
     ECU_Client = new Communication("10.10.100.254",8899);
+    IDWrite_Client = new Communication("192.168.131.228",4540);
+    JSON_Client = new Communication("192.168.131.228",4570);
     ui->tableWidget_SSID->setColumnWidth(0,150);
     ui->tableWidget_SSID->setColumnWidth(1,60);
     ui->progressBar->setValue(0);
@@ -30,6 +32,8 @@ MainWindow::~MainWindow()
     delete ui;
     delete ECU_Client;
     ECU_Client = NULL;
+    delete IDWrite_Client;
+    IDWrite_Client = NULL;
 }
 
 void MainWindow::IPInterfaceSataus(bool status)
@@ -180,7 +184,7 @@ void MainWindow::on_btn_baseInfo_clicked()
     flag = ECU_Client->ECU_Communication(Sendbuff,16,Recvbuff,&recvLen,2000,&commtime);
     if(flag == true)
     {
-        if(recvLen == 68)
+        if(!memcmp(&Recvbuff[25],"02",2))   //ECU-R-RS
         {
             //±£´æECUID
             memcpy(ECUID,&Recvbuff[13],12);
@@ -232,7 +236,7 @@ void MainWindow::on_btn_baseInfo_clicked()
             ui->label_MacAddress->clear();
             ui->label_WifiMac->clear();
         }
-        if(recvLen == 92)
+        if(!memcmp(&Recvbuff[25],"01",2))       //ECU-R
         {
             //±£´æECUID
             memcpy(ECUID,&Recvbuff[13],12);
@@ -1989,5 +1993,393 @@ void MainWindow::on_btn_gethardware_clicked()
     }else
     {
         statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_download_IDWrite_clicked()
+{
+
+
+}
+
+void MainWindow::on_btn_config_IDWrite_clicked()
+{
+    if(IDWrite_Client != NULL)
+    {
+        delete IDWrite_Client;
+        IDWrite_Client = NULL;
+    }
+
+    IDWrite_Client = new Communication(ui->lineEdit_IP_IDWrite->text(),ui->lineEdit_Port_IDWrite->text().toUShort());
+    statusBar()->showMessage(tr("Configure IDWrite IP And Port Successful ..."), 1000);
+}
+
+void MainWindow::on_btn_mkfs_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
+    memset(Recvbuff,0x00,4096);
+
+    flag = IDWrite_Client->IDWrite_Communication("mkfs",4,Recvbuff,&recvLen,10000,&commtime);
+    if(flag == true)
+    {
+        Recvbuff[recvLen-1] = '\0';
+        ui->label_mkfs->setText(Recvbuff);
+        statusBar()->showMessage(tr("mkfs Success ... time:%1").arg(commtime), 2000);
+    }else
+    {
+        ui->label_mkfs->setText("mkfs failed");
+        statusBar()->showMessage(tr("mkfs failed ..."), 2000);
+    }
+}
+
+
+
+void MainWindow::on_btn_setID_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
+    char ID[13] = {'\0'};
+    memset(Recvbuff,0x00,4096);
+    memcpy(ID,ui->lineEdit_ID_2->text().toLatin1(),12);
+    sprintf(Sendbuff,"set_ecu_id %s",ID);
+    flag = IDWrite_Client->IDWrite_Communication(Sendbuff,23,Recvbuff,&recvLen,20000,&commtime);
+    if(flag == true)
+    {
+        ui->label_ID_2->setText(Recvbuff);
+        statusBar()->showMessage(tr("Set ID Success ... time:%1").arg(commtime), 2000);
+    }else
+    {
+        ui->label_ID_2->setText("Set ID failed");
+        statusBar()->showMessage(tr("Set ID failed ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_getID_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
+
+    memset(Recvbuff,0x00,4096);
+    flag = IDWrite_Client->IDWrite_Communication("get_ecu_id",10,Recvbuff,&recvLen,3000,&commtime);
+    if(flag == true)
+    {
+        ui->label_ID_2->setText(Recvbuff);
+        statusBar()->showMessage(tr("Get ID Success ... time:%1").arg(commtime), 2000);
+    }else
+    {
+        ui->label_ID_2->setText("Get ID failed");
+        statusBar()->showMessage(tr("Get ID failed ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_setMAC_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
+    char MAC[13] = {'\0'};
+    memset(Recvbuff,0x00,4096);
+    memcpy(MAC,ui->lineEdit_MAC->text().toLatin1(),12);
+    sprintf(Sendbuff,"set_eth0_mac %s",MAC);
+    flag = IDWrite_Client->IDWrite_Communication(Sendbuff,25,Recvbuff,&recvLen,3000,&commtime);
+    if(flag == true)
+    {
+        ui->label_MAC->setText(Recvbuff);
+        statusBar()->showMessage(tr("Set MAC Success ... time:%1").arg(commtime), 2000);
+    }else
+    {
+        ui->label_MAC->setText("Set MAC failed");
+        statusBar()->showMessage(tr("Set MAC failed ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_getMAC_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
+
+    memset(Recvbuff,0x00,4096);
+    flag = IDWrite_Client->IDWrite_Communication("get_eth0_mac",12,Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        ui->label_MAC->setText(Recvbuff);
+        statusBar()->showMessage(tr("Get MAC Success ... time:%1").arg(commtime), 2000);
+    }else
+    {
+        ui->label_MAC->setText("Get MAC failed");
+        statusBar()->showMessage(tr("Get MAC failed ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_setArea_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
+    char Area[13] = {'\0'};
+    memset(Recvbuff,0x00,4096);
+    memcpy(Area,ui->comboBox_Area->currentText().toLatin1(),ui->comboBox_Area->currentText().length());
+    sprintf(Sendbuff,"set_area %s",Area);
+    flag = IDWrite_Client->IDWrite_Communication(Sendbuff,(ui->comboBox_Area->currentText().length()+9),Recvbuff,&recvLen,3000,&commtime);
+    if(flag == true)
+    {
+        ui->label_Area->setText(Recvbuff);
+        statusBar()->showMessage(tr("Set AREA Success ... time:%1").arg(commtime), 2000);
+    }else
+    {
+        ui->label_Area->setText("Set MAC failed");
+        statusBar()->showMessage(tr("Set AREA failed ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_getArea_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
+
+    memset(Recvbuff,0x00,4096);
+    flag = IDWrite_Client->IDWrite_Communication("get_area",8,Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        ui->label_Area->setText(Recvbuff);
+        statusBar()->showMessage(tr("Get AREA Success ... time:%1").arg(commtime), 2000);
+    }else
+    {
+        ui->label_Area->setText("Get AREA failed");
+        statusBar()->showMessage(tr("Get AREA failed ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_getTime_2_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
+
+    memset(Recvbuff,0x00,4096);
+    flag = IDWrite_Client->IDWrite_Communication("get_time",8,Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        ui->label_Time->setText(Recvbuff);
+        statusBar()->showMessage(tr("Get Time Success ... time:%1").arg(commtime), 2000);
+    }else
+    {
+        ui->label_Time->setText("Get Time failed");
+        statusBar()->showMessage(tr("Get Time failed ..."), 2000);
+    }
+
+}
+
+void MainWindow::on_btn_setTime_2_clicked()
+{
+    char Time[15] = {'\0'};
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
+    memset(Recvbuff,0x00,4096);
+    memcpy(Time,QDateTime::currentDateTime().toString("yyyyMMddhhmmss").toLatin1(),14);
+    sprintf(Sendbuff,"set_time %s",Time);
+    flag = IDWrite_Client->IDWrite_Communication(Sendbuff,23,Recvbuff,&recvLen,3000,&commtime);
+    if(flag == true)
+    {
+        ui->label_Time->setText(Recvbuff);
+        statusBar()->showMessage(tr("Set Time Success ... time:%1").arg(commtime), 2000);
+    }else
+    {
+        ui->label_Time->setText("Set Time failed");
+        statusBar()->showMessage(tr("Set Time failed ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_LED_clicked()
+{
+    IDWrite_Client->ECU_Connect();
+    IDWrite_Client->ECU_Write("test_led",8);
+    IDWrite_Client->ECU_Disconnect();
+}
+
+void MainWindow::on_btn_Version_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
+
+    memset(Recvbuff,0x00,4096);
+    flag = IDWrite_Client->IDWrite_Communication("get_version",11,Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        ui->label_version->setText(Recvbuff);
+        statusBar()->showMessage(tr("Get Version Success ... time:%1").arg(commtime), 2000);
+    }else
+    {
+        ui->label_version->setText("Get Version failed");
+        statusBar()->showMessage(tr("Get Version failed ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_Clear_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    int commtime = 0;
+    char Recvbuff[4096] = {'\0'};
+    IDWrite_Client->ECU_Connect();
+    IDWrite_Client->ECU_Write("clear",5);
+    flag = IDWrite_Client->ECU_Read(Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        if(!memcmp(Recvbuff,"0x10",4))
+        {
+            memset(Recvbuff,'\0',4096);
+            recvLen = 0;
+            commtime = 0;
+            flag = IDWrite_Client->ECU_Read(Recvbuff,&recvLen,3000,&commtime);
+            if(flag == true)
+            {
+                if(!memcmp(Recvbuff,"clearok",7))
+                {
+                    ui->label_Clear->setText(Recvbuff);
+                    statusBar()->showMessage(tr("clear Success ... time:%1").arg(commtime), 2000);
+                }
+            }
+        }
+    }else
+    {
+        ui->label_Clear->setText("clear failed");
+        statusBar()->showMessage(tr("clear failed ..."), 2000);
+    }
+
+    IDWrite_Client->ECU_Disconnect();
+}
+
+void MainWindow::on_btn_addInverter_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
+    char inverterID[200] = {'\0'};
+    memset(Recvbuff,0x00,4096);
+    memcpy(inverterID,ui->lineEdit_INVERTER->text().toLatin1(),ui->lineEdit_INVERTER->text().length());
+    sprintf(Sendbuff,"set_inverter_id %s",inverterID);
+    IDWrite_Client->ECU_Connect();
+    IDWrite_Client->ECU_Write(Sendbuff,(16+ui->lineEdit_INVERTER->text().length()));
+    flag = IDWrite_Client->ECU_Read(Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        if(!memcmp(Recvbuff,"0x12",4))
+        {
+            memset(Recvbuff,'\0',4096);
+            recvLen = 0;
+            commtime = 0;
+            flag = IDWrite_Client->ECU_Read(Recvbuff,&recvLen,3000,&commtime);
+            if(flag == true)
+            {
+                if(!memcmp(Recvbuff,"01",2))
+                {
+                    ui->label_inverter->setText(Recvbuff);
+                    statusBar()->showMessage(tr("Add Inverter Success ... time:%1").arg(commtime), 2000);
+                }
+            }
+        }
+    }else
+    {
+        ui->label_inverter->setText("Add Inverter failed");
+        statusBar()->showMessage(tr("Add Inverter failed ..."), 2000);
+    }
+
+    IDWrite_Client->ECU_Disconnect();
+}
+
+void MainWindow::on_btn_query_result_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Recvbuff[8192] = {'\0'};
+    int commtime = 0;
+
+    memset(Recvbuff,0x00,8192);
+    flag = IDWrite_Client->IDWrite_Communication("query_result",12,Recvbuff,&recvLen,3000,&commtime);
+    if(flag == true)
+    {
+        ui->textBrowser->setText(Recvbuff);
+        statusBar()->showMessage(tr("query result Success ... time:%1").arg(commtime), 2000);
+    }else
+    {
+        ui->textBrowser->setText("query result failed");
+        statusBar()->showMessage(tr("query result failed ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_query_protection_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
+
+    memset(Recvbuff,0x00,4096);
+    flag = IDWrite_Client->IDWrite_Communication("query_protection",16,Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        ui->textBrowser_2->setText(Recvbuff);
+        statusBar()->showMessage(tr("query protection Success ... time:%1").arg(commtime), 2000);
+    }else
+    {
+        ui->textBrowser_2->setText("query protection failed");
+        statusBar()->showMessage(tr("query protection failed ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_config_JSON_clicked()
+{
+    if(JSON_Client != NULL)
+    {
+        delete JSON_Client;
+        JSON_Client = NULL;
+    }
+
+    JSON_Client = new Communication(ui->lineEdit_IP_JSON->text(),ui->lineEdit_Port_JSON->text().toUShort());
+    statusBar()->showMessage(tr("Configure JSON IP And Port Successful ..."), 1000);
+}
+
+void MainWindow::on_btn_cmd101_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Recvbuff[16384] = {'\0'};
+    int commtime = 0;
+
+    memset(Recvbuff,0x00,16384);
+    flag = JSON_Client->IDWrite_Communication("{\"cmd\":101}",11,Recvbuff,&recvLen,5000,&commtime);
+    if(flag == true)
+    {
+        ui->plainTextEdit->setPlainText(Recvbuff);
+        statusBar()->showMessage(tr("query JSON Success ... time:%1").arg(commtime), 2000);
+    }else
+    {
+        ui->plainTextEdit->setPlainText("query JSON failed");
+        statusBar()->showMessage(tr("query JSON failed ..."), 2000);
     }
 }

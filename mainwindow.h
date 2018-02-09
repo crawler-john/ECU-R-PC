@@ -171,9 +171,50 @@ private slots:
 
     void on_btn_gethardware_clicked();
 
+    void on_btn_download_IDWrite_clicked();
+
+    void on_btn_config_IDWrite_clicked();
+
+    void on_btn_mkfs_clicked();
+
+
+    void on_btn_setID_clicked();
+
+    void on_btn_getID_clicked();
+
+    void on_btn_setMAC_clicked();
+
+    void on_btn_getMAC_clicked();
+
+    void on_btn_setArea_clicked();
+
+    void on_btn_getArea_clicked();
+
+    void on_btn_getTime_2_clicked();
+
+    void on_btn_setTime_2_clicked();
+
+    void on_btn_LED_clicked();
+
+    void on_btn_Version_clicked();
+
+    void on_btn_Clear_clicked();
+
+    void on_btn_addInverter_clicked();
+
+    void on_btn_query_result_clicked();
+
+    void on_btn_query_protection_clicked();
+
+    void on_btn_config_JSON_clicked();
+
+    void on_btn_cmd101_clicked();
+
 private:
     Ui::MainWindow *ui;
     Communication *ECU_Client;
+    Communication *IDWrite_Client;
+    Communication *JSON_Client;
     CommUDP *UDPClient1;
     CommUDP *UDPClient2;
     char ECUID[13];

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Thu Nov 30 15:20:16 2017
+** Created: Tue Feb 6 09:03:45 2018
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -30,6 +30,7 @@
 #include <QtGui/QStatusBar>
 #include <QtGui/QTabWidget>
 #include <QtGui/QTableWidget>
+#include <QtGui/QTextBrowser>
 #include <QtGui/QToolBar>
 #include <QtGui/QWidget>
 
@@ -39,6 +40,8 @@ class Ui_MainWindow
 {
 public:
     QWidget *centralWidget;
+    QTabWidget *tabWidget_2;
+    QWidget *tab_5;
     QTabWidget *tabWidget;
     QWidget *tab;
     QGroupBox *groupBox;
@@ -216,6 +219,78 @@ public:
     QTableWidget *tableWidget_Info;
     QPushButton *btn_getInfo;
     QPushButton *btn_getDate_2;
+    QWidget *tab_6;
+    QTabWidget *tabWidget_3;
+    QWidget *tab_7;
+    QGroupBox *groupBox_18;
+    QLabel *label_13;
+    QLabel *label_14;
+    QLineEdit *lineEdit_IP_IDWrite;
+    QLineEdit *lineEdit_Port_IDWrite;
+    QPushButton *btn_config_IDWrite;
+    QGroupBox *groupBox_20;
+    QPushButton *btn_download_IDWrite;
+    QGroupBox *groupBox_21;
+    QPushButton *btn_mkfs;
+    QLabel *label_24;
+    QLabel *label_mkfs;
+    QGroupBox *groupBox_19;
+    QPushButton *btn_setID;
+    QPushButton *btn_getID;
+    QLineEdit *lineEdit_ID_2;
+    QLabel *label_ID_2;
+    QLabel *label_26;
+    QGroupBox *groupBox_22;
+    QLineEdit *lineEdit_MAC;
+    QLabel *label_MAC;
+    QLabel *label_28;
+    QPushButton *btn_setMAC;
+    QPushButton *btn_getMAC;
+    QGroupBox *groupBox_23;
+    QPushButton *btn_setArea;
+    QPushButton *btn_getArea;
+    QLabel *label_Area;
+    QLabel *label_35;
+    QComboBox *comboBox_Area;
+    QLabel *label_36;
+    QGroupBox *groupBox_24;
+    QPushButton *btn_getTime_2;
+    QPushButton *btn_setTime_2;
+    QComboBox *comboBox_TimeZone;
+    QLabel *label_37;
+    QLabel *label_Time;
+    QLabel *label_38;
+    QGroupBox *groupBox_25;
+    QPushButton *btn_LED;
+    QGroupBox *groupBox_26;
+    QPushButton *btn_Version;
+    QLabel *label_39;
+    QLabel *label_version;
+    QGroupBox *groupBox_28;
+    QPushButton *btn_addInverter;
+    QLineEdit *lineEdit_INVERTER;
+    QPushButton *btn_query_result;
+    QPushButton *btn_query_protection;
+    QLabel *label_inverter;
+    QLabel *label_41;
+    QTextBrowser *textBrowser;
+    QTextBrowser *textBrowser_2;
+    QGroupBox *groupBox_29;
+    QPushButton *btn_Clear;
+    QLabel *label_40;
+    QLabel *label_Clear;
+    QWidget *tab_8;
+    QTabWidget *tabWidget_4;
+    QWidget *tab_9;
+    QGroupBox *groupBox_30;
+    QLabel *label_46;
+    QLabel *label_47;
+    QLineEdit *lineEdit_IP_JSON;
+    QLineEdit *lineEdit_Port_JSON;
+    QPushButton *btn_config_JSON;
+    QPlainTextEdit *plainTextEdit;
+    QGroupBox *groupBox_31;
+    QPushButton *btn_cmd101;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -224,12 +299,17 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(807, 506);
+        MainWindow->resize(810, 521);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
-        tabWidget = new QTabWidget(centralWidget);
+        tabWidget_2 = new QTabWidget(centralWidget);
+        tabWidget_2->setObjectName(QString::fromUtf8("tabWidget_2"));
+        tabWidget_2->setGeometry(QRect(4, -1, 801, 471));
+        tab_5 = new QWidget();
+        tab_5->setObjectName(QString::fromUtf8("tab_5"));
+        tabWidget = new QTabWidget(tab_5);
         tabWidget->setObjectName(QString::fromUtf8("tabWidget"));
-        tabWidget->setGeometry(QRect(0, 0, 801, 451));
+        tabWidget->setGeometry(QRect(3, 0, 821, 451));
         tabWidget->setStyleSheet(QString::fromUtf8("QWidget#centralwidget{\n"
 "	background-image:url(img/mainwindow.jpg);\n"
 "}\n"
@@ -1018,10 +1098,373 @@ public:
         btn_getDate_2->setObjectName(QString::fromUtf8("btn_getDate_2"));
         btn_getDate_2->setGeometry(QRect(510, 20, 91, 23));
         tabWidget->addTab(tab_3, QString());
+        tabWidget_2->addTab(tab_5, QString());
+        tab_6 = new QWidget();
+        tab_6->setObjectName(QString::fromUtf8("tab_6"));
+        tabWidget_3 = new QTabWidget(tab_6);
+        tabWidget_3->setObjectName(QString::fromUtf8("tabWidget_3"));
+        tabWidget_3->setGeometry(QRect(4, 0, 791, 441));
+        tabWidget_3->setStyleSheet(QString::fromUtf8("QWidget#centralwidget{\n"
+"	background-image:url(img/mainwindow.jpg);\n"
+"}\n"
+"QGroupBox::title {\n"
+"	color:#ff0000\n"
+"}\n"
+"\n"
+"QTableWidget\n"
+"{\n"
+"background: rgb(237,216,255);\n"
+"alternate-background-color:rgb(48,51,55);\n"
+"selection-background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(237,216,255),stop:1 rgb(237,211,255));\n"
+"}\n"
+"\n"
+"QHeaderView::section\n"
+"{\n"
+"background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 		stop:0 rgb(237,216,255),\n"
+"	stop:1 rgb(237,211,255));\n"
+"color: rgb(0,0,0);\n"
+"padding-left: 4px;\n"
+"border: 1px solid #383838;\n"
+"}\n"
+"QScrollBar:vertical \n"
+"{\n"
+"border: 0px solid grey;\n"
+"background: transparent;\n"
+"width: 15px;\n"
+"margin: 22px 0 22px 0;\n"
+"}\n"
+"QScrollBar::handle:vertical \n"
+"{\n"
+"background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 rgb(46,46,46),stop:1 rgb(66,66,66));\n"
+"min-height: 20px;\n"
+"}\n"
+"QScrollBar::add-line:vertical \n"
+"{\n"
+"border: 0px solid grey;\n"
+"background: rgb(66,66,66);\n"
+"height: 20px;\n"
+""
+                        "subcontrol-position: bottom;\n"
+"subcontrol-origin: margin;\n"
+"}\n"
+"QScrollBar::sub-line:vertical \n"
+"{\n"
+"border: 0px solid grey;\n"
+"background: rgb(56,56,56);\n"
+"height: 20px;\n"
+"subcontrol-position: top;\n"
+"subcontrol-origin: margin;\n"
+"}\n"
+"QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical \n"
+"{\n"
+"border: 0px solid grey;\n"
+"width: 3px;\n"
+"height: 3px;\n"
+"background: rgb(46,46,46);\n"
+"}\n"
+"QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical\n"
+"{\n"
+"background: none;\n"
+"}\n"
+"\n"
+"QPushButton{\n"
+"color:#0000ff;\n"
+"border:26px;\n"
+"solid #FFFFFF;\n"
+"border: 1px solid green;\n"
+"border-radius:10px;\n"
+"}\n"
+"QPushButton:hover{\n"
+"color:#FF0000;\n"
+"}"));
+        tab_7 = new QWidget();
+        tab_7->setObjectName(QString::fromUtf8("tab_7"));
+        groupBox_18 = new QGroupBox(tab_7);
+        groupBox_18->setObjectName(QString::fromUtf8("groupBox_18"));
+        groupBox_18->setGeometry(QRect(0, 43, 261, 71));
+        label_13 = new QLabel(groupBox_18);
+        label_13->setObjectName(QString::fromUtf8("label_13"));
+        label_13->setGeometry(QRect(10, 16, 41, 21));
+        label_14 = new QLabel(groupBox_18);
+        label_14->setObjectName(QString::fromUtf8("label_14"));
+        label_14->setGeometry(QRect(10, 40, 41, 21));
+        lineEdit_IP_IDWrite = new QLineEdit(groupBox_18);
+        lineEdit_IP_IDWrite->setObjectName(QString::fromUtf8("lineEdit_IP_IDWrite"));
+        lineEdit_IP_IDWrite->setGeometry(QRect(50, 16, 91, 20));
+        lineEdit_Port_IDWrite = new QLineEdit(groupBox_18);
+        lineEdit_Port_IDWrite->setObjectName(QString::fromUtf8("lineEdit_Port_IDWrite"));
+        lineEdit_Port_IDWrite->setGeometry(QRect(50, 41, 91, 20));
+        btn_config_IDWrite = new QPushButton(groupBox_18);
+        btn_config_IDWrite->setObjectName(QString::fromUtf8("btn_config_IDWrite"));
+        btn_config_IDWrite->setGeometry(QRect(150, 15, 101, 31));
+        groupBox_20 = new QGroupBox(tab_7);
+        groupBox_20->setObjectName(QString::fromUtf8("groupBox_20"));
+        groupBox_20->setGeometry(QRect(0, 0, 261, 41));
+        btn_download_IDWrite = new QPushButton(groupBox_20);
+        btn_download_IDWrite->setObjectName(QString::fromUtf8("btn_download_IDWrite"));
+        btn_download_IDWrite->setGeometry(QRect(10, 15, 241, 21));
+        groupBox_21 = new QGroupBox(tab_7);
+        groupBox_21->setObjectName(QString::fromUtf8("groupBox_21"));
+        groupBox_21->setGeometry(QRect(0, 120, 261, 51));
+        btn_mkfs = new QPushButton(groupBox_21);
+        btn_mkfs->setObjectName(QString::fromUtf8("btn_mkfs"));
+        btn_mkfs->setGeometry(QRect(10, 20, 101, 23));
+        label_24 = new QLabel(groupBox_21);
+        label_24->setObjectName(QString::fromUtf8("label_24"));
+        label_24->setGeometry(QRect(120, 20, 31, 21));
+        label_mkfs = new QLabel(groupBox_21);
+        label_mkfs->setObjectName(QString::fromUtf8("label_mkfs"));
+        label_mkfs->setGeometry(QRect(160, 20, 91, 21));
+        groupBox_19 = new QGroupBox(tab_7);
+        groupBox_19->setObjectName(QString::fromUtf8("groupBox_19"));
+        groupBox_19->setGeometry(QRect(0, 170, 261, 81));
+        btn_setID = new QPushButton(groupBox_19);
+        btn_setID->setObjectName(QString::fromUtf8("btn_setID"));
+        btn_setID->setGeometry(QRect(10, 20, 101, 23));
+        btn_getID = new QPushButton(groupBox_19);
+        btn_getID->setObjectName(QString::fromUtf8("btn_getID"));
+        btn_getID->setGeometry(QRect(10, 50, 101, 23));
+        lineEdit_ID_2 = new QLineEdit(groupBox_19);
+        lineEdit_ID_2->setObjectName(QString::fromUtf8("lineEdit_ID_2"));
+        lineEdit_ID_2->setGeometry(QRect(120, 20, 101, 21));
+        label_ID_2 = new QLabel(groupBox_19);
+        label_ID_2->setObjectName(QString::fromUtf8("label_ID_2"));
+        label_ID_2->setGeometry(QRect(160, 50, 91, 21));
+        label_26 = new QLabel(groupBox_19);
+        label_26->setObjectName(QString::fromUtf8("label_26"));
+        label_26->setGeometry(QRect(120, 50, 31, 21));
+        groupBox_22 = new QGroupBox(tab_7);
+        groupBox_22->setObjectName(QString::fromUtf8("groupBox_22"));
+        groupBox_22->setGeometry(QRect(0, 251, 261, 80));
+        lineEdit_MAC = new QLineEdit(groupBox_22);
+        lineEdit_MAC->setObjectName(QString::fromUtf8("lineEdit_MAC"));
+        lineEdit_MAC->setGeometry(QRect(90, 20, 111, 21));
+        label_MAC = new QLabel(groupBox_22);
+        label_MAC->setObjectName(QString::fromUtf8("label_MAC"));
+        label_MAC->setGeometry(QRect(120, 50, 141, 21));
+        label_28 = new QLabel(groupBox_22);
+        label_28->setObjectName(QString::fromUtf8("label_28"));
+        label_28->setGeometry(QRect(90, 50, 31, 21));
+        btn_setMAC = new QPushButton(groupBox_22);
+        btn_setMAC->setObjectName(QString::fromUtf8("btn_setMAC"));
+        btn_setMAC->setGeometry(QRect(10, 20, 71, 23));
+        btn_getMAC = new QPushButton(groupBox_22);
+        btn_getMAC->setObjectName(QString::fromUtf8("btn_getMAC"));
+        btn_getMAC->setGeometry(QRect(10, 50, 71, 23));
+        groupBox_23 = new QGroupBox(tab_7);
+        groupBox_23->setObjectName(QString::fromUtf8("groupBox_23"));
+        groupBox_23->setGeometry(QRect(270, 0, 261, 81));
+        btn_setArea = new QPushButton(groupBox_23);
+        btn_setArea->setObjectName(QString::fromUtf8("btn_setArea"));
+        btn_setArea->setGeometry(QRect(10, 20, 101, 23));
+        btn_getArea = new QPushButton(groupBox_23);
+        btn_getArea->setObjectName(QString::fromUtf8("btn_getArea"));
+        btn_getArea->setGeometry(QRect(10, 50, 101, 23));
+        label_Area = new QLabel(groupBox_23);
+        label_Area->setObjectName(QString::fromUtf8("label_Area"));
+        label_Area->setGeometry(QRect(160, 50, 91, 21));
+        label_35 = new QLabel(groupBox_23);
+        label_35->setObjectName(QString::fromUtf8("label_35"));
+        label_35->setGeometry(QRect(120, 50, 31, 21));
+        comboBox_Area = new QComboBox(groupBox_23);
+        comboBox_Area->setObjectName(QString::fromUtf8("comboBox_Area"));
+        comboBox_Area->setGeometry(QRect(170, 20, 61, 22));
+        label_36 = new QLabel(groupBox_23);
+        label_36->setObjectName(QString::fromUtf8("label_36"));
+        label_36->setGeometry(QRect(120, 20, 31, 21));
+        groupBox_24 = new QGroupBox(tab_7);
+        groupBox_24->setObjectName(QString::fromUtf8("groupBox_24"));
+        groupBox_24->setGeometry(QRect(0, 331, 261, 81));
+        btn_getTime_2 = new QPushButton(groupBox_24);
+        btn_getTime_2->setObjectName(QString::fromUtf8("btn_getTime_2"));
+        btn_getTime_2->setGeometry(QRect(10, 50, 101, 23));
+        btn_setTime_2 = new QPushButton(groupBox_24);
+        btn_setTime_2->setObjectName(QString::fromUtf8("btn_setTime_2"));
+        btn_setTime_2->setGeometry(QRect(10, 20, 101, 23));
+        comboBox_TimeZone = new QComboBox(groupBox_24);
+        comboBox_TimeZone->setObjectName(QString::fromUtf8("comboBox_TimeZone"));
+        comboBox_TimeZone->setGeometry(QRect(150, 20, 91, 22));
+        label_37 = new QLabel(groupBox_24);
+        label_37->setObjectName(QString::fromUtf8("label_37"));
+        label_37->setGeometry(QRect(120, 20, 31, 21));
+        label_Time = new QLabel(groupBox_24);
+        label_Time->setObjectName(QString::fromUtf8("label_Time"));
+        label_Time->setGeometry(QRect(160, 50, 91, 21));
+        label_38 = new QLabel(groupBox_24);
+        label_38->setObjectName(QString::fromUtf8("label_38"));
+        label_38->setGeometry(QRect(120, 50, 31, 21));
+        groupBox_25 = new QGroupBox(tab_7);
+        groupBox_25->setObjectName(QString::fromUtf8("groupBox_25"));
+        groupBox_25->setGeometry(QRect(270, 90, 261, 51));
+        btn_LED = new QPushButton(groupBox_25);
+        btn_LED->setObjectName(QString::fromUtf8("btn_LED"));
+        btn_LED->setGeometry(QRect(10, 20, 101, 23));
+        groupBox_26 = new QGroupBox(tab_7);
+        groupBox_26->setObjectName(QString::fromUtf8("groupBox_26"));
+        groupBox_26->setGeometry(QRect(270, 150, 261, 51));
+        btn_Version = new QPushButton(groupBox_26);
+        btn_Version->setObjectName(QString::fromUtf8("btn_Version"));
+        btn_Version->setGeometry(QRect(10, 20, 101, 23));
+        label_39 = new QLabel(groupBox_26);
+        label_39->setObjectName(QString::fromUtf8("label_39"));
+        label_39->setGeometry(QRect(120, 20, 31, 21));
+        label_version = new QLabel(groupBox_26);
+        label_version->setObjectName(QString::fromUtf8("label_version"));
+        label_version->setGeometry(QRect(160, 20, 91, 21));
+        groupBox_28 = new QGroupBox(tab_7);
+        groupBox_28->setObjectName(QString::fromUtf8("groupBox_28"));
+        groupBox_28->setGeometry(QRect(530, 0, 241, 411));
+        btn_addInverter = new QPushButton(groupBox_28);
+        btn_addInverter->setObjectName(QString::fromUtf8("btn_addInverter"));
+        btn_addInverter->setGeometry(QRect(10, 20, 91, 23));
+        lineEdit_INVERTER = new QLineEdit(groupBox_28);
+        lineEdit_INVERTER->setObjectName(QString::fromUtf8("lineEdit_INVERTER"));
+        lineEdit_INVERTER->setGeometry(QRect(110, 20, 111, 21));
+        btn_query_result = new QPushButton(groupBox_28);
+        btn_query_result->setObjectName(QString::fromUtf8("btn_query_result"));
+        btn_query_result->setGeometry(QRect(10, 80, 91, 23));
+        btn_query_protection = new QPushButton(groupBox_28);
+        btn_query_protection->setObjectName(QString::fromUtf8("btn_query_protection"));
+        btn_query_protection->setGeometry(QRect(10, 241, 91, 23));
+        label_inverter = new QLabel(groupBox_28);
+        label_inverter->setObjectName(QString::fromUtf8("label_inverter"));
+        label_inverter->setGeometry(QRect(80, 50, 141, 21));
+        label_41 = new QLabel(groupBox_28);
+        label_41->setObjectName(QString::fromUtf8("label_41"));
+        label_41->setGeometry(QRect(50, 50, 31, 21));
+        textBrowser = new QTextBrowser(groupBox_28);
+        textBrowser->setObjectName(QString::fromUtf8("textBrowser"));
+        textBrowser->setGeometry(QRect(5, 110, 231, 121));
+        textBrowser_2 = new QTextBrowser(groupBox_28);
+        textBrowser_2->setObjectName(QString::fromUtf8("textBrowser_2"));
+        textBrowser_2->setGeometry(QRect(5, 271, 231, 131));
+        groupBox_29 = new QGroupBox(tab_7);
+        groupBox_29->setObjectName(QString::fromUtf8("groupBox_29"));
+        groupBox_29->setGeometry(QRect(270, 210, 261, 61));
+        btn_Clear = new QPushButton(groupBox_29);
+        btn_Clear->setObjectName(QString::fromUtf8("btn_Clear"));
+        btn_Clear->setGeometry(QRect(10, 20, 101, 23));
+        label_40 = new QLabel(groupBox_29);
+        label_40->setObjectName(QString::fromUtf8("label_40"));
+        label_40->setGeometry(QRect(120, 20, 31, 21));
+        label_Clear = new QLabel(groupBox_29);
+        label_Clear->setObjectName(QString::fromUtf8("label_Clear"));
+        label_Clear->setGeometry(QRect(160, 20, 91, 21));
+        tabWidget_3->addTab(tab_7, QString());
+        tabWidget_2->addTab(tab_6, QString());
+        tab_8 = new QWidget();
+        tab_8->setObjectName(QString::fromUtf8("tab_8"));
+        tabWidget_4 = new QTabWidget(tab_8);
+        tabWidget_4->setObjectName(QString::fromUtf8("tabWidget_4"));
+        tabWidget_4->setGeometry(QRect(4, 0, 791, 441));
+        tabWidget_4->setStyleSheet(QString::fromUtf8("QWidget#centralwidget{\n"
+"	background-image:url(img/mainwindow.jpg);\n"
+"}\n"
+"QGroupBox::title {\n"
+"	color:#ff0000\n"
+"}\n"
+"\n"
+"QTableWidget\n"
+"{\n"
+"background: rgb(237,216,255);\n"
+"alternate-background-color:rgb(48,51,55);\n"
+"selection-background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(237,216,255),stop:1 rgb(237,211,255));\n"
+"}\n"
+"\n"
+"QHeaderView::section\n"
+"{\n"
+"background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 		stop:0 rgb(237,216,255),\n"
+"	stop:1 rgb(237,211,255));\n"
+"color: rgb(0,0,0);\n"
+"padding-left: 4px;\n"
+"border: 1px solid #383838;\n"
+"}\n"
+"QScrollBar:vertical \n"
+"{\n"
+"border: 0px solid grey;\n"
+"background: transparent;\n"
+"width: 15px;\n"
+"margin: 22px 0 22px 0;\n"
+"}\n"
+"QScrollBar::handle:vertical \n"
+"{\n"
+"background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 rgb(46,46,46),stop:1 rgb(66,66,66));\n"
+"min-height: 20px;\n"
+"}\n"
+"QScrollBar::add-line:vertical \n"
+"{\n"
+"border: 0px solid grey;\n"
+"background: rgb(66,66,66);\n"
+"height: 20px;\n"
+""
+                        "subcontrol-position: bottom;\n"
+"subcontrol-origin: margin;\n"
+"}\n"
+"QScrollBar::sub-line:vertical \n"
+"{\n"
+"border: 0px solid grey;\n"
+"background: rgb(56,56,56);\n"
+"height: 20px;\n"
+"subcontrol-position: top;\n"
+"subcontrol-origin: margin;\n"
+"}\n"
+"QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical \n"
+"{\n"
+"border: 0px solid grey;\n"
+"width: 3px;\n"
+"height: 3px;\n"
+"background: rgb(46,46,46);\n"
+"}\n"
+"QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical\n"
+"{\n"
+"background: none;\n"
+"}\n"
+"\n"
+"QPushButton{\n"
+"color:#0000ff;\n"
+"border:26px;\n"
+"solid #FFFFFF;\n"
+"border: 1px solid green;\n"
+"border-radius:10px;\n"
+"}\n"
+"QPushButton:hover{\n"
+"color:#FF0000;\n"
+"}"));
+        tab_9 = new QWidget();
+        tab_9->setObjectName(QString::fromUtf8("tab_9"));
+        groupBox_30 = new QGroupBox(tab_9);
+        groupBox_30->setObjectName(QString::fromUtf8("groupBox_30"));
+        groupBox_30->setGeometry(QRect(0, 0, 261, 71));
+        label_46 = new QLabel(groupBox_30);
+        label_46->setObjectName(QString::fromUtf8("label_46"));
+        label_46->setGeometry(QRect(10, 16, 41, 21));
+        label_47 = new QLabel(groupBox_30);
+        label_47->setObjectName(QString::fromUtf8("label_47"));
+        label_47->setGeometry(QRect(10, 40, 41, 21));
+        lineEdit_IP_JSON = new QLineEdit(groupBox_30);
+        lineEdit_IP_JSON->setObjectName(QString::fromUtf8("lineEdit_IP_JSON"));
+        lineEdit_IP_JSON->setGeometry(QRect(50, 16, 91, 20));
+        lineEdit_Port_JSON = new QLineEdit(groupBox_30);
+        lineEdit_Port_JSON->setObjectName(QString::fromUtf8("lineEdit_Port_JSON"));
+        lineEdit_Port_JSON->setGeometry(QRect(50, 41, 91, 20));
+        btn_config_JSON = new QPushButton(groupBox_30);
+        btn_config_JSON->setObjectName(QString::fromUtf8("btn_config_JSON"));
+        btn_config_JSON->setGeometry(QRect(150, 20, 101, 31));
+        plainTextEdit = new QPlainTextEdit(tab_9);
+        plainTextEdit->setObjectName(QString::fromUtf8("plainTextEdit"));
+        plainTextEdit->setGeometry(QRect(290, 10, 421, 401));
+        groupBox_31 = new QGroupBox(tab_9);
+        groupBox_31->setObjectName(QString::fromUtf8("groupBox_31"));
+        groupBox_31->setGeometry(QRect(0, 80, 251, 61));
+        btn_cmd101 = new QPushButton(groupBox_31);
+        btn_cmd101->setObjectName(QString::fromUtf8("btn_cmd101"));
+        btn_cmd101->setGeometry(QRect(10, 20, 75, 23));
+        tabWidget_4->addTab(tab_9, QString());
+        tabWidget_2->addTab(tab_8, QString());
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 807, 23));
+        menuBar->setGeometry(QRect(0, 0, 810, 23));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
@@ -1032,7 +1475,10 @@ public:
 
         retranslateUi(MainWindow);
 
+        tabWidget_2->setCurrentIndex(0);
         tabWidget->setCurrentIndex(0);
+        tabWidget_3->setCurrentIndex(0);
+        tabWidget_4->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -1260,6 +1706,78 @@ public:
         btn_getInfo->setText(QApplication::translate("MainWindow", "\350\216\267\345\217\226\345\215\225\345\217\260\346\233\262\347\272\277", 0, QApplication::UnicodeUTF8));
         btn_getDate_2->setText(QApplication::translate("MainWindow", "\350\216\267\345\217\226\345\275\223\345\211\215\346\227\245\346\234\237", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("MainWindow", "\345\215\225\345\217\260RSD\344\277\241\346\201\257", 0, QApplication::UnicodeUTF8));
+        tabWidget_2->setTabText(tabWidget_2->indexOf(tab_5), QApplication::translate("MainWindow", "WIFI\345\212\237\350\203\275", 0, QApplication::UnicodeUTF8));
+        groupBox_18->setTitle(QApplication::translate("MainWindow", "\351\200\232\344\277\241\345\217\202\346\225\260", 0, QApplication::UnicodeUTF8));
+        label_13->setText(QApplication::translate("MainWindow", "IP\357\274\232", 0, QApplication::UnicodeUTF8));
+        label_14->setText(QApplication::translate("MainWindow", "\347\253\257\345\217\243\357\274\232", 0, QApplication::UnicodeUTF8));
+        lineEdit_IP_IDWrite->setText(QApplication::translate("MainWindow", "192.168.131.228", 0, QApplication::UnicodeUTF8));
+        lineEdit_Port_IDWrite->setText(QApplication::translate("MainWindow", "4540", 0, QApplication::UnicodeUTF8));
+        btn_config_IDWrite->setText(QApplication::translate("MainWindow", "\351\205\215\347\275\256\345\217\202\346\225\260", 0, QApplication::UnicodeUTF8));
+        groupBox_20->setTitle(QApplication::translate("MainWindow", "\347\203\247\345\206\231\347\250\213\345\272\217", 0, QApplication::UnicodeUTF8));
+        btn_download_IDWrite->setText(QApplication::translate("MainWindow", "\347\203\247\345\206\231\347\250\213\345\272\217", 0, QApplication::UnicodeUTF8));
+        groupBox_21->setTitle(QApplication::translate("MainWindow", "\346\226\207\344\273\266\347\263\273\347\273\237\345\210\235\345\247\213\345\214\226", 0, QApplication::UnicodeUTF8));
+        btn_mkfs->setText(QApplication::translate("MainWindow", "\346\226\207\344\273\266\347\263\273\347\273\237\345\210\235\345\247\213\345\214\226", 0, QApplication::UnicodeUTF8));
+        label_24->setText(QApplication::translate("MainWindow", "\347\273\223\346\236\234\357\274\232", 0, QApplication::UnicodeUTF8));
+        label_mkfs->setText(QString());
+        groupBox_19->setTitle(QApplication::translate("MainWindow", "ID\347\256\241\347\220\206", 0, QApplication::UnicodeUTF8));
+        btn_setID->setText(QApplication::translate("MainWindow", "ID\345\210\235\345\247\213\345\214\226", 0, QApplication::UnicodeUTF8));
+        btn_getID->setText(QApplication::translate("MainWindow", "\350\257\273\345\217\226ID", 0, QApplication::UnicodeUTF8));
+        lineEdit_ID_2->setText(QApplication::translate("MainWindow", "216000000000", 0, QApplication::UnicodeUTF8));
+        label_ID_2->setText(QString());
+        label_26->setText(QApplication::translate("MainWindow", "\347\273\223\346\236\234\357\274\232", 0, QApplication::UnicodeUTF8));
+        groupBox_22->setTitle(QApplication::translate("MainWindow", "MAC\347\256\241\347\220\206", 0, QApplication::UnicodeUTF8));
+        lineEdit_MAC->setText(QApplication::translate("MainWindow", "80971B000000", 0, QApplication::UnicodeUTF8));
+        label_MAC->setText(QString());
+        label_28->setText(QApplication::translate("MainWindow", "\347\273\223\346\236\234\357\274\232", 0, QApplication::UnicodeUTF8));
+        btn_setMAC->setText(QApplication::translate("MainWindow", "MAC\345\210\235\345\247\213\345\214\226", 0, QApplication::UnicodeUTF8));
+        btn_getMAC->setText(QApplication::translate("MainWindow", "\350\257\273\345\217\226MAC", 0, QApplication::UnicodeUTF8));
+        groupBox_23->setTitle(QApplication::translate("MainWindow", "Area\347\256\241\347\220\206", 0, QApplication::UnicodeUTF8));
+        btn_setArea->setText(QApplication::translate("MainWindow", "Area\345\210\235\345\247\213\345\214\226", 0, QApplication::UnicodeUTF8));
+        btn_getArea->setText(QApplication::translate("MainWindow", "\350\257\273\345\217\226Area", 0, QApplication::UnicodeUTF8));
+        label_Area->setText(QString());
+        label_35->setText(QApplication::translate("MainWindow", "\347\273\223\346\236\234\357\274\232", 0, QApplication::UnicodeUTF8));
+        comboBox_Area->clear();
+        comboBox_Area->insertItems(0, QStringList()
+         << QApplication::translate("MainWindow", "NA", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("MainWindow", "SAA", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("MainWindow", "MX", 0, QApplication::UnicodeUTF8)
+        );
+        label_36->setText(QApplication::translate("MainWindow", "\345\214\272\345\237\237\357\274\232", 0, QApplication::UnicodeUTF8));
+        groupBox_24->setTitle(QApplication::translate("MainWindow", "\346\227\266\351\227\264\347\256\241\347\220\206", 0, QApplication::UnicodeUTF8));
+        btn_getTime_2->setText(QApplication::translate("MainWindow", "\350\216\267\345\217\226\346\227\266\351\227\264", 0, QApplication::UnicodeUTF8));
+        btn_setTime_2->setText(QApplication::translate("MainWindow", "\350\256\276\347\275\256\346\227\266\351\227\264", 0, QApplication::UnicodeUTF8));
+        label_37->setText(QApplication::translate("MainWindow", "\346\227\266\345\214\272\357\274\232", 0, QApplication::UnicodeUTF8));
+        label_Time->setText(QString());
+        label_38->setText(QApplication::translate("MainWindow", "\347\273\223\346\236\234\357\274\232", 0, QApplication::UnicodeUTF8));
+        groupBox_25->setTitle(QApplication::translate("MainWindow", "LED\346\265\213\350\257\225", 0, QApplication::UnicodeUTF8));
+        btn_LED->setText(QApplication::translate("MainWindow", "LED\346\265\213\350\257\225", 0, QApplication::UnicodeUTF8));
+        groupBox_26->setTitle(QApplication::translate("MainWindow", "\347\211\210\346\234\254\350\216\267\345\217\226", 0, QApplication::UnicodeUTF8));
+        btn_Version->setText(QApplication::translate("MainWindow", "\347\211\210\346\234\254\350\216\267\345\217\226", 0, QApplication::UnicodeUTF8));
+        label_39->setText(QApplication::translate("MainWindow", "\347\273\223\346\236\234\357\274\232", 0, QApplication::UnicodeUTF8));
+        label_version->setText(QString());
+        groupBox_28->setTitle(QApplication::translate("MainWindow", "ID\346\267\273\345\212\240\346\265\213\350\257\225", 0, QApplication::UnicodeUTF8));
+        btn_addInverter->setText(QApplication::translate("MainWindow", "\346\267\273\345\212\240\351\200\206\345\217\230\345\231\250ID", 0, QApplication::UnicodeUTF8));
+        lineEdit_INVERTER->setText(QApplication::translate("MainWindow", "501003220001", 0, QApplication::UnicodeUTF8));
+        btn_query_result->setText(QApplication::translate("MainWindow", "\346\237\245\350\257\242\347\273\223\346\236\234", 0, QApplication::UnicodeUTF8));
+        btn_query_protection->setText(QApplication::translate("MainWindow", "\346\237\245\350\257\242\344\277\235\346\212\244\345\217\202\346\225\260", 0, QApplication::UnicodeUTF8));
+        label_inverter->setText(QString());
+        label_41->setText(QApplication::translate("MainWindow", "\347\273\223\346\236\234\357\274\232", 0, QApplication::UnicodeUTF8));
+        groupBox_29->setTitle(QApplication::translate("MainWindow", "\346\270\205\347\251\272\346\265\213\350\257\225\350\256\260\345\275\225", 0, QApplication::UnicodeUTF8));
+        btn_Clear->setText(QApplication::translate("MainWindow", "\346\270\205\347\251\272\346\265\213\350\257\225\346\225\260\346\215\256", 0, QApplication::UnicodeUTF8));
+        label_40->setText(QApplication::translate("MainWindow", "\347\273\223\346\236\234\357\274\232", 0, QApplication::UnicodeUTF8));
+        label_Clear->setText(QString());
+        tabWidget_3->setTabText(tabWidget_3->indexOf(tab_7), QApplication::translate("MainWindow", "\345\237\272\347\241\200\345\221\275\344\273\244", 0, QApplication::UnicodeUTF8));
+        tabWidget_2->setTabText(tabWidget_2->indexOf(tab_6), QApplication::translate("MainWindow", "IDWrite\345\212\237\350\203\275", 0, QApplication::UnicodeUTF8));
+        groupBox_30->setTitle(QApplication::translate("MainWindow", "\351\200\232\344\277\241\345\217\202\346\225\260", 0, QApplication::UnicodeUTF8));
+        label_46->setText(QApplication::translate("MainWindow", "IP\357\274\232", 0, QApplication::UnicodeUTF8));
+        label_47->setText(QApplication::translate("MainWindow", "\347\253\257\345\217\243\357\274\232", 0, QApplication::UnicodeUTF8));
+        lineEdit_IP_JSON->setText(QApplication::translate("MainWindow", "192.168.131.228", 0, QApplication::UnicodeUTF8));
+        lineEdit_Port_JSON->setText(QApplication::translate("MainWindow", "4570", 0, QApplication::UnicodeUTF8));
+        btn_config_JSON->setText(QApplication::translate("MainWindow", "\351\205\215\347\275\256\345\217\202\346\225\260", 0, QApplication::UnicodeUTF8));
+        groupBox_31->setTitle(QApplication::translate("MainWindow", "\345\221\275\344\273\244", 0, QApplication::UnicodeUTF8));
+        btn_cmd101->setText(QApplication::translate("MainWindow", "CMD\357\274\232101", 0, QApplication::UnicodeUTF8));
+        tabWidget_4->setTabText(tabWidget_4->indexOf(tab_9), QApplication::translate("MainWindow", "\345\237\272\347\241\200\345\221\275\344\273\244", 0, QApplication::UnicodeUTF8));
+        tabWidget_2->setTabText(tabWidget_2->indexOf(tab_8), QApplication::translate("MainWindow", "JSON\346\265\213\350\257\225", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

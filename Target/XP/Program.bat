@@ -1,0 +1,1 @@
+JLink.exe -device STM32F103RG -if SWD -speed 4000  -autoconnect 1 -CommanderScript .\config.jlink

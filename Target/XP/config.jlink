@@ -1,0 +1,5 @@
+r
+speed 4000
+device STM32F103RG
+loadbin .\Programmer\HEX\ECUR\V1.0\ECU_R_NA_1.0.hex 0x8000000
+qc
