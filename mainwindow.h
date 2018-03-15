@@ -28,6 +28,11 @@ typedef struct
     unsigned short shortAddr;
 } ShortAddr_t;
 
+typedef struct
+{
+    char ID[13];
+    unsigned char function;
+} RSDStatus_t;
 
 typedef struct
 {
@@ -55,6 +60,8 @@ typedef struct
     unsigned int PV_Output_ENERGY;    //10 -6´Î·½¶È
     unsigned char MOS_CLOSE_NUM;
     unsigned short version;
+    unsigned char model;
+    unsigned char temperature;
 
 } OPT700_RS;
 
@@ -89,6 +96,18 @@ typedef struct
     unsigned char PI2;
     unsigned short Power2;
 } OPT700_RS_INFO;
+
+
+typedef struct
+{
+    int ecn;
+    char SSID[100];
+    int RSSI;
+    char MAC[20];
+    int CHANNEL;
+    int offset;
+    int calibration;
+} ESP07S_SSID_INFO;
 
 
 namespace Ui {
@@ -210,6 +229,25 @@ private slots:
 
     void on_btn_cmd101_clicked();
 
+    void on_btn_connect_ESP07_clicked();
+
+    void on_pushButton_ESP07_clicked();
+    void addESP07SData(QTableWidget *table, QList<ESP07S_SSID_INFO *> &List);
+    void on_btn_getWIFI_2_clicked();
+
+    void on_btn_functionstatus_clicked();
+
+
+    void on_btn_SetServer_clicked();
+
+    void on_btn_setFunction_open_clicked();
+
+    void on_btn_setFunction_close_clicked();
+
+    void on_btn_getRSDStatus_clicked();
+
+    void addRSDStatusData(QTableWidget *table, QList<RSDStatus_t *> &List);
+
 private:
     Ui::MainWindow *ui;
     Communication *ECU_Client;
@@ -220,11 +258,14 @@ private:
     char ECUID[13];
     QList<YC600_RealData_t *> YC600_RealData_List;
     QList<ShortAddr_t *> ShortAddr_List;
+    QList<RSDStatus_t *> RSDStatus_List;
     QList<OPT700_RS *> OPT700_RSList;
     QList<YC600_PowerData_t *> YC600_PowerData_List;
     QList<YC600_EnergyData_t *> YC600_EnergyData_List;
     QList<SSID_t *> SSID_List;
     QList<OPT700_RS_INFO *> OPT700_RS_INFOList;
+    QList<ESP07S_SSID_INFO *> ESP07S_SSID_INFOList;
+
 };
 
 #endif // MAINWINDOW_H

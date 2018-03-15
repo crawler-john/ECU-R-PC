@@ -3,6 +3,7 @@
 #include "QDebug.h"
 #include "QDateTime"
 #include <unistd.h>
+#include <QString>
 
 #define MAJOR_VERSION   1
 #define MINOR_VERSION   0
@@ -24,7 +25,14 @@ MainWindow::MainWindow(QWidget *parent) :
     JSON_Client = new Communication("192.168.131.228",4570);
     ui->tableWidget_SSID->setColumnWidth(0,150);
     ui->tableWidget_SSID->setColumnWidth(1,60);
-    ui->progressBar->setValue(0);
+    //    ui->progressBar->setValue(0);
+    ui->tableWidget_SSID_ESP07S->setColumnWidth(0,40);
+    ui->tableWidget_SSID_ESP07S->setColumnWidth(1,150);
+    ui->tableWidget_SSID_ESP07S->setColumnWidth(2,40);
+    ui->tableWidget_SSID_ESP07S->setColumnWidth(3,130);
+    ui->tableWidget_SSID_ESP07S->setColumnWidth(4,40);
+    ui->tableWidget_SSID_ESP07S->setColumnWidth(5,100);
+    ui->tableWidget_SSID_ESP07S->setColumnWidth(6,100);
 }
 
 MainWindow::~MainWindow()
@@ -214,6 +222,7 @@ void MainWindow::on_btn_baseInfo_clicked()
             ui->label_LastNumberInverters->setText(QString::number(Last_Number_Inverters));
 
             memcpy(level,&Recvbuff[43],3);
+            level[3] = '\0';
             ui->label_level->setText(level);
             memcpy(channel,&Recvbuff[46],2);
             channel[2] = '\0';
@@ -825,6 +834,8 @@ void MainWindow::addTableData(QTableWidget *table, QList<OPT700_RS *> &List)
         QTableWidgetItem *item21 = new QTableWidgetItem();
         QTableWidgetItem *item22 = new QTableWidgetItem();
         QTableWidgetItem *item23 = new QTableWidgetItem();
+        QTableWidgetItem *item24 = new QTableWidgetItem();
+        QTableWidgetItem *item25 = new QTableWidgetItem();
 
 
 
@@ -855,7 +866,8 @@ void MainWindow::addTableData(QTableWidget *table, QList<OPT700_RS *> &List)
         item21->setText(QString::number((*iter)->PV_Output_ENERGY));
         item22->setText(QString::number((*iter)->MOS_CLOSE_NUM));
         item23->setText(QString::number((*iter)->version));
-
+        item24->setText(QString::number((*iter)->model));
+        item25->setText(QString::number((*iter)->temperature));
 
         if((*iter)->Mos_Status == 1)
         {
@@ -883,6 +895,8 @@ void MainWindow::addTableData(QTableWidget *table, QList<OPT700_RS *> &List)
             item21->setBackgroundColor(QColor(0,238,0));
             item22->setBackgroundColor(QColor(0,238,0));
             item23->setBackgroundColor(QColor(0,238,0));
+            item24->setBackgroundColor(QColor(0,238,0));
+            item25->setBackgroundColor(QColor(0,238,0));
         }
 
         table->setItem(row_count, 0, item);
@@ -909,6 +923,8 @@ void MainWindow::addTableData(QTableWidget *table, QList<OPT700_RS *> &List)
         table->setItem(row_count, 21, item21);
         table->setItem(row_count, 22, item22);
         table->setItem(row_count, 23, item23);
+        table->setItem(row_count, 24, item24);
+        table->setItem(row_count, 25, item25);
     }
 }
 
@@ -996,8 +1012,6 @@ void MainWindow::on_btn_getRealData_clicked()
                         YC600_RealData->Inverter_Power_B = (Recvbuff[length+17] & 0x000000ff)*256 + (Recvbuff[length+18] & 0x000000ff);
                         YC600_RealData->Grid_Voltage_B = (Recvbuff[length+19] & 0x000000ff)*256 + (Recvbuff[length+20] & 0x000000ff);
                         length += 21;
-
-
                     }else if(YC600_RealData->inverter_type == 2)
                     {
                         YC600_RealData->Grid_Frequency = (Recvbuff[length+9] & 0x000000ff)*256 + (Recvbuff[length+10] & 0x000000ff);
@@ -1011,8 +1025,6 @@ void MainWindow::on_btn_getRealData_clicked()
                         YC600_RealData->Inverter_Power_D = (Recvbuff[length+25] & 0x000000ff)*256 + (Recvbuff[length+26] & 0x000000ff);
                         length += 27;
                     }
-
-
                     YC600_RealData_List.push_back(YC600_RealData);
 
                 }
@@ -1072,6 +1084,8 @@ void MainWindow::on_btn_getRealData_clicked()
 
                     opt700_rs->MOS_CLOSE_NUM = (Recvbuff[length+44] & 0x000000ff);
                     opt700_rs->version = (Recvbuff[length+45] & 0x000000ff)*256+(Recvbuff[length+46] & 0x000000ff);
+                    opt700_rs->model = (Recvbuff[length+47] & 0x000000ff);
+                    opt700_rs->temperature = (Recvbuff[length+48] & 0x000000ff);
                     OPT700_RSList.push_back(opt700_rs);
 
                     length += 57;
@@ -1292,7 +1306,7 @@ void MainWindow::set_tableWidget_RealData_View(int item)
                 delete 	ui->tableWidget_RealData->horizontalHeaderItem(i);
         }
 
-        ui->tableWidget_RealData->setColumnCount(24);
+        ui->tableWidget_RealData->setColumnCount(26);
 
 
         ui->tableWidget_RealData->setHorizontalHeaderItem(0,new QTableWidgetItem(tr("ID")));
@@ -1319,6 +1333,8 @@ void MainWindow::set_tableWidget_RealData_View(int item)
         ui->tableWidget_RealData->setHorizontalHeaderItem(21,new QTableWidgetItem(tr("PV Out Energy")));
         ui->tableWidget_RealData->setHorizontalHeaderItem(22,new QTableWidgetItem(tr("MOS Close Num")));
         ui->tableWidget_RealData->setHorizontalHeaderItem(23,new QTableWidgetItem(tr("Version")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(24,new QTableWidgetItem(tr("Model")));
+        ui->tableWidget_RealData->setHorizontalHeaderItem(25,new QTableWidgetItem(tr("Temperature")));
 
         ui->tableWidget_RealData->setColumnWidth(0,100);
         ui->tableWidget_RealData->setColumnWidth(1,40);
@@ -1344,6 +1360,8 @@ void MainWindow::set_tableWidget_RealData_View(int item)
         ui->tableWidget_RealData->setColumnWidth(21,80);
         ui->tableWidget_RealData->setColumnWidth(22,80);
         ui->tableWidget_RealData->setColumnWidth(23,50);
+        ui->tableWidget_RealData->setColumnWidth(24,50);
+        ui->tableWidget_RealData->setColumnWidth(25,100);
     }
 
 }
@@ -1881,20 +1899,14 @@ void MainWindow::on_btn_getInfo_clicked()
                 OPT700_RS_INFOList.push_back(opt700_rs_info);
 
                 length += 12;
-
             }
-
             statusBar()->showMessage(tr("Get RSD Info Success ... time:%1 ms").arg(commtime), 2000);
-
             addINFOTableData(ui->tableWidget_Info,OPT700_RS_INFOList);
             QList<OPT700_RS_INFO *>::Iterator iter = OPT700_RS_INFOList.begin();
             for ( ; iter != OPT700_RS_INFOList.end(); iter++)  {
                 delete (*iter);
             }
-
         }
-
-
     }else
     {
         ui->tableWidget_Info->setRowCount(0);
@@ -1986,6 +1998,9 @@ void MainWindow::on_btn_gethardware_clicked()
             }else if(!memcmp(&Recvbuff[15],"01",2))
             {
                 ui->label_wifiType->setText("01:RAK475 MODULE");
+            }else if(!memcmp(&Recvbuff[15],"02",2))
+            {
+                ui->label_wifiType->setText("02:ESP07S MODULE");
             }
         }
 
@@ -2382,4 +2397,558 @@ void MainWindow::on_btn_cmd101_clicked()
         ui->plainTextEdit->setPlainText("query JSON failed");
         statusBar()->showMessage(tr("query JSON failed ..."), 2000);
     }
+}
+
+void MainWindow::on_btn_connect_ESP07_clicked()
+{
+
+    qint64 SSIDLen,PassWDLen = 0;
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
+    char length[5] = {'\0'};
+    char SSID_esp07[100] = {'\0'};
+    char PassWD[100] = {'\0'};
+
+    sprintf(Sendbuff,"APS1100000021%sEND04",ECUID);
+    SSIDLen = ui->lineEdit_SSID2->text().length();
+    sprintf(length,"%02d",SSIDLen);
+    memcpy(&Sendbuff[strlen(Sendbuff)],length,2);
+
+    memcpy(SSID_esp07,ui->lineEdit_SSID2->text().toLatin1().data(),SSIDLen);
+    SSID_esp07[SSIDLen] = '\0';
+    memcpy(&Sendbuff[strlen(Sendbuff)],SSID_esp07,SSIDLen);
+
+    PassWDLen = ui->lineEdit_PassWD2->text().length();
+    sprintf(length,"%02d",PassWDLen);
+    memcpy(&Sendbuff[strlen(Sendbuff)],length,2);
+
+    memcpy(PassWD,ui->lineEdit_PassWD2->text().toLatin1().data(),PassWDLen);
+    PassWD[PassWDLen] = '\0';
+    memcpy(&Sendbuff[strlen(Sendbuff)],PassWD,PassWDLen);
+
+    memcpy(&Sendbuff[strlen(Sendbuff)],"END",3);
+    sprintf(length,"%04d",QString(Sendbuff).length());
+    memcpy(&Sendbuff[5],length,4);
+    qDebug("%s",Sendbuff);
+
+    flag = ECU_Client->ECU_Communication(Sendbuff,(37+SSIDLen+PassWDLen),Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        if(Recvbuff[14] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("ECU SET ESP07 WIFI Connect Success ... time:%1").arg(commtime), 2000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+
+
+}
+//APS1100620020001"yuneng_ecu_test","00:1d:0f:7f:f3:08",6,-31END
+void MainWindow::on_pushButton_ESP07_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Time[15] = {'\0'};
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
+    memset(Recvbuff,0x00,4096);
+    sprintf(Sendbuff,"APS1100280020%sEND",ECUID);
+    flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        if(Recvbuff[14] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+
+            statusBar()->showMessage(tr("ECU Get ESP07 WIFI Connect Success ... time:%1").arg(commtime), 2000);
+            if(0 == Recvbuff[15])
+            {
+                ui->label_LinkStatus_ESP07->setText("Disconnect");
+            }else
+            {
+                char info[100];
+                Recvbuff[recvLen-4] = '\0';
+                memcpy(info,&Recvbuff[16],recvLen-17);
+                qDebug("%s",info);
+                ui->label_LinkStatus_ESP07->setWordWrap ( true );
+                ui->label_LinkStatus_ESP07->setText(info);
+            }
+        }
+
+
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::addESP07SData(QTableWidget *table, QList<ESP07S_SSID_INFO *> &List)
+{
+    table->setRowCount(0);
+    //清空Table中内容
+    table->clearContents();
+    QList<ESP07S_SSID_INFO *>::Iterator iter = List.begin();
+    for ( ; iter != List.end(); iter++)  {
+        int row_count = table->rowCount(); //获取表单行数
+        table->insertRow(row_count); //插入新行
+        QTableWidgetItem *item = new QTableWidgetItem();
+        QTableWidgetItem *item1 = new QTableWidgetItem();
+        QTableWidgetItem *item2 = new QTableWidgetItem();
+        QTableWidgetItem *item3 = new QTableWidgetItem();
+        QTableWidgetItem *item4 = new QTableWidgetItem();
+        QTableWidgetItem *item5 = new QTableWidgetItem();
+        QTableWidgetItem *item6 = new QTableWidgetItem();
+
+
+        item->setText(QString::number((*iter)->ecn));
+        item1->setText(QString((*iter)->SSID));
+        item2->setText(QString::number((*iter)->RSSI));
+        item3->setText(QString((*iter)->MAC));
+        item4->setText(QString::number((*iter)->CHANNEL));
+        item5->setText(QString::number((*iter)->offset));
+        item6->setText(QString::number((*iter)->calibration));
+
+
+        table->setItem(row_count, 0, item);
+        table->setItem(row_count, 1, item1);
+        table->setItem(row_count, 2, item2);
+        table->setItem(row_count, 3, item3);
+        table->setItem(row_count, 4, item4);
+        table->setItem(row_count, 5, item5);
+        table->setItem(row_count, 6, item6);
+
+    }
+
+}
+
+void MainWindow::on_btn_getWIFI_2_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
+    memset(Recvbuff,0x00,4096);
+    sprintf(Sendbuff,"APS1100280022%sEND",ECUID);
+    flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,10000,&commtime);
+    ESP07S_SSID_INFOList.clear();
+    if(flag == true)
+    {
+        if(Recvbuff[14] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 1000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("ECU Get ESP07 WIFI Connect Success ... time:%1").arg(commtime), 2000);
+            if(0 == Recvbuff[15])
+            {
+                ui->label_LinkStatus_ESP07->setText("Disconnect");
+            }else
+            {
+                char SSIDLIST[3000];
+                int i = 0,j = 0;
+                Recvbuff[recvLen-4] = '\0';
+                memcpy(SSIDLIST,&Recvbuff[15],recvLen-17);
+                //qDebug("%s",SSIDLIST);
+                qDebug("11111111111111\n");
+                for(i = 0;i<recvLen-4;i++)
+                {
+                    if(SSIDLIST[i] == '(')
+                    {
+                        for(j = i;j<recvLen-4;j++)
+                        {
+                            if(SSIDLIST[j] == ')')
+                            {
+                                char SSIDINFO[100];
+                                QStringList SSIDlist;
+                                memset(SSIDINFO,'\0',100);
+                                memcpy(SSIDINFO,&SSIDLIST[i+1],(j-i));
+                                SSIDINFO[j-i-1] = '\0';
+                                QString SSIDListStr = SSIDINFO;
+                                SSIDlist = SSIDListStr.replace("\"","").split(",");
+                                qDebug("%s\n",SSIDINFO);
+                                ESP07S_SSID_INFO *esp07s_ssid_info = new ESP07S_SSID_INFO;
+                                esp07s_ssid_info->ecn = atoi(SSIDlist.value(0).toLatin1().data());
+                                memset(esp07s_ssid_info->SSID,'\0',100);
+                                memcpy(esp07s_ssid_info->SSID,SSIDlist.value(1).toLatin1().data(),SSIDlist.value(1).length());
+                                esp07s_ssid_info->RSSI = atoi(SSIDlist.value(2).toLatin1().data());
+                                memset(esp07s_ssid_info->MAC,'\0',20);
+                                memcpy(esp07s_ssid_info->MAC,SSIDlist.value(3).toLatin1().data(),SSIDlist.value(3).length());
+                                esp07s_ssid_info->CHANNEL = atoi(SSIDlist.value(4).toLatin1().data());
+                                esp07s_ssid_info->offset = atoi(SSIDlist.value(5).toLatin1().data());
+                                esp07s_ssid_info->calibration = atoi(SSIDlist.value(6).toLatin1().data());
+                                ESP07S_SSID_INFOList.push_back(esp07s_ssid_info);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        addESP07SData(ui->tableWidget_SSID_ESP07S,ESP07S_SSID_INFOList);
+        QList<ESP07S_SSID_INFO *>::Iterator iter = ESP07S_SSID_INFOList.begin();
+        for ( ; iter != ESP07S_SSID_INFOList.end(); iter++)  {
+            delete (*iter);
+        }
+
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_functionstatus_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Time[15] = {'\0'};
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
+    memset(Recvbuff,0x00,4096);
+    sprintf(Sendbuff,"APS1100280023%sEND",ECUID);
+    flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        if(Recvbuff[14] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+
+            statusBar()->showMessage(tr("ECU Get Function Status Success ... time:%1").arg(commtime), 2000);
+            if(Recvbuff[15] == '0')
+            {
+                ui->RSDstatus->setText("NO FUNCTION");
+            }else if(Recvbuff[15] == '1')
+            {
+                ui->RSDstatus->setText("CLOSE");
+            }else if(Recvbuff[15] == '2')
+            {
+                ui->RSDstatus->setText("OPEN");
+            }else
+            {
+                ui->RSDstatus->setText("UNKNOWN");
+            }
+        }
+
+
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+
+
+void MainWindow::on_btn_SetServer_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
+    int index = 0;
+    char Domain[100] = {'\0'};
+    char Domain_Len_str[4] = {'\0'};
+    int Domain_Len = 0;
+    unsigned char IP[4] = {'\0'};
+    unsigned short Port1 = 0;
+    unsigned short Port2 = 0;
+    unsigned short Port3 = 0;
+    int sendlen = 0;
+
+    memset(Recvbuff,0x00,4096);
+    index = ui->comboBox_ServerItem->currentIndex()+1;
+    Domain_Len = ui->lineEdit_Domain->text().length();
+    memcpy(Domain,ui->lineEdit_Domain->text().toLatin1().data(),Domain_Len);
+    IP[0] = (unsigned char )ui->lineEdit_Ip_1->text().toInt(); //IP 1
+    IP[1] = (unsigned char )ui->lineEdit_Ip_2->text().toInt(); //IP 2
+    IP[2] = (unsigned char )ui->lineEdit_Ip_3->text().toInt(); //IP 3
+    IP[3] = (unsigned char )ui->lineEdit_Ip_4->text().toInt(); //IP 4
+    Port1 = ui->lineEdit_Port1->text().toUShort();
+    Port2 = ui->lineEdit_Port2->text().toUShort();
+    Port3 = ui->lineEdit_Port3->text().toUShort();
+
+    if((index == 1)||(index == 2)||(index == 3))
+    {
+        sprintf(Sendbuff,"APS1100300024%s%02dEND",ECUID,index);
+        qDebug("%s",Sendbuff);
+        sendlen = 30;
+    }else
+    {
+        sprintf(Sendbuff,"APS11%04d0024%s%02dEND%03d",(Domain_Len+46),ECUID,index,Domain_Len);
+        memcpy(&Sendbuff[33],Domain,Domain_Len);
+        Sendbuff[33+Domain_Len] = IP[0];
+        Sendbuff[34+Domain_Len] = IP[1];
+        Sendbuff[35+Domain_Len] = IP[2];
+        Sendbuff[36+Domain_Len] = IP[3];
+        Sendbuff[37+Domain_Len] = Port1/256;
+        Sendbuff[38+Domain_Len] = Port1%256;
+        Sendbuff[39+Domain_Len] = Port2/256;
+        Sendbuff[40+Domain_Len] = Port2%256;
+        Sendbuff[41+Domain_Len] = Port3/256;
+        Sendbuff[42+Domain_Len] = Port3%256;
+        Sendbuff[43+Domain_Len] = 'E';
+        Sendbuff[44+Domain_Len] = 'N';
+        Sendbuff[45+Domain_Len] = 'D';
+        qDebug("%s",Sendbuff);
+        sendlen = (Domain_Len+46);
+    }
+
+    flag = ECU_Client->ECU_Communication(Sendbuff,sendlen,Recvbuff,&recvLen,3000,&commtime);
+    if(flag == true)
+    {
+        if(Recvbuff[16] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            if((index == 1)||(index == 2)||(index == 3))
+            {
+                //Domain
+                memcpy(Domain_Len_str,&Recvbuff[17],3);
+                Domain_Len =atoi(Domain_Len_str);
+                memcpy(Domain,&Recvbuff[20],Domain_Len);
+                //IP
+                IP[0] = Recvbuff[20+Domain_Len];
+                IP[1] = Recvbuff[21+Domain_Len];
+                IP[2] = Recvbuff[22+Domain_Len];
+                IP[3] = Recvbuff[23+Domain_Len];
+                //Port1
+                Port1 = (Recvbuff[24+Domain_Len]& 0x000000ff)*256 + (Recvbuff[25+Domain_Len]& 0x000000ff);
+                //Port2
+                Port2 = (Recvbuff[26+Domain_Len]& 0x000000ff)*256 + (Recvbuff[27+Domain_Len]& 0x000000ff);
+                //Port3
+                Port3 = (Recvbuff[28+Domain_Len]& 0x000000ff)*256 + (Recvbuff[29+Domain_Len]& 0x000000ff);
+
+                ui->lineEdit_Domain->setText(Domain);
+                ui->lineEdit_Ip_1->setText(QString::number(IP[0]));
+                ui->lineEdit_Ip_2->setText(QString::number(IP[1]));
+                ui->lineEdit_Ip_3->setText(QString::number(IP[2]));
+                ui->lineEdit_Ip_4->setText(QString::number(IP[3]));
+                ui->lineEdit_Port1->setText(QString::number(Port1));
+                ui->lineEdit_Port2->setText(QString::number(Port2));
+                ui->lineEdit_Port3->setText(QString::number(Port3));
+                statusBar()->showMessage(tr("ECU Get Server Info Success ... time:%1").arg(commtime), 2000);
+
+            }else
+            {
+                statusBar()->showMessage(tr("ECU Set Server Info Success ... time:%1").arg(commtime), 2000);
+            }
+
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+
+}
+
+void MainWindow::on_btn_setFunction_open_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[4096];
+    char Recvbuff[200] = {'\0'};
+    char ID_BCD[8];
+    char ID_BCD_List[4096];
+    char text[4096] = {'\0'};
+    int OPTCount = 0,index=0;
+    char packlength[5] = {'\0'};
+    int length = ui->plainTextEdit_RSDID->toPlainText().length();
+    OPTCount = (length + 1)/13;
+    memcpy(text,ui->plainTextEdit_RSDID->toPlainText().toLatin1().data(),length);
+
+    for(index = 0;index<OPTCount;index++)
+    {
+        memset(ID_BCD,0x00,7);
+        ID_BCD[0] = ((text[0+index*13]&0x000000ff)-'0')*16+((text[1+index*13]&0x000000ff)-'0');
+        ID_BCD[1] = ((text[2+index*13]&0x000000ff)-'0')*16+((text[3+index*13]&0x000000ff)-'0');
+        ID_BCD[2] = ((text[4+index*13]&0x000000ff)-'0')*16+((text[5+index*13]&0x000000ff)-'0');
+        ID_BCD[3] = ((text[6+index*13]&0x000000ff)-'0')*16+((text[7+index*13]&0x000000ff)-'0');
+        ID_BCD[4] = ((text[8+index*13]&0x000000ff)-'0')*16+((text[9+index*13]&0x000000ff)-'0');
+        ID_BCD[5] = ((text[10+index*13]&0x000000ff)-'0')*16+((text[11+index*13]&0x000000ff)-'0');
+        ID_BCD[6] = (0x01)&0x000000ff;
+
+        memcpy(&ID_BCD_List[index*7],ID_BCD,7);
+    }
+
+    sprintf(Sendbuff,"APS1100000016%s2END",ECUID);
+    memcpy(&Sendbuff[29],ID_BCD_List,(OPTCount*7));
+    Sendbuff[OPTCount*7+29] = 'E';
+    Sendbuff[OPTCount*7+30] = 'N';
+    Sendbuff[OPTCount*7+31] = 'D';
+
+    sprintf(packlength,"%04d",(OPTCount*7+32));
+    memcpy(&Sendbuff[5],packlength,4);
+
+    memset(Recvbuff,0x00,200);
+    int commtime = 0;
+    flag = ECU_Client->ECU_Communication(Sendbuff,(OPTCount*7+32),Recvbuff,&recvLen,3000,&commtime);
+    if(flag == true)
+    {
+        if(Recvbuff[14] == '1')
+        {//ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("Set RSD Open Success ... time:%1").arg(commtime), 2000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_setFunction_close_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[4096];
+    char Recvbuff[200] = {'\0'};
+    char ID_BCD[8];
+    char ID_BCD_List[4096];
+    char text[4096] = {'\0'};
+    int OPTCount = 0,index=0;
+    char packlength[5] = {'\0'};
+    int length = ui->plainTextEdit_RSDID->toPlainText().length();
+    OPTCount = (length + 1)/13;
+    memcpy(text,ui->plainTextEdit_RSDID->toPlainText().toLatin1().data(),length);
+
+    for(index = 0;index<OPTCount;index++)
+    {
+        memset(ID_BCD,0x00,7);
+        ID_BCD[0] = ((text[0+index*13]&0x000000ff)-'0')*16+((text[1+index*13]&0x000000ff)-'0');
+        ID_BCD[1] = ((text[2+index*13]&0x000000ff)-'0')*16+((text[3+index*13]&0x000000ff)-'0');
+        ID_BCD[2] = ((text[4+index*13]&0x000000ff)-'0')*16+((text[5+index*13]&0x000000ff)-'0');
+        ID_BCD[3] = ((text[6+index*13]&0x000000ff)-'0')*16+((text[7+index*13]&0x000000ff)-'0');
+        ID_BCD[4] = ((text[8+index*13]&0x000000ff)-'0')*16+((text[9+index*13]&0x000000ff)-'0');
+        ID_BCD[5] = ((text[10+index*13]&0x000000ff)-'0')*16+((text[11+index*13]&0x000000ff)-'0');
+        ID_BCD[6] = (0x00)&0x000000ff;
+
+        memcpy(&ID_BCD_List[index*7],ID_BCD,7);
+    }
+
+    sprintf(Sendbuff,"APS1100000016%s2END",ECUID);
+    memcpy(&Sendbuff[29],ID_BCD_List,(OPTCount*7));
+    Sendbuff[OPTCount*7+29] = 'E';
+    Sendbuff[OPTCount*7+30] = 'N';
+    Sendbuff[OPTCount*7+31] = 'D';
+
+    sprintf(packlength,"%04d",(OPTCount*7+32));
+    memcpy(&Sendbuff[5],packlength,4);
+
+    memset(Recvbuff,0x00,200);
+    int commtime = 0;
+    flag = ECU_Client->ECU_Communication(Sendbuff,(OPTCount*7+32),Recvbuff,&recvLen,3000,&commtime);
+    if(flag == true)
+    {
+        if(Recvbuff[14] == '1')
+        {//ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("Set RSD Close Success ... time:%1").arg(commtime), 2000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::addRSDStatusData(QTableWidget *table, QList<RSDStatus_t *> &List)
+{
+    table->setRowCount(0);
+    //清空Table中内容
+    table->clearContents();
+
+    QList<RSDStatus_t *>::Iterator iter = List.begin();
+    for ( ; iter != List.end(); iter++)  {
+        int row_count = table->rowCount(); //获取表单行数
+        table->insertRow(row_count); //插入新行
+        QTableWidgetItem *item = new QTableWidgetItem();
+        QTableWidgetItem *item1 = new QTableWidgetItem();
+
+        item->setText((*iter)->ID);
+        item1->setText(QString::number((unsigned char)(*iter)->function));
+
+        item->setBackgroundColor(QColor(0,238,0));
+        item1->setBackgroundColor(QColor(0,238,0));
+
+        table->setItem(row_count, 0, item);
+        table->setItem(row_count, 1, item1);
+    }
+}
+
+void MainWindow::on_btn_getRSDStatus_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[8192] = {'\0'};
+    int length = 0,index = 0;
+    int num = 0;
+    int commtime = 0;
+    memset(Recvbuff,0x00,8192);
+    sprintf(Sendbuff,"APS1100290016%s3END",ECUID);
+    flag = ECU_Client->ECU_Communication(Sendbuff,29,Recvbuff,&recvLen,2000,&commtime);
+    RSDStatus_List.clear();
+    if(flag == true)
+    {
+        ui->tableWidget_RSDStatus->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_RSDStatus->clearContents();
+        if(Recvbuff[14] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("ECU Get RSD Function Data Success ... time:%1").arg(commtime), 2000);
+            num = (recvLen-18)/7;
+            length = 15;
+            for(index = 0;index < num;index++)
+            {
+                RSDStatus_t *RSDStatus = new RSDStatus_t;
+                sprintf(RSDStatus->ID,"%02x%02x%02x%02x%02x%02x",(Recvbuff[length]& 0x000000ff),(Recvbuff[length+1]& 0x000000ff),(Recvbuff[length+2]& 0x000000ff),(Recvbuff[length+3]& 0x000000ff),(Recvbuff[length+4]& 0x000000ff),(Recvbuff[length+5]& 0x000000ff));
+                RSDStatus->function = (Recvbuff[length+6] & 0x000000ff);
+                RSDStatus_List.push_back(RSDStatus);
+                length += 7;
+            }
+            addRSDStatusData(ui->tableWidget_RSDStatus,RSDStatus_List);
+
+            QList<RSDStatus_t *>::Iterator iter = RSDStatus_List.begin();
+            for ( ; iter != RSDStatus_List.end(); iter++)  {
+                delete (*iter);
+            }
+        }
+
+
+    }else
+    {
+        ui->tableWidget_Energy->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_Energy->clearContents();
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+
 }

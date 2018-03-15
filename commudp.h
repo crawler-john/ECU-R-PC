@@ -18,7 +18,7 @@ public:
     QString IP;
     quint16 Port;
 private:
-    QUdpSocket *Client;     //´´½¨µÄSOCKET Client
+    QUdpSocket *Client;
 
 };
 
