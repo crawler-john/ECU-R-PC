@@ -669,8 +669,11 @@ void MainWindow::addRealData(QTableWidget *table, QList<YC600_RealData_t *> &Lis
                 item9->setText("-");
                 item10->setText("-");
             }
-        }else if((*iter)->inverter_type == 2){
-            item1->setText("YC1000");
+        }else if(((*iter)->inverter_type == 2)||((*iter)->inverter_type == 3)){
+            if((*iter)->inverter_type == 2)
+                item1->setText("YC1000");
+            else if((*iter)->inverter_type == 3)
+                item1->setText("QS1200");
             if((*iter)->flag == 1)
             {
                 item2->setText(QString::number((double)((*iter)->Grid_Frequency/10)));
@@ -1024,6 +1027,19 @@ void MainWindow::on_btn_getRealData_clicked()
                         YC600_RealData->Grid_Voltage_C = (Recvbuff[length+23] & 0x000000ff)*256 + (Recvbuff[length+24] & 0x000000ff);
                         YC600_RealData->Inverter_Power_D = (Recvbuff[length+25] & 0x000000ff)*256 + (Recvbuff[length+26] & 0x000000ff);
                         length += 27;
+                    }
+                    else if(YC600_RealData->inverter_type == 3)
+                    {
+                        YC600_RealData->Grid_Frequency = (Recvbuff[length+9] & 0x000000ff)*256 + (Recvbuff[length+10] & 0x000000ff);
+                        YC600_RealData->Temperature = (Recvbuff[length+11] & 0x000000ff)*256 + (Recvbuff[length+12] & 0x000000ff);
+                        YC600_RealData->Inverter_Power = (Recvbuff[length+13] & 0x000000ff)*256 + (Recvbuff[length+14] & 0x000000ff);
+                        YC600_RealData->Grid_Voltage = (Recvbuff[length+15] & 0x000000ff)*256 + (Recvbuff[length+16] & 0x000000ff);
+                        YC600_RealData->Inverter_Power_B = (Recvbuff[length+17] & 0x000000ff)*256 + (Recvbuff[length+18] & 0x000000ff);
+                        YC600_RealData->Grid_Voltage_B =YC600_RealData->Grid_Voltage;
+                        YC600_RealData->Inverter_Power_C = (Recvbuff[length+19] & 0x000000ff)*256 + (Recvbuff[length+20] & 0x000000ff);
+                        YC600_RealData->Grid_Voltage_C =YC600_RealData->Grid_Voltage;
+                        YC600_RealData->Inverter_Power_D = (Recvbuff[length+21] & 0x000000ff)*256 + (Recvbuff[length+22] & 0x000000ff);
+                        length += 23;
                     }
                     YC600_RealData_List.push_back(YC600_RealData);
 
@@ -2011,12 +2027,6 @@ void MainWindow::on_btn_gethardware_clicked()
     }
 }
 
-void MainWindow::on_btn_download_IDWrite_clicked()
-{
-
-
-}
-
 void MainWindow::on_btn_config_IDWrite_clicked()
 {
     if(IDWrite_Client != NULL)
@@ -2148,15 +2158,23 @@ void MainWindow::on_btn_setArea_clicked()
     char Area[13] = {'\0'};
     memset(Recvbuff,0x00,4096);
     memcpy(Area,ui->comboBox_Area->currentText().toLatin1(),ui->comboBox_Area->currentText().length());
-    sprintf(Sendbuff,"set_area %s",Area);
-    flag = IDWrite_Client->IDWrite_Communication(Sendbuff,(ui->comboBox_Area->currentText().length()+9),Recvbuff,&recvLen,3000,&commtime);
+    if(ui->comboBox_Area->currentIndex() == 0)
+    {
+        sprintf(Sendbuff,"set_area  ");
+    }
+    else
+    {
+        sprintf(Sendbuff,"set_area %s",Area);
+    }
+
+    flag = IDWrite_Client->IDWrite_Communication(Sendbuff,strlen(Sendbuff),Recvbuff,&recvLen,3000,&commtime);
     if(flag == true)
     {
         ui->label_Area->setText(Recvbuff);
         statusBar()->showMessage(tr("Set AREA Success ... time:%1").arg(commtime), 2000);
     }else
     {
-        ui->label_Area->setText("Set MAC failed");
+        ui->label_Area->setText("Set AREA failed");
         statusBar()->showMessage(tr("Set AREA failed ..."), 2000);
     }
 }
@@ -2945,10 +2963,1020 @@ void MainWindow::on_btn_getRSDStatus_clicked()
 
     }else
     {
-        ui->tableWidget_Energy->setRowCount(0);
+        ui->tableWidget_RSDStatus->setRowCount(0);
         //清空Table中内容
-        ui->tableWidget_Energy->clearContents();
+        ui->tableWidget_RSDStatus->clearContents();
         statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
     }
 
+}
+
+void MainWindow::addRSSIData(QTableWidget *table, QList<RSSI_t *> &List)
+{
+    table->setRowCount(0);
+    //清空Table中内容
+    table->clearContents();
+
+    QList<RSSI_t *>::Iterator iter = List.begin();
+    for ( ; iter != List.end(); iter++)  {
+        int row_count = table->rowCount(); //获取表单行数
+        table->insertRow(row_count); //插入新行
+        QTableWidgetItem *item = new QTableWidgetItem();
+        QTableWidgetItem *item1 = new QTableWidgetItem();
+
+        item->setText((*iter)->ID);
+        item1->setText(QString::number((unsigned char)(*iter)->RSSI));
+
+        item->setBackgroundColor(QColor(0,238,0));
+        item1->setBackgroundColor(QColor(0,238,0));
+
+        table->setItem(row_count, 0, item);
+        table->setItem(row_count, 1, item1);
+    }
+}
+
+void MainWindow::on_btn_RSSI_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[8192] = {'\0'};
+    int length = 0,index = 0;
+    int num = 0;
+    int commtime = 0;
+    memset(Recvbuff,0x00,8192);
+    sprintf(Sendbuff,"APS1100290030%s3END",ECUID);
+    flag = ECU_Client->ECU_Communication(Sendbuff,29,Recvbuff,&recvLen,2000,&commtime);
+    RSSI_List.clear();
+    if(flag == true)
+    {
+        ui->tableWidget_RSSI->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_RSSI->clearContents();
+        if(Recvbuff[14] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("ECU Get RSD Function Data Success ... time:%1").arg(commtime), 2000);
+            num = (recvLen-18)/7;
+            length = 15;
+            for(index = 0;index < num;index++)
+            {
+                RSSI_t *RSSI = new RSSI_t;
+                sprintf(RSSI->ID,"%02x%02x%02x%02x%02x%02x",(Recvbuff[length]& 0x000000ff),(Recvbuff[length+1]& 0x000000ff),(Recvbuff[length+2]& 0x000000ff),(Recvbuff[length+3]& 0x000000ff),(Recvbuff[length+4]& 0x000000ff),(Recvbuff[length+5]& 0x000000ff));
+                RSSI->RSSI = (Recvbuff[length+6] & 0x000000ff);
+                RSSI_List.push_back(RSSI);
+                length += 7;
+            }
+            addRSSIData(ui->tableWidget_RSSI,RSSI_List);
+
+            QList<RSSI_t *>::Iterator iter = RSSI_List.begin();
+            for ( ; iter != RSSI_List.end(); iter++)  {
+                delete (*iter);
+            }
+        }
+
+
+    }else
+    {
+        ui->tableWidget_RSSI->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_RSSI->clearContents();
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_ClearEnergy_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[8192] = {'\0'};
+    int length = 0,index = 0;
+    int num = 0;
+    int commtime = 0;
+    memset(Recvbuff,0x00,8192);
+    sprintf(Sendbuff,"APS1100290031%s3END",ECUID);
+    flag = ECU_Client->ECU_Communication(Sendbuff,29,Recvbuff,&recvLen,2000,&commtime);
+
+    if(flag == true)
+    {
+
+        if(Recvbuff[14] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("ECU Clear Energy Data Success ... time:%1").arg(commtime), 2000);
+        }
+
+
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_InternalVersion_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
+
+    memset(Recvbuff,0x00,4096);
+    flag = IDWrite_Client->IDWrite_Communication("Internal_version",16,Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        ui->label_InternalVersion->setText(Recvbuff);
+        statusBar()->showMessage(tr("Get Internal Version Success ... time:%1").arg(commtime), 2000);
+    }else
+    {
+        ui->label_InternalVersion->setText("Get Internal Version failed");
+        statusBar()->showMessage(tr("Get Internal Version failed ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_Flash_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
+
+    memset(Recvbuff,0x00,4096);
+    flag = IDWrite_Client->IDWrite_Communication("get_flash",9,Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        ui->label_Flash->setText(Recvbuff);
+        statusBar()->showMessage(tr("Get Flash Success ... time:%1").arg(commtime), 2000);
+    }else
+    {
+        ui->label_Flash->setText("Get Flash failed");
+        statusBar()->showMessage(tr("Get Flash failed ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_reboot_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Recvbuff[4096] = {'\0'};
+    int commtime = 0;
+
+    memset(Recvbuff,0x00,4096);
+    flag = IDWrite_Client->IDWrite_Communication("reboot",6,Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        ui->label_reboot->setText(Recvbuff);
+        statusBar()->showMessage(tr("Reboot Success ... time:%1").arg(commtime), 2000);
+    }else
+    {
+        ui->label_reboot->setText("Reboot failed");
+        statusBar()->showMessage(tr("Reboot failed ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_update_ver_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Recvbuff[4096] = {'\0'};
+    char Sendbuff[4096] = {'\0'};
+    int commtime = 0;
+    char IP[30] = {'\0'};
+    char port[10] = {'\0'};
+    char user[30] = {'\0'};
+    char passwd[30] = {'\0'};
+    memset(Recvbuff,0x00,4096);
+    memcpy(IP,ui->lineEdit_UpdateIP->text().toLatin1(),ui->lineEdit_UpdateIP->text().length());
+    memcpy(port,ui->lineEdit_UpdatePort->text().toLatin1(),ui->lineEdit_UpdatePort->text().length());
+    memcpy(user,ui->lineEdit_UpdateUser->text().toLatin1(),ui->lineEdit_UpdateUser->text().length());
+    memcpy(passwd,ui->lineEdit_UpdatePasswd->text().toLatin1(),ui->lineEdit_UpdatePasswd->text().length());
+    sprintf(Sendbuff,"update VER %s %s %s %s",IP,port,user,passwd);
+    flag = IDWrite_Client->IDWrite_Communication(Sendbuff,strlen(Sendbuff),Recvbuff,&recvLen,25000,&commtime);
+    if(flag == true)
+    {
+
+        ui->label_update->setText(Recvbuff);
+        statusBar()->showMessage(Recvbuff, 2000);
+    }else
+    {
+        ui->label_reboot->setText("Update failed");
+        statusBar()->showMessage(tr("Update failed ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_update_ID_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Recvbuff[4096] = {'\0'};
+    char Sendbuff[4096] = {'\0'};
+    int commtime = 0;
+    char IP[30] = {'\0'};
+    char port[10] = {'\0'};
+    char user[30] = {'\0'};
+    char passwd[30] = {'\0'};
+    memset(Recvbuff,0x00,4096);
+    memcpy(IP,ui->lineEdit_UpdateIP->text().toLatin1(),ui->lineEdit_UpdateIP->text().length());
+    memcpy(port,ui->lineEdit_UpdatePort->text().toLatin1(),ui->lineEdit_UpdatePort->text().length());
+    memcpy(user,ui->lineEdit_UpdateUser->text().toLatin1(),ui->lineEdit_UpdateUser->text().length());
+    memcpy(passwd,ui->lineEdit_UpdatePasswd->text().toLatin1(),ui->lineEdit_UpdatePasswd->text().length());
+    sprintf(Sendbuff,"update ID %s %s %s %s",IP,port,user,passwd);
+    flag = IDWrite_Client->IDWrite_Communication(Sendbuff,strlen(Sendbuff),Recvbuff,&recvLen,25000,&commtime);
+    if(flag == true)
+    {
+
+        ui->label_update->setText(Recvbuff);
+        statusBar()->showMessage(Recvbuff, 2000);
+    }else
+    {
+        ui->label_reboot->setText("Update failed");
+        statusBar()->showMessage(tr("Update failed ..."), 2000);
+    }
+}
+
+void MainWindow::addTurnOnOffData(QTableWidget *table, QList<TurnOnOff_t *> &List)
+{
+    table->setRowCount(0);
+    //清空Table中内容
+    table->clearContents();
+
+    QList<TurnOnOff_t *>::Iterator iter = List.begin();
+    for ( ; iter != List.end(); iter++)  {
+        int row_count = table->rowCount(); //获取表单行数
+        table->insertRow(row_count); //插入新行
+        QTableWidgetItem *item = new QTableWidgetItem();
+        QTableWidgetItem *item1 = new QTableWidgetItem();
+
+        item->setText((*iter)->ID);
+        item1->setText((*iter)->turnonoff);
+
+        item->setBackgroundColor(QColor(0,238,0));
+        item1->setBackgroundColor(QColor(0,238,0));
+
+        table->setItem(row_count, 0, item);
+        table->setItem(row_count, 1, item1);
+    }
+}
+
+void MainWindow::on_btn_getSetTurnOnOff_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[8192] = {'\0'};
+    int length = 0,index = 0;
+    int num = 0;
+    int commtime = 0;
+    memset(Recvbuff,0x00,8192);
+    sprintf(Sendbuff,"APS1100300026%s01END",ECUID);
+    flag = ECU_Client->ECU_Communication(Sendbuff,30,Recvbuff,&recvLen,2000,&commtime);
+    TurnOnOff_List.clear();
+    if(flag == true)
+    {
+        ui->tableWidget_SetTurnOnOff->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_SetTurnOnOff->clearContents();
+        if(Recvbuff[16] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("ECU Get RSD Function Data Success ... time:%1").arg(commtime), 2000);
+            num = (recvLen-20)/7;
+            length = 17;
+            for(index = 0;index < num;index++)
+            {
+                TurnOnOff_t *TurnOnOff = new TurnOnOff_t;
+                sprintf(TurnOnOff->ID,"%02x%02x%02x%02x%02x%02x",(Recvbuff[length]& 0x000000ff),(Recvbuff[length+1]& 0x000000ff),(Recvbuff[length+2]& 0x000000ff),(Recvbuff[length+3]& 0x000000ff),(Recvbuff[length+4]& 0x000000ff),(Recvbuff[length+5]& 0x000000ff));
+                TurnOnOff->turnonoff[0] = (Recvbuff[length+6] & 0x000000ff);
+                TurnOnOff->turnonoff[1] = '\0';
+                TurnOnOff_List.push_back(TurnOnOff);
+                length += 7;
+            }
+            addTurnOnOffData(ui->tableWidget_SetTurnOnOff,TurnOnOff_List);
+
+            QList<TurnOnOff_t *>::Iterator iter = TurnOnOff_List.begin();
+            for ( ; iter != TurnOnOff_List.end(); iter++)  {
+                delete (*iter);
+            }
+        }
+
+
+    }else
+    {
+        ui->tableWidget_SetTurnOnOff->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_SetTurnOnOff->clearContents();
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_SetTurnOnOff_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    int commtime = 0;
+    unsigned char Sendbuff[200] = {'\0'};
+    unsigned char Recvbuff[8192] = {'\0'};
+    int select_item = 0;
+    memset(Recvbuff,0x00,8192);
+
+    select_item = ui->comboBox_SetTurnOnOff->currentIndex();
+    qDebug("select_item:%d\n",select_item);
+    //先判断是关闭  还是开启
+    if(select_item == 0)
+    {   //广播开机
+        sprintf((char *)Sendbuff,"APS1100340026%s02END0END",ECUID);
+    }else if(select_item == 1)
+    {   //广播关机
+        sprintf((char *)Sendbuff,"APS1100340026%s02END1END",ECUID);
+    }
+
+    flag = ECU_Client->ECU_Communication((char *)Sendbuff,34,(char *)Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        if(!memcmp(&Recvbuff[15],"00",2))
+        {
+            statusBar()->showMessage(tr("Set TurnOnOff Success ... time:%1 ms").arg(commtime), 1000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("Set TurnOnOff Function Failed ... time:%1 ms").arg(commtime), 1000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 1000);
+    }
+}
+
+void MainWindow::on_btn_SetTurnOnOff_Open_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[4096];
+    char Recvbuff[200] = {'\0'};
+    char ID_BCD[8];
+    char ID_BCD_List[4096];
+    char text[4096] = {'\0'};
+    int OPTCount = 0,index=0;
+    char packlength[5] = {'\0'};
+    int length = ui->plainTextEdit_SetTurnOnOff->toPlainText().length();
+    OPTCount = (length + 1)/13;
+    memcpy(text,ui->plainTextEdit_SetTurnOnOff->toPlainText().toLatin1().data(),length);
+
+    for(index = 0;index<OPTCount;index++)
+    {
+        memset(ID_BCD,0x00,7);
+        ID_BCD[0] = ((text[0+index*13]&0x000000ff)-'0')*16+((text[1+index*13]&0x000000ff)-'0');
+        ID_BCD[1] = ((text[2+index*13]&0x000000ff)-'0')*16+((text[3+index*13]&0x000000ff)-'0');
+        ID_BCD[2] = ((text[4+index*13]&0x000000ff)-'0')*16+((text[5+index*13]&0x000000ff)-'0');
+        ID_BCD[3] = ((text[6+index*13]&0x000000ff)-'0')*16+((text[7+index*13]&0x000000ff)-'0');
+        ID_BCD[4] = ((text[8+index*13]&0x000000ff)-'0')*16+((text[9+index*13]&0x000000ff)-'0');
+        ID_BCD[5] = ((text[10+index*13]&0x000000ff)-'0')*16+((text[11+index*13]&0x000000ff)-'0');
+        ID_BCD[6] = '0';
+
+        memcpy(&ID_BCD_List[index*7],ID_BCD,7);
+    }
+
+    sprintf(Sendbuff,"APS1100000026%s03END",ECUID);
+    memcpy(&Sendbuff[30],ID_BCD_List,(OPTCount*7));
+    Sendbuff[OPTCount*7+30] = 'E';
+    Sendbuff[OPTCount*7+31] = 'N';
+    Sendbuff[OPTCount*7+32] = 'D';
+
+    sprintf(packlength,"%04d",(OPTCount*7+33));
+    memcpy(&Sendbuff[5],packlength,4);
+
+    memset(Recvbuff,0x00,200);
+    int commtime = 0;
+    flag = ECU_Client->ECU_Communication(Sendbuff,(OPTCount*7+32),Recvbuff,&recvLen,3000,&commtime);
+    if(flag == true)
+    {
+        if(Recvbuff[16] == '1')
+        {//ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("Set Turn ON OFF Open Success ... time:%1").arg(commtime), 2000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_SetTurnOnOff_Close_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[4096];
+    char Recvbuff[200] = {'\0'};
+    char ID_BCD[8];
+    char ID_BCD_List[4096];
+    char text[4096] = {'\0'};
+    int OPTCount = 0,index=0;
+    char packlength[5] = {'\0'};
+    int length = ui->plainTextEdit_SetTurnOnOff->toPlainText().length();
+    OPTCount = (length + 1)/13;
+    memcpy(text,ui->plainTextEdit_SetTurnOnOff->toPlainText().toLatin1().data(),length);
+
+    for(index = 0;index<OPTCount;index++)
+    {
+        memset(ID_BCD,0x00,7);
+        ID_BCD[0] = ((text[0+index*13]&0x000000ff)-'0')*16+((text[1+index*13]&0x000000ff)-'0');
+        ID_BCD[1] = ((text[2+index*13]&0x000000ff)-'0')*16+((text[3+index*13]&0x000000ff)-'0');
+        ID_BCD[2] = ((text[4+index*13]&0x000000ff)-'0')*16+((text[5+index*13]&0x000000ff)-'0');
+        ID_BCD[3] = ((text[6+index*13]&0x000000ff)-'0')*16+((text[7+index*13]&0x000000ff)-'0');
+        ID_BCD[4] = ((text[8+index*13]&0x000000ff)-'0')*16+((text[9+index*13]&0x000000ff)-'0');
+        ID_BCD[5] = ((text[10+index*13]&0x000000ff)-'0')*16+((text[11+index*13]&0x000000ff)-'0');
+        ID_BCD[6] = '1';
+
+        memcpy(&ID_BCD_List[index*7],ID_BCD,7);
+    }
+
+    sprintf(Sendbuff,"APS1100000026%s03END",ECUID);
+    memcpy(&Sendbuff[30],ID_BCD_List,(OPTCount*7));
+    Sendbuff[OPTCount*7+30] = 'E';
+    Sendbuff[OPTCount*7+31] = 'N';
+    Sendbuff[OPTCount*7+32] = 'D';
+
+    sprintf(packlength,"%04d",(OPTCount*7+33));
+    memcpy(&Sendbuff[5],packlength,4);
+
+    memset(Recvbuff,0x00,200);
+    int commtime = 0;
+    flag = ECU_Client->ECU_Communication(Sendbuff,(OPTCount*7+32),Recvbuff,&recvLen,3000,&commtime);
+    if(flag == true)
+    {
+        if(Recvbuff[16] == '1')
+        {//ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("Set Turn ON OFF Open Success ... time:%1").arg(commtime), 2000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::addGFDIData(QTableWidget *table, QList<GFDI_t *> &List)
+{
+    table->setRowCount(0);
+    //清空Table中内容
+    table->clearContents();
+
+    QList<GFDI_t *>::Iterator iter = List.begin();
+    for ( ; iter != List.end(); iter++)  {
+        int row_count = table->rowCount(); //获取表单行数
+        table->insertRow(row_count); //插入新行
+        QTableWidgetItem *item = new QTableWidgetItem();
+        QTableWidgetItem *item1 = new QTableWidgetItem();
+
+        item->setText((*iter)->ID);
+        item1->setText((*iter)->GFDI);
+
+        item->setBackgroundColor(QColor(0,238,0));
+        item1->setBackgroundColor(QColor(0,238,0));
+
+        table->setItem(row_count, 0, item);
+        table->setItem(row_count, 1, item1);
+    }
+}
+
+void MainWindow::on_btn_getClearGFDI_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[8192] = {'\0'};
+    int length = 0,index = 0;
+    int num = 0;
+    int commtime = 0;
+    memset(Recvbuff,0x00,8192);
+    sprintf(Sendbuff,"APS1100300026%s01END",ECUID);
+    flag = ECU_Client->ECU_Communication(Sendbuff,30,Recvbuff,&recvLen,2000,&commtime);
+    GFDI_List.clear();
+    if(flag == true)
+    {
+        ui->tableWidget_ClearGFDI->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_ClearGFDI->clearContents();
+        if(Recvbuff[16] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("ECU Get GFDI Data Success ... time:%1").arg(commtime), 2000);
+            num = (recvLen-20)/7;
+            length = 17;
+            for(index = 0;index < num;index++)
+            {
+                GFDI_t *GFDI = new GFDI_t;
+                sprintf(GFDI->ID,"%02x%02x%02x%02x%02x%02x",(Recvbuff[length]& 0x000000ff),(Recvbuff[length+1]& 0x000000ff),(Recvbuff[length+2]& 0x000000ff),(Recvbuff[length+3]& 0x000000ff),(Recvbuff[length+4]& 0x000000ff),(Recvbuff[length+5]& 0x000000ff));
+                GFDI->GFDI[0] = (Recvbuff[length+6] & 0x000000ff);
+                GFDI->GFDI[1] = '\0';
+                GFDI_List.push_back(GFDI);
+                length += 7;
+            }
+            addGFDIData(ui->tableWidget_ClearGFDI,GFDI_List);
+
+            QList<GFDI_t *>::Iterator iter = GFDI_List.begin();
+            for ( ; iter != GFDI_List.end(); iter++)  {
+                delete (*iter);
+            }
+        }
+
+
+    }else
+    {
+        ui->tableWidget_ClearGFDI->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_ClearGFDI->clearContents();
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_ClearGFDI_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[4096];
+    char Recvbuff[200] = {'\0'};
+    char ID_BCD[8];
+    char ID_BCD_List[4096];
+    char text[4096] = {'\0'};
+    int OPTCount = 0,index=0;
+    char packlength[5] = {'\0'};
+    int length = ui->plainTextEdit_ClearGFDI->toPlainText().length();
+    OPTCount = (length + 1)/13;
+    memcpy(text,ui->plainTextEdit_ClearGFDI->toPlainText().toLatin1().data(),length);
+
+    for(index = 0;index<OPTCount;index++)
+    {
+        memset(ID_BCD,0x00,7);
+        ID_BCD[0] = ((text[0+index*13]&0x000000ff)-'0')*16+((text[1+index*13]&0x000000ff)-'0');
+        ID_BCD[1] = ((text[2+index*13]&0x000000ff)-'0')*16+((text[3+index*13]&0x000000ff)-'0');
+        ID_BCD[2] = ((text[4+index*13]&0x000000ff)-'0')*16+((text[5+index*13]&0x000000ff)-'0');
+        ID_BCD[3] = ((text[6+index*13]&0x000000ff)-'0')*16+((text[7+index*13]&0x000000ff)-'0');
+        ID_BCD[4] = ((text[8+index*13]&0x000000ff)-'0')*16+((text[9+index*13]&0x000000ff)-'0');
+        ID_BCD[5] = ((text[10+index*13]&0x000000ff)-'0')*16+((text[11+index*13]&0x000000ff)-'0');
+        ID_BCD[6] = '1';
+
+        memcpy(&ID_BCD_List[index*7],ID_BCD,7);
+    }
+
+    sprintf(Sendbuff,"APS1100000027%s02END",ECUID);
+    memcpy(&Sendbuff[30],ID_BCD_List,(OPTCount*7));
+    Sendbuff[OPTCount*7+30] = 'E';
+    Sendbuff[OPTCount*7+31] = 'N';
+    Sendbuff[OPTCount*7+32] = 'D';
+
+    sprintf(packlength,"%04d",(OPTCount*7+33));
+    memcpy(&Sendbuff[5],packlength,4);
+
+    memset(Recvbuff,0x00,200);
+    int commtime = 0;
+    flag = ECU_Client->ECU_Communication(Sendbuff,(OPTCount*7+32),Recvbuff,&recvLen,3000,&commtime);
+    if(flag == true)
+    {
+        if(Recvbuff[16] == '1')
+        {//ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("Set Clear GFDI Open Success ... time:%1").arg(commtime), 2000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_MaxPower_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    int commtime = 0;
+    unsigned char Sendbuff[200] = {'\0'};
+    unsigned char Recvbuff[8192] = {'\0'};
+    int maxpower = 0;
+    unsigned char maxPowerStr[2] = {'\0'};
+    memset(Recvbuff,0x00,8192);
+
+    maxpower = ui->lineEdit_MaxPower->text().toInt();
+    maxPowerStr[0] = maxpower/256;
+    maxPowerStr[1] = maxpower%256;
+
+    sprintf((char *)Sendbuff,"APS1100350025%s02END",ECUID);
+    memcpy((char *)&Sendbuff[30],maxPowerStr,2);
+    memcpy((char *)&Sendbuff[32],"END",3);
+    flag = ECU_Client->ECU_Communication((char *)Sendbuff,35,(char *)Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        if(!memcmp(&Recvbuff[15],"00",2))
+        {
+            statusBar()->showMessage(tr("Set maxPower Success ... time:%1 ms").arg(commtime), 1000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("Set maxPower Function Failed ... time:%1 ms").arg(commtime), 1000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 1000);
+    }
+}
+
+void MainWindow::on_btn_SetMaxPower_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[4096];
+    char Recvbuff[200] = {'\0'};
+    char ID_BCD[9];
+    char ID_BCD_List[4096];
+    char text[4096] = {'\0'};
+    int OPTCount = 0,index=0;
+    char packlength[5] = {'\0'};
+    int maxpower = 0;
+    int length = ui->plainTextEdit_SeMaxPower->toPlainText().length();
+    OPTCount = (length + 1)/13;
+    memcpy(text,ui->plainTextEdit_SeMaxPower->toPlainText().toLatin1().data(),length);
+
+    maxpower = ui->lineEdit_MaxPower_2->text().toInt();
+
+    qDebug("%d\n",maxpower);
+    for(index = 0;index<OPTCount;index++)
+    {
+        memset(ID_BCD,0x00,8);
+        ID_BCD[0] = ((text[0+index*13]&0x000000ff)-'0')*16+((text[1+index*13]&0x000000ff)-'0');
+        ID_BCD[1] = ((text[2+index*13]&0x000000ff)-'0')*16+((text[3+index*13]&0x000000ff)-'0');
+        ID_BCD[2] = ((text[4+index*13]&0x000000ff)-'0')*16+((text[5+index*13]&0x000000ff)-'0');
+        ID_BCD[3] = ((text[6+index*13]&0x000000ff)-'0')*16+((text[7+index*13]&0x000000ff)-'0');
+        ID_BCD[4] = ((text[8+index*13]&0x000000ff)-'0')*16+((text[9+index*13]&0x000000ff)-'0');
+        ID_BCD[5] = ((text[10+index*13]&0x000000ff)-'0')*16+((text[11+index*13]&0x000000ff)-'0');
+        ID_BCD[6] = maxpower/256;
+        ID_BCD[7] = maxpower%256;
+        memcpy(&ID_BCD_List[index*8],ID_BCD,8);
+    }
+
+    sprintf(Sendbuff,"APS1100000025%s03END",ECUID);
+    memcpy(&Sendbuff[30],ID_BCD_List,(OPTCount*8));
+    Sendbuff[OPTCount*8+30] = 'E';
+    Sendbuff[OPTCount*8+31] = 'N';
+    Sendbuff[OPTCount*8+32] = 'D';
+
+    sprintf(packlength,"%04d",(OPTCount*8+33));
+    memcpy(&Sendbuff[5],packlength,4);
+
+    memset(Recvbuff,0x00,200);
+    int commtime = 0;
+    flag = ECU_Client->ECU_Communication(Sendbuff,(OPTCount*7+32),Recvbuff,&recvLen,3000,&commtime);
+    if(flag == true)
+    {
+        if(Recvbuff[16] == '1')
+        {//ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("Set Max Power Open Success ... time:%1").arg(commtime), 2000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_MaxPower_get_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    int commtime = 0;
+    unsigned char Sendbuff[200] = {'\0'};
+    unsigned char Recvbuff[8192] = {'\0'};
+    memset(Recvbuff,0x00,8192);
+
+
+    sprintf((char *)Sendbuff,"APS1100300025%s04END",ECUID);
+
+    flag = ECU_Client->ECU_Communication((char *)Sendbuff,35,(char *)Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        if(!memcmp(&Recvbuff[15],"00",2))
+        {
+            statusBar()->showMessage(tr("Get maxPower Success ... time:%1 ms").arg(commtime), 1000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("Get maxPower Failed ... time:%1 ms").arg(commtime), 1000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 1000);
+    }
+}
+
+void MainWindow::addMaxPowerData(QTableWidget *table, QList<MaxPower_t *> &List)
+{
+    table->setRowCount(0);
+    //清空Table中内容
+    table->clearContents();
+
+    QList<MaxPower_t *>::Iterator iter = List.begin();
+    for ( ; iter != List.end(); iter++)  {
+        int row_count = table->rowCount(); //获取表单行数
+        table->insertRow(row_count); //插入新行
+        QTableWidgetItem *item = new QTableWidgetItem();
+        QTableWidgetItem *item1 = new QTableWidgetItem();
+        QTableWidgetItem *item2 = new QTableWidgetItem();
+
+        item->setText((*iter)->ID);
+        item1->setText(QString::number((*iter)->limitedpower));
+        item2->setText(QString::number((*iter)->limitedresult));
+
+
+        item->setBackgroundColor(QColor(0,238,0));
+        item1->setBackgroundColor(QColor(0,238,0));
+        item2->setBackgroundColor(QColor(0,238,0));
+
+        table->setItem(row_count, 0, item);
+        table->setItem(row_count, 1, item1);
+        table->setItem(row_count, 2, item2);
+    }
+}
+
+
+void MainWindow::on_btn_getMaxPower_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[8192] = {'\0'};
+    int length = 0,index = 0;
+    int num = 0;
+    int commtime = 0;
+    memset(Recvbuff,0x00,8192);
+    sprintf(Sendbuff,"APS1100300025%s01END",ECUID);
+    flag = ECU_Client->ECU_Communication(Sendbuff,30,Recvbuff,&recvLen,2000,&commtime);
+    MaxPower_List.clear();
+
+    if(flag == true)
+    {
+        ui->tableWidget_MaxPower->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_MaxPower->clearContents();
+        if(Recvbuff[16] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("ECU Get Max Power Success ... time:%1").arg(commtime), 2000);
+            num = (recvLen-20)/10;
+            length = 17;
+            for(index = 0;index < num;index++)
+            {
+                MaxPower_t *MaxPower = new MaxPower_t;
+                sprintf(MaxPower->ID,"%02x%02x%02x%02x%02x%02x",(Recvbuff[length]& 0x000000ff),(Recvbuff[length+1]& 0x000000ff),(Recvbuff[length+2]& 0x000000ff),(Recvbuff[length+3]& 0x000000ff),(Recvbuff[length+4]& 0x000000ff),(Recvbuff[length+5]& 0x000000ff));
+                MaxPower->limitedpower = (Recvbuff[length+6] & 0x000000ff)*256 + (Recvbuff[length+7] & 0x000000ff);
+                MaxPower->limitedresult = (Recvbuff[length+8] & 0x000000ff)*256 + (Recvbuff[length+9] & 0x000000ff);
+                MaxPower_List.push_back(MaxPower);
+                length += 10;
+            }
+            addMaxPowerData(ui->tableWidget_MaxPower,MaxPower_List);
+
+            QList<MaxPower_t *>::Iterator iter = MaxPower_List.begin();
+            for ( ; iter != MaxPower_List.end(); iter++)  {
+                delete (*iter);
+            }
+        }
+
+
+    }else
+    {
+        ui->tableWidget_MaxPower->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_MaxPower->clearContents();
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_IRD_get_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    int commtime = 0;
+    unsigned char Sendbuff[200] = {'\0'};
+    unsigned char Recvbuff[8192] = {'\0'};
+    memset(Recvbuff,0x00,8192);
+
+
+    sprintf((char *)Sendbuff,"APS1100300028%s04END",ECUID);
+
+    flag = ECU_Client->ECU_Communication((char *)Sendbuff,35,(char *)Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        if(!memcmp(&Recvbuff[15],"00",2))
+        {
+            statusBar()->showMessage(tr("Get IRD Success ... time:%1 ms").arg(commtime), 1000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("Get IRD Failed ... time:%1 ms").arg(commtime), 1000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 1000);
+    }
+}
+
+void MainWindow::on_btn_IRD_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    int commtime = 0;
+    unsigned char Sendbuff[200] = {'\0'};
+    unsigned char Recvbuff[8192] = {'\0'};
+    unsigned char ird = 0;
+    memset(Recvbuff,0x00,8192);
+
+    ird = ui->comboBox_IRDALL->currentIndex()+1;
+
+
+    sprintf((char *)Sendbuff,"APS1100350028%s02END",ECUID);
+    Sendbuff[30] = ird;
+    memcpy((char *)&Sendbuff[31],"END",3);
+    flag = ECU_Client->ECU_Communication((char *)Sendbuff,34,(char *)Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        if(!memcmp(&Recvbuff[15],"00",2))
+        {
+            statusBar()->showMessage(tr("Set IRD ALL Success ... time:%1 ms").arg(commtime), 1000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("Set IRD ALL Failed ... time:%1 ms").arg(commtime), 1000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 1000);
+    }
+}
+
+void MainWindow::on_btn_SetIRD_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[4096];
+    char Recvbuff[200] = {'\0'};
+    char ID_BCD[9];
+    char ID_BCD_List[4096];
+    char text[4096] = {'\0'};
+    int OPTCount = 0,index=0;
+    char packlength[5] = {'\0'};
+    int ird = 0;
+    int length = ui->plainTextEdit_IRD->toPlainText().length();
+    OPTCount = (length + 1)/13;
+    memcpy(text,ui->plainTextEdit_IRD->toPlainText().toLatin1().data(),length);
+
+    ird = ui->comboBox_IRD->currentIndex()+1;
+
+    qDebug("%d\n",ird);
+    for(index = 0;index<OPTCount;index++)
+    {
+        memset(ID_BCD,0x00,8);
+        ID_BCD[0] = ((text[0+index*13]&0x000000ff)-'0')*16+((text[1+index*13]&0x000000ff)-'0');
+        ID_BCD[1] = ((text[2+index*13]&0x000000ff)-'0')*16+((text[3+index*13]&0x000000ff)-'0');
+        ID_BCD[2] = ((text[4+index*13]&0x000000ff)-'0')*16+((text[5+index*13]&0x000000ff)-'0');
+        ID_BCD[3] = ((text[6+index*13]&0x000000ff)-'0')*16+((text[7+index*13]&0x000000ff)-'0');
+        ID_BCD[4] = ((text[8+index*13]&0x000000ff)-'0')*16+((text[9+index*13]&0x000000ff)-'0');
+        ID_BCD[5] = ((text[10+index*13]&0x000000ff)-'0')*16+((text[11+index*13]&0x000000ff)-'0');
+        ID_BCD[6] = ird;
+        memcpy(&ID_BCD_List[index*7],ID_BCD,7);
+    }
+
+    sprintf(Sendbuff,"APS1100000028%s03END",ECUID);
+    memcpy(&Sendbuff[30],ID_BCD_List,(OPTCount*7));
+    Sendbuff[OPTCount*7+30] = 'E';
+    Sendbuff[OPTCount*7+31] = 'N';
+    Sendbuff[OPTCount*7+32] = 'D';
+
+    sprintf(packlength,"%04d",(OPTCount*7+33));
+    memcpy(&Sendbuff[5],packlength,4);
+
+    memset(Recvbuff,0x00,200);
+    int commtime = 0;
+    flag = ECU_Client->ECU_Communication(Sendbuff,(OPTCount*7+32),Recvbuff,&recvLen,3000,&commtime);
+    if(flag == true)
+    {
+        if(Recvbuff[16] == '1')
+        {//ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("Set IRD Success ... time:%1").arg(commtime), 2000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::addIRDData(QTableWidget *table, QList<IRD_t *> &List)
+{
+    table->setRowCount(0);
+    //清空Table中内容
+    table->clearContents();
+
+    QList<IRD_t *>::Iterator iter = List.begin();
+    for ( ; iter != List.end(); iter++)  {
+        int row_count = table->rowCount(); //获取表单行数
+        table->insertRow(row_count); //插入新行
+        QTableWidgetItem *item = new QTableWidgetItem();
+        QTableWidgetItem *item1 = new QTableWidgetItem();
+        QTableWidgetItem *item2 = new QTableWidgetItem();
+
+        item->setText((*iter)->ID);
+        item1->setText(QString::number((*iter)->IRD));
+        item2->setText(QString::number((*iter)->IRDresult));
+
+
+        item->setBackgroundColor(QColor(0,238,0));
+        item1->setBackgroundColor(QColor(0,238,0));
+        item2->setBackgroundColor(QColor(0,238,0));
+
+        table->setItem(row_count, 0, item);
+        table->setItem(row_count, 1, item1);
+        table->setItem(row_count, 2, item2);
+    }
+}
+
+void MainWindow::on_btn_geIRD_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[8192] = {'\0'};
+    int length = 0,index = 0;
+    int num = 0;
+    int commtime = 0;
+    memset(Recvbuff,0x00,8192);
+    sprintf(Sendbuff,"APS1100300028%s01END",ECUID);
+    flag = ECU_Client->ECU_Communication(Sendbuff,30,Recvbuff,&recvLen,2000,&commtime);
+    IRD_List.clear();
+
+    if(flag == true)
+    {
+        ui->tableWidget_IRD->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_IRD->clearContents();
+        if(Recvbuff[16] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("ECU Get IRD Success ... time:%1").arg(commtime), 2000);
+            num = (recvLen-20)/8;
+            length = 17;
+            for(index = 0;index < num;index++)
+            {
+                IRD_t *IRD = new IRD_t;
+                sprintf(IRD->ID,"%02x%02x%02x%02x%02x%02x",(Recvbuff[length]& 0x000000ff),(Recvbuff[length+1]& 0x000000ff),(Recvbuff[length+2]& 0x000000ff),(Recvbuff[length+3]& 0x000000ff),(Recvbuff[length+4]& 0x000000ff),(Recvbuff[length+5]& 0x000000ff));
+                IRD->IRD = (Recvbuff[length+6] & 0x000000ff);
+                IRD->IRDresult = (Recvbuff[length+7] & 0x000000ff);
+                IRD_List.push_back(IRD);
+                length += 8;
+            }
+            addIRDData(ui->tableWidget_IRD,IRD_List);
+
+            QList<IRD_t *>::Iterator iter = IRD_List.begin();
+            for ( ; iter != IRD_List.end(); iter++)  {
+                delete (*iter);
+            }
+        }
+
+
+    }else
+    {
+        ui->tableWidget_IRD->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_IRD->clearContents();
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
 }

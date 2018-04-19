@@ -1754,7 +1754,7 @@ color:#FF0000;
       </widget>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">
-        <string>获取短地址</string>
+        <string>获取短地址、ESP07S</string>
        </attribute>
        <widget class="QGroupBox" name="groupBox_16">
         <property name="geometry">
@@ -2084,7 +2084,7 @@ color:#FF0000;
       </widget>
       <widget class="QWidget" name="tab_10">
        <attribute name="title">
-        <string>设置及查询</string>
+        <string>设置及查询1</string>
        </attribute>
        <widget class="QGroupBox" name="groupBox_35">
         <property name="geometry">
@@ -2235,7 +2235,7 @@ color:#FF0000;
            <x>250</x>
            <y>20</y>
            <width>211</width>
-           <height>171</height>
+           <height>211</height>
           </rect>
          </property>
          <property name="title">
@@ -2442,6 +2442,638 @@ color:#FF0000;
             </layout>
            </item>
           </layout>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="groupBox_38">
+         <property name="geometry">
+          <rect>
+           <x>250</x>
+           <y>240</y>
+           <width>261</width>
+           <height>161</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>30 信号强度</string>
+         </property>
+         <widget class="QPushButton" name="btn_RSSI">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>20</y>
+            <width>101</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>查询功能状态</string>
+          </property>
+         </widget>
+         <widget class="QTableWidget" name="tableWidget_RSSI">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>50</y>
+            <width>221</width>
+            <height>101</height>
+           </rect>
+          </property>
+          <column>
+           <property name="text">
+            <string>ID</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>信号强度</string>
+           </property>
+          </column>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="groupBox_39">
+         <property name="geometry">
+          <rect>
+           <x>520</x>
+           <y>240</y>
+           <width>251</width>
+           <height>151</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>31 清除历史发电量</string>
+         </property>
+         <widget class="QPushButton" name="btn_ClearEnergy">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>20</y>
+            <width>101</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>清除历史发电量</string>
+          </property>
+         </widget>
+        </widget>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_11">
+       <attribute name="title">
+        <string>设置及查询2</string>
+       </attribute>
+       <widget class="QGroupBox" name="groupBox_43">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>791</width>
+          <height>411</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>设置和查询命令</string>
+        </property>
+        <widget class="QGroupBox" name="groupBox_44">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>20</y>
+           <width>241</width>
+           <height>381</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>26 开关机设置与查询</string>
+         </property>
+         <widget class="QPushButton" name="btn_SetTurnOnOff">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>20</y>
+            <width>81</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>广播设置</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="comboBox_SetTurnOnOff">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>20</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>00：广播开机</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>01：广播关机</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QLabel" name="label_70">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>50</y>
+            <width>111</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>需要设置的ID列表</string>
+          </property>
+         </widget>
+         <widget class="QPlainTextEdit" name="plainTextEdit_SetTurnOnOff">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>80</y>
+            <width>151</width>
+            <height>81</height>
+           </rect>
+          </property>
+          <property name="plainText">
+           <string/>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="btn_SetTurnOnOff_Open">
+          <property name="geometry">
+           <rect>
+            <x>170</x>
+            <y>90</y>
+            <width>61</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>列表开</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="btn_SetTurnOnOff_Close">
+          <property name="geometry">
+           <rect>
+            <x>170</x>
+            <y>130</y>
+            <width>61</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>列表关</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="btn_getSetTurnOnOff">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>170</y>
+            <width>111</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>查看开关机状态</string>
+          </property>
+         </widget>
+         <widget class="QTableWidget" name="tableWidget_SetTurnOnOff">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>200</y>
+            <width>221</width>
+            <height>161</height>
+           </rect>
+          </property>
+          <column>
+           <property name="text">
+            <string>ID</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>开关机状态</string>
+           </property>
+          </column>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="groupBox_45">
+         <property name="geometry">
+          <rect>
+           <x>250</x>
+           <y>20</y>
+           <width>241</width>
+           <height>381</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>27 清除GFDI状态</string>
+         </property>
+         <widget class="QLabel" name="label_72">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>111</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>需要设置的ID列表</string>
+          </property>
+         </widget>
+         <widget class="QPlainTextEdit" name="plainTextEdit_ClearGFDI">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>40</y>
+            <width>151</width>
+            <height>81</height>
+           </rect>
+          </property>
+          <property name="plainText">
+           <string/>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="btn_ClearGFDI">
+          <property name="geometry">
+           <rect>
+            <x>170</x>
+            <y>50</y>
+            <width>61</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>清除GFDI</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="btn_getClearGFDI">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>130</y>
+            <width>111</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>查看GFDI状态</string>
+          </property>
+         </widget>
+         <widget class="QTableWidget" name="tableWidget_ClearGFDI">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>160</y>
+            <width>221</width>
+            <height>161</height>
+           </rect>
+          </property>
+          <column>
+           <property name="text">
+            <string>ID</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>GFDI状态</string>
+           </property>
+          </column>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="groupBox_46">
+         <property name="geometry">
+          <rect>
+           <x>500</x>
+           <y>20</y>
+           <width>281</width>
+           <height>381</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>25 读取和设置最大保护功率</string>
+         </property>
+         <widget class="QPushButton" name="btn_MaxPower">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>50</y>
+            <width>101</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>广播设置</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_75">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>80</y>
+            <width>111</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>需要设置的ID列表</string>
+          </property>
+         </widget>
+         <widget class="QPlainTextEdit" name="plainTextEdit_SeMaxPower">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>110</y>
+            <width>151</width>
+            <height>81</height>
+           </rect>
+          </property>
+          <property name="plainText">
+           <string/>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="btn_SetMaxPower">
+          <property name="geometry">
+           <rect>
+            <x>170</x>
+            <y>160</y>
+            <width>81</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>单播设置</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="btn_getMaxPower">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>200</y>
+            <width>111</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>查看最大功率状态</string>
+          </property>
+         </widget>
+         <widget class="QTableWidget" name="tableWidget_MaxPower">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>230</y>
+            <width>261</width>
+            <height>141</height>
+           </rect>
+          </property>
+          <column>
+           <property name="text">
+            <string>ID</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>设定最大功率</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>实际最大功率</string>
+           </property>
+          </column>
+         </widget>
+         <widget class="QLineEdit" name="lineEdit_MaxPower">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>50</y>
+            <width>121</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>256</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="lineEdit_MaxPower_2">
+          <property name="geometry">
+           <rect>
+            <x>170</x>
+            <y>130</y>
+            <width>81</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>255</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="btn_MaxPower_get">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>20</y>
+            <width>81</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>下发读取命令</string>
+          </property>
+         </widget>
+        </widget>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_12">
+       <attribute name="title">
+        <string>设置及查询3</string>
+       </attribute>
+       <widget class="QGroupBox" name="groupBox_47">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>791</width>
+          <height>411</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>设置和查询命令</string>
+        </property>
+        <widget class="QGroupBox" name="groupBox_50">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>20</y>
+           <width>281</width>
+           <height>381</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>28 读取和设置IRD</string>
+         </property>
+         <widget class="QPushButton" name="btn_IRD">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>50</y>
+            <width>101</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>广播设置</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_77">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>80</y>
+            <width>111</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>需要设置的ID列表</string>
+          </property>
+         </widget>
+         <widget class="QPlainTextEdit" name="plainTextEdit_IRD">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>110</y>
+            <width>151</width>
+            <height>81</height>
+           </rect>
+          </property>
+          <property name="plainText">
+           <string/>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="btn_SetIRD">
+          <property name="geometry">
+           <rect>
+            <x>170</x>
+            <y>160</y>
+            <width>81</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>单播设置</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="btn_geIRD">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>200</y>
+            <width>111</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>查看IRD状态</string>
+          </property>
+         </widget>
+         <widget class="QTableWidget" name="tableWidget_IRD">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>230</y>
+            <width>261</width>
+            <height>141</height>
+           </rect>
+          </property>
+          <column>
+           <property name="text">
+            <string>ID</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>设定IRD</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>实际IRD</string>
+           </property>
+          </column>
+         </widget>
+         <widget class="QPushButton" name="btn_IRD_get">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>20</y>
+            <width>81</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>下发读取命令</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="comboBox_IRDALL">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>50</y>
+            <width>111</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>1:关闭IRD</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>2:开启IRD带锁存</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>3:开启IRD不带锁存</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QComboBox" name="comboBox_IRD">
+          <property name="geometry">
+           <rect>
+            <x>170</x>
+            <y>130</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>1:关闭IRD</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>2:开启IRD带锁存</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>3:开启IRD不带锁存</string>
+           </property>
+          </item>
          </widget>
         </widget>
        </widget>
@@ -2681,8 +3313,8 @@ color:#FF0000;
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>43</y>
-          <width>261</width>
+          <y>0</y>
+          <width>271</width>
           <height>71</height>
          </rect>
         </property>
@@ -2746,8 +3378,8 @@ color:#FF0000;
           <rect>
            <x>150</x>
            <y>15</y>
-           <width>101</width>
-           <height>31</height>
+           <width>121</width>
+           <height>41</height>
           </rect>
          </property>
          <property name="text">
@@ -2755,38 +3387,12 @@ color:#FF0000;
          </property>
         </widget>
        </widget>
-       <widget class="QGroupBox" name="groupBox_20">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>261</width>
-          <height>41</height>
-         </rect>
-        </property>
-        <property name="title">
-         <string>烧写程序</string>
-        </property>
-        <widget class="QPushButton" name="btn_download_IDWrite">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>15</y>
-           <width>241</width>
-           <height>21</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>烧写程序</string>
-         </property>
-        </widget>
-       </widget>
        <widget class="QGroupBox" name="groupBox_21">
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>120</y>
-          <width>261</width>
+          <y>70</y>
+          <width>271</width>
           <height>51</height>
          </rect>
         </property>
@@ -2837,8 +3443,8 @@ color:#FF0000;
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>170</y>
-          <width>261</width>
+          <y>120</y>
+          <width>271</width>
           <height>81</height>
          </rect>
         </property>
@@ -2876,7 +3482,7 @@ color:#FF0000;
           <rect>
            <x>120</x>
            <y>20</y>
-           <width>101</width>
+           <width>81</width>
            <height>21</height>
           </rect>
          </property>
@@ -2887,7 +3493,7 @@ color:#FF0000;
         <widget class="QLabel" name="label_ID_2">
          <property name="geometry">
           <rect>
-           <x>160</x>
+           <x>170</x>
            <y>50</y>
            <width>91</width>
            <height>21</height>
@@ -2915,9 +3521,9 @@ color:#FF0000;
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>251</y>
-          <width>261</width>
-          <height>80</height>
+          <y>200</y>
+          <width>271</width>
+          <height>71</height>
          </rect>
         </property>
         <property name="title">
@@ -2927,7 +3533,7 @@ color:#FF0000;
          <property name="geometry">
           <rect>
            <x>90</x>
-           <y>20</y>
+           <y>14</y>
            <width>111</width>
            <height>21</height>
           </rect>
@@ -2940,7 +3546,7 @@ color:#FF0000;
          <property name="geometry">
           <rect>
            <x>120</x>
-           <y>50</y>
+           <y>44</y>
            <width>141</width>
            <height>21</height>
           </rect>
@@ -2949,24 +3555,11 @@ color:#FF0000;
           <string/>
          </property>
         </widget>
-        <widget class="QLabel" name="label_28">
-         <property name="geometry">
-          <rect>
-           <x>90</x>
-           <y>50</y>
-           <width>31</width>
-           <height>21</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>结果：</string>
-         </property>
-        </widget>
         <widget class="QPushButton" name="btn_setMAC">
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>20</y>
+           <y>14</y>
            <width>71</width>
            <height>23</height>
           </rect>
@@ -2979,7 +3572,7 @@ color:#FF0000;
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>50</y>
+           <y>44</y>
            <width>71</width>
            <height>23</height>
           </rect>
@@ -2988,11 +3581,24 @@ color:#FF0000;
           <string>读取MAC</string>
          </property>
         </widget>
+        <widget class="QLabel" name="label_28">
+         <property name="geometry">
+          <rect>
+           <x>88</x>
+           <y>44</y>
+           <width>31</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>结果：</string>
+         </property>
+        </widget>
        </widget>
        <widget class="QGroupBox" name="groupBox_23">
         <property name="geometry">
          <rect>
-          <x>270</x>
+          <x>280</x>
           <y>0</y>
           <width>261</width>
           <height>81</height>
@@ -3064,6 +3670,11 @@ color:#FF0000;
          </property>
          <item>
           <property name="text">
+           <string/>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>NA</string>
           </property>
          </item>
@@ -3096,8 +3707,8 @@ color:#FF0000;
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>331</y>
-          <width>261</width>
+          <y>270</y>
+          <width>271</width>
           <height>81</height>
          </rect>
         </property>
@@ -3133,9 +3744,9 @@ color:#FF0000;
         <widget class="QComboBox" name="comboBox_TimeZone">
          <property name="geometry">
           <rect>
-           <x>150</x>
+           <x>160</x>
            <y>20</y>
-           <width>91</width>
+           <width>61</width>
            <height>22</height>
           </rect>
          </property>
@@ -3183,8 +3794,8 @@ color:#FF0000;
        <widget class="QGroupBox" name="groupBox_25">
         <property name="geometry">
          <rect>
-          <x>270</x>
-          <y>90</y>
+          <x>280</x>
+          <y>80</y>
           <width>261</width>
           <height>51</height>
          </rect>
@@ -3209,10 +3820,10 @@ color:#FF0000;
        <widget class="QGroupBox" name="groupBox_26">
         <property name="geometry">
          <rect>
-          <x>270</x>
-          <y>150</y>
+          <x>280</x>
+          <y>130</y>
           <width>261</width>
-          <height>51</height>
+          <height>81</height>
          </rect>
         </property>
         <property name="title">
@@ -3257,14 +3868,53 @@ color:#FF0000;
           <string/>
          </property>
         </widget>
+        <widget class="QPushButton" name="btn_InternalVersion">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>50</y>
+           <width>101</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>内部版本获取</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_62">
+         <property name="geometry">
+          <rect>
+           <x>120</x>
+           <y>50</y>
+           <width>31</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>结果：</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_InternalVersion">
+         <property name="geometry">
+          <rect>
+           <x>160</x>
+           <y>50</y>
+           <width>91</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </widget>
        <widget class="QGroupBox" name="groupBox_28">
         <property name="geometry">
          <rect>
-          <x>530</x>
+          <x>540</x>
           <y>0</y>
           <width>241</width>
-          <height>411</height>
+          <height>351</height>
          </rect>
         </property>
         <property name="title">
@@ -3313,7 +3963,7 @@ color:#FF0000;
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>241</y>
+           <y>210</y>
            <width>91</width>
            <height>23</height>
           </rect>
@@ -3354,7 +4004,7 @@ color:#FF0000;
            <x>5</x>
            <y>110</y>
            <width>231</width>
-           <height>121</height>
+           <height>91</height>
           </rect>
          </property>
         </widget>
@@ -3362,9 +4012,9 @@ color:#FF0000;
          <property name="geometry">
           <rect>
            <x>5</x>
-           <y>271</y>
+           <y>240</y>
            <width>231</width>
-           <height>131</height>
+           <height>91</height>
           </rect>
          </property>
         </widget>
@@ -3372,10 +4022,10 @@ color:#FF0000;
        <widget class="QGroupBox" name="groupBox_29">
         <property name="geometry">
          <rect>
-          <x>270</x>
+          <x>280</x>
           <y>210</y>
           <width>261</width>
-          <height>61</height>
+          <height>51</height>
          </rect>
         </property>
         <property name="title">
@@ -3418,6 +4068,279 @@ color:#FF0000;
          </property>
          <property name="text">
           <string/>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QGroupBox" name="groupBox_40">
+        <property name="geometry">
+         <rect>
+          <x>280</x>
+          <y>260</y>
+          <width>261</width>
+          <height>51</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Flash空间</string>
+        </property>
+        <widget class="QPushButton" name="btn_Flash">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>20</y>
+           <width>101</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>查看Flash空间</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_63">
+         <property name="geometry">
+          <rect>
+           <x>120</x>
+           <y>20</y>
+           <width>31</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>结果：</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_Flash">
+         <property name="geometry">
+          <rect>
+           <x>160</x>
+           <y>20</y>
+           <width>91</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QGroupBox" name="groupBox_41">
+        <property name="geometry">
+         <rect>
+          <x>280</x>
+          <y>310</y>
+          <width>261</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>重启</string>
+        </property>
+        <widget class="QPushButton" name="btn_reboot">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>15</y>
+           <width>101</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>重启</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_64">
+         <property name="geometry">
+          <rect>
+           <x>120</x>
+           <y>15</y>
+           <width>31</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>结果：</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_reboot">
+         <property name="geometry">
+          <rect>
+           <x>160</x>
+           <y>15</y>
+           <width>91</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QGroupBox" name="groupBox_42">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>350</y>
+          <width>781</width>
+          <height>51</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>本地升级</string>
+        </property>
+        <widget class="QLabel" name="label_65">
+         <property name="geometry">
+          <rect>
+           <x>12</x>
+           <y>22</y>
+           <width>21</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>IP：</string>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="lineEdit_UpdateIP">
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>20</y>
+           <width>91</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>192.168.131.1</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_66">
+         <property name="geometry">
+          <rect>
+           <x>140</x>
+           <y>20</y>
+           <width>41</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>端口：</string>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="lineEdit_UpdatePort">
+         <property name="geometry">
+          <rect>
+           <x>170</x>
+           <y>21</y>
+           <width>41</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>21</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_67">
+         <property name="geometry">
+          <rect>
+           <x>220</x>
+           <y>19</y>
+           <width>41</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>用户名：</string>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="lineEdit_UpdateUser">
+         <property name="geometry">
+          <rect>
+           <x>267</x>
+           <y>20</y>
+           <width>71</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>dsf</string>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="lineEdit_UpdatePasswd">
+         <property name="geometry">
+          <rect>
+           <x>370</x>
+           <y>20</y>
+           <width>61</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>dsf031411</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_68">
+         <property name="geometry">
+          <rect>
+           <x>340</x>
+           <y>20</y>
+           <width>31</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>密码：</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="btn_update_ver">
+         <property name="geometry">
+          <rect>
+           <x>440</x>
+           <y>18</y>
+           <width>101</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>按照版本号升级</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="btn_update_ID">
+         <property name="geometry">
+          <rect>
+           <x>543</x>
+           <y>17</y>
+           <width>71</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>按照ID升级</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_update">
+         <property name="geometry">
+          <rect>
+           <x>660</x>
+           <y>20</y>
+           <width>101</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_69">
+         <property name="geometry">
+          <rect>
+           <x>620</x>
+           <y>20</y>
+           <width>31</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>结果：</string>
          </property>
         </widget>
        </widget>

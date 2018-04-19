@@ -37,6 +37,38 @@ typedef struct
 typedef struct
 {
     char ID[13];
+    char turnonoff[2];
+} TurnOnOff_t;
+
+typedef struct
+{
+    char ID[13];
+    char GFDI[2];
+} GFDI_t;
+
+typedef struct
+{
+    char ID[13];
+    int limitedpower;
+    int limitedresult;
+} MaxPower_t;
+
+typedef struct
+{
+    char ID[13];
+    int IRD;
+    int IRDresult;
+} IRD_t;
+
+typedef struct
+{
+    char ID[13];
+    unsigned char RSSI;
+} RSSI_t;
+
+typedef struct
+{
+    char ID[13];
     unsigned char Equipment_Status;
     unsigned char Mos_Status;
     unsigned char Function_Status;
@@ -190,7 +222,6 @@ private slots:
 
     void on_btn_gethardware_clicked();
 
-    void on_btn_download_IDWrite_clicked();
 
     void on_btn_config_IDWrite_clicked();
 
@@ -245,8 +276,54 @@ private slots:
     void on_btn_setFunction_close_clicked();
 
     void on_btn_getRSDStatus_clicked();
-
+    void addTurnOnOffData(QTableWidget *table, QList<TurnOnOff_t *> &List);
     void addRSDStatusData(QTableWidget *table, QList<RSDStatus_t *> &List);
+    void addRSSIData(QTableWidget *table, QList<RSSI_t *> &List);
+    void on_btn_RSSI_clicked();
+
+    void on_btn_ClearEnergy_clicked();
+
+    void on_btn_InternalVersion_clicked();
+
+    void on_btn_Flash_clicked();
+
+    void on_btn_reboot_clicked();
+
+
+    void on_btn_update_ver_clicked();
+
+    void on_btn_update_ID_clicked();
+
+    void on_btn_getSetTurnOnOff_clicked();
+
+    void on_btn_SetTurnOnOff_clicked();
+
+    void on_btn_SetTurnOnOff_Open_clicked();
+
+    void on_btn_SetTurnOnOff_Close_clicked();
+
+    void addGFDIData(QTableWidget *table, QList<GFDI_t *> &List);
+    void on_btn_getClearGFDI_clicked();
+
+    void on_btn_ClearGFDI_clicked();
+
+    void on_btn_MaxPower_clicked();
+
+    void on_btn_SetMaxPower_clicked();
+
+    void on_btn_MaxPower_get_clicked();
+
+    void addMaxPowerData(QTableWidget *table, QList<MaxPower_t *> &List);
+    void on_btn_getMaxPower_clicked();
+
+    void on_btn_IRD_get_clicked();
+
+    void on_btn_IRD_clicked();
+
+    void on_btn_SetIRD_clicked();
+
+    void addIRDData(QTableWidget *table, QList<IRD_t *> &List);
+    void on_btn_geIRD_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -259,6 +336,13 @@ private:
     QList<YC600_RealData_t *> YC600_RealData_List;
     QList<ShortAddr_t *> ShortAddr_List;
     QList<RSDStatus_t *> RSDStatus_List;
+    QList<TurnOnOff_t *> TurnOnOff_List;
+    QList<GFDI_t *> GFDI_List;
+    QList<MaxPower_t *> MaxPower_List;
+    QList<IRD_t *> IRD_List;
+
+    QList<RSSI_t *> RSSI_List;
+
     QList<OPT700_RS *> OPT700_RSList;
     QList<YC600_PowerData_t *> YC600_PowerData_List;
     QList<YC600_EnergyData_t *> YC600_EnergyData_List;
