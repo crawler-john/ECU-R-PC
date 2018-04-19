@@ -2843,12 +2843,12 @@ color:#FF0000;
           </column>
           <column>
            <property name="text">
-            <string>设定最大功率</string>
+            <string>设定功率</string>
            </property>
           </column>
           <column>
            <property name="text">
-            <string>实际最大功率</string>
+            <string>实际功率</string>
            </property>
           </column>
          </widget>
@@ -3074,6 +3074,113 @@ color:#FF0000;
             <string>3:开启IRD不带锁存</string>
            </property>
           </item>
+         </widget>
+        </widget>
+        <widget class="QGroupBox" name="groupBox_20">
+         <property name="geometry">
+          <rect>
+           <x>300</x>
+           <y>20</y>
+           <width>481</width>
+           <height>381</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>32 告警事件</string>
+         </property>
+         <widget class="QDateEdit" name="dateEdit_alarm">
+          <property name="geometry">
+           <rect>
+            <x>50</x>
+            <y>28</y>
+            <width>110</width>
+            <height>22</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_61">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>30</y>
+            <width>31</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>时间：</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_71">
+          <property name="geometry">
+           <rect>
+            <x>180</x>
+            <y>30</y>
+            <width>41</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>序列号：</string>
+          </property>
+         </widget>
+         <widget class="QSpinBox" name="spinBox_alarm">
+          <property name="geometry">
+           <rect>
+            <x>230</x>
+            <y>28</y>
+            <width>42</width>
+            <height>22</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QTableWidget" name="tableWidget_alarmEvent">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>53</y>
+            <width>461</width>
+            <height>191</height>
+           </rect>
+          </property>
+          <column>
+           <property name="text">
+            <string>ID</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>时间</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>告警事件</string>
+           </property>
+          </column>
+         </widget>
+         <widget class="QPushButton" name="btn_alarmevent">
+          <property name="geometry">
+           <rect>
+            <x>290</x>
+            <y>29</y>
+            <width>101</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>获取告警事件</string>
+          </property>
+         </widget>
+         <widget class="QTextBrowser" name="textBrowser_alarmEvent">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>251</y>
+            <width>461</width>
+            <height>91</height>
+           </rect>
+          </property>
          </widget>
         </widget>
        </widget>

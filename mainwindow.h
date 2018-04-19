@@ -63,6 +63,13 @@ typedef struct
 typedef struct
 {
     char ID[13];
+    char Time[10];
+    char Event[65];
+} AlarmEvent_t;
+
+typedef struct
+{
+    char ID[13];
     unsigned char RSSI;
 } RSSI_t;
 
@@ -325,6 +332,11 @@ private slots:
     void addIRDData(QTableWidget *table, QList<IRD_t *> &List);
     void on_btn_geIRD_clicked();
 
+    void addAlarmEventData(QTableWidget *table, QList<AlarmEvent_t *> &List);
+    void on_btn_alarmevent_clicked();
+
+    void on_tableWidget_alarmEvent_itemClicked(QTableWidgetItem *item);
+
 private:
     Ui::MainWindow *ui;
     Communication *ECU_Client;
@@ -340,6 +352,7 @@ private:
     QList<GFDI_t *> GFDI_List;
     QList<MaxPower_t *> MaxPower_List;
     QList<IRD_t *> IRD_List;
+    QList<AlarmEvent_t *> AlarmEvent_List;
 
     QList<RSSI_t *> RSSI_List;
 

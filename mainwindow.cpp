@@ -33,6 +33,21 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tableWidget_SSID_ESP07S->setColumnWidth(4,40);
     ui->tableWidget_SSID_ESP07S->setColumnWidth(5,100);
     ui->tableWidget_SSID_ESP07S->setColumnWidth(6,100);
+
+    ui->tableWidget_MaxPower->setColumnWidth(0,100);
+    ui->tableWidget_MaxPower->setColumnWidth(1,70);
+    ui->tableWidget_MaxPower->setColumnWidth(2,70);
+    ui->tableWidget_IRD->setColumnWidth(0,100);
+    ui->tableWidget_IRD->setColumnWidth(1,70);
+    ui->tableWidget_IRD->setColumnWidth(2,70);
+
+    ui->dateEdit->setDate(QDate::currentDate());
+    ui->dateEdit_alarm->setDate(QDate::currentDate());
+    ui->dateEdit_2->setDate(QDate::currentDate());
+
+    ui->tableWidget_alarmEvent->setColumnWidth(1,100);
+    ui->tableWidget_alarmEvent->setColumnWidth(2,70);
+    ui->tableWidget_alarmEvent->setColumnWidth(2,300);
 }
 
 MainWindow::~MainWindow()
@@ -3464,7 +3479,7 @@ void MainWindow::on_btn_getClearGFDI_clicked()
     int num = 0;
     int commtime = 0;
     memset(Recvbuff,0x00,8192);
-    sprintf(Sendbuff,"APS1100300026%s01END",ECUID);
+    sprintf(Sendbuff,"APS1100300027%s01END",ECUID);
     flag = ECU_Client->ECU_Communication(Sendbuff,30,Recvbuff,&recvLen,2000,&commtime);
     GFDI_List.clear();
     if(flag == true)
@@ -3979,4 +3994,288 @@ void MainWindow::on_btn_geIRD_clicked()
         ui->tableWidget_IRD->clearContents();
         statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
     }
+}
+
+void MainWindow::addAlarmEventData(QTableWidget *table, QList<AlarmEvent_t *> &List)
+{
+    table->setRowCount(0);
+    //清空Table中内容
+    table->clearContents();
+
+    QList<AlarmEvent_t *>::Iterator iter = List.begin();
+    for ( ; iter != List.end(); iter++)  {
+        int row_count = table->rowCount(); //获取表单行数
+        table->insertRow(row_count); //插入新行
+        QTableWidgetItem *item = new QTableWidgetItem();
+        QTableWidgetItem *item1 = new QTableWidgetItem();
+        QTableWidgetItem *item2 = new QTableWidgetItem();
+
+        item->setText((*iter)->ID);
+        item1->setText((*iter)->Time);
+        item2->setText((*iter)->Event);
+
+
+        item->setBackgroundColor(QColor(0,238,0));
+        item1->setBackgroundColor(QColor(0,238,0));
+        item2->setBackgroundColor(QColor(0,238,0));
+
+        table->setItem(row_count, 0, item);
+        table->setItem(row_count, 1, item1);
+        table->setItem(row_count, 2, item2);
+    }
+}
+
+void MainWindow::on_btn_alarmevent_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[8192] = {'\0'};
+    int length = 0,index = 0;
+    int num = 0;
+    int commtime = 0,i=0;
+    int year = ui->dateEdit_alarm->date().year();
+    int month = ui->dateEdit_alarm->date().month();
+    int day = ui->dateEdit_alarm->date().day();
+    int serial =ui->spinBox_alarm->value();
+    memset(Recvbuff,0x00,8192);
+    sprintf(Sendbuff,"APS1100420032%sEND%04d%02d%02d%03dEND",ECUID,year,month,day,serial);
+    flag = ECU_Client->ECU_Communication(Sendbuff,42,Recvbuff,&recvLen,10000,&commtime);
+    AlarmEvent_List.clear();
+
+    if(flag == true)
+    {
+        ui->tableWidget_alarmEvent->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_alarmEvent->clearContents();
+        if(Recvbuff[14] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("ECU Get Alarm Event Success ... time:%1").arg(commtime), 2000);
+            num = (recvLen-18)/17;
+            length = 15;
+            for(index = 0;index < num;index++)
+            {
+                AlarmEvent_t *AlarmEvent = new AlarmEvent_t;
+                sprintf(AlarmEvent->ID,"%02x%02x%02x%02x%02x%02x",(Recvbuff[length]& 0x000000ff),(Recvbuff[length+1]& 0x000000ff),(Recvbuff[length+2]& 0x000000ff),(Recvbuff[length+3]& 0x000000ff),(Recvbuff[length+4]& 0x000000ff),(Recvbuff[length+5]& 0x000000ff));
+                sprintf(AlarmEvent->Time,"%02x:%02x:%02x",(Recvbuff[length+6]& 0x000000ff),(Recvbuff[length+7]& 0x000000ff),(Recvbuff[length+8]& 0x000000ff));
+                for(i = 0;i<64;i++)
+                {
+                    AlarmEvent->Event[i] =(((Recvbuff[length+9 + (i/8)]& 0x000000ff)&(0x01 <<(7-i%8)))>>(7-i%8)) + '0';
+                }
+                AlarmEvent->Event[64] = '\0';
+                AlarmEvent_List.push_back(AlarmEvent);
+                length += 17;
+            }
+            addAlarmEventData(ui->tableWidget_alarmEvent,AlarmEvent_List);
+
+            QList<AlarmEvent_t *>::Iterator iter = AlarmEvent_List.begin();
+            for ( ; iter != AlarmEvent_List.end(); iter++)  {
+                delete (*iter);
+            }
+        }
+
+
+    }else
+    {
+        ui->tableWidget_alarmEvent->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_alarmEvent->clearContents();
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::on_tableWidget_alarmEvent_itemClicked(QTableWidgetItem *item)
+{
+    QString UID;
+    QString Time;
+    char Event[64] = {'0'};
+    QString string;
+    UID = ui->tableWidget_alarmEvent->item(item->row(),0)->text();
+    Time = ui->tableWidget_alarmEvent->item(item->row(),1)->text();
+    memcpy(Event,ui->tableWidget_alarmEvent->item(item->row(),2)->text().toLatin1().data(),ui->tableWidget_alarmEvent->item(item->row(),2)->text().length());
+    string = "UID:"+UID + "\n" + "Time:" + Time + "\n";
+    if(Event[0] == '1')
+    {
+        string+="AC Frequency Exceeding Range\n";
+    }
+
+    if(Event[1] == '1')
+    {
+        string+= "AC Frequency Under Range\n";
+    }
+
+    if(Event[2] == '1')
+    {
+        string+= "Channel A: AC Voltage Exceeding Range\n";
+    }
+
+    if(Event[3] == '1')
+    {
+        string+= "Channel A: AC Voltage Under Range\n";
+    }
+
+    if(Event[4] == '1')
+    {
+        string+= "Channel B: AC Voltage Exceeding Range\n";
+    }
+
+    if(Event[5] == '1')
+    {
+        string+= "Channel B: AC Voltage Under Range\n";
+    }
+
+    if(Event[6] == '1')
+    {
+        string+= "Channel C: AC Voltage Exceeding Range\n";
+    }
+
+    if(Event[7] == '1')
+    {
+        string+= "Channel C: AC Voltage Under Range\n";
+    }
+
+    if(Event[8] == '1')
+    {
+        string+= "Channel A: DC Voltage Too High\n";
+    }
+
+    if(Event[9] == '1')
+    {
+        string+= "Channel A: DC Voltage Too Low\n";
+    }
+
+    if(Event[10] == '1')
+    {
+        string+= "Channel B: DC Voltage Too High\n";
+    }
+
+    if(Event[11] == '1')
+    {
+        string+= "Channel B: DC Voltage Too Low\n";
+    }
+
+    if(Event[16] == '1')
+    {
+        string+= "Over Critical Temperature\n";
+    }
+
+    if(Event[17] == '1')
+    {
+        string+= "GFDI Locked\n";
+    }
+
+    if(Event[18] == '1')
+    {
+        string+= "Remote Shut\n";
+    }
+
+    if(Event[19] == '1')
+    {
+        string+= "AC Disconnect\n";
+    }
+
+    if(Event[21] == '1')
+    {
+        string+= "Active Anti-island Protection\n";
+    }
+
+    if(Event[22] == '1')
+    {
+        string+= "CP Protection\n";
+    }
+
+    if(Event[23] == '1')
+    {
+        string+= "AC Voltage Exceeding Range\n";
+    }
+
+    if(Event[24] == '1')
+    {
+        string+= "AC Voltage Under Range\n";
+    }
+
+    if(Event[25] == '1')
+    {
+        string+= "10min Protect\n";
+    }
+
+    if(Event[26] == '1')
+    {
+        string+= "BUS Voltage Too Low\n";
+    }
+
+    if(Event[27] == '1')
+    {
+        string+= "BUS Voltage Too High\n";
+    }
+
+    if(Event[28] == '1')
+    {
+        string+= "Relay Failed\n";
+    }
+    if(Event[29] == '1')
+    {
+        string+= "AC Frequency_stage1 Exceeding Range\n";
+    }
+    if(Event[30] == '1')
+    {
+        string+= "AC Frequency_stage1 Under Range\n";
+    }
+    if(Event[31] == '1')
+    {
+        string+= "AC Frequency_stage2 Exceeding Range\n";
+    }
+    if(Event[32] == '1')
+    {
+        string+= "AC Frequency_stage2 Under Range\n";
+    }
+    if(Event[33] == '1')
+    {
+        string+= "AC Voltage_stage1 Exceeding Range\n";
+    }
+    if(Event[34] == '1')
+    {
+        string+= "AC Voltage_stage1 Under Range\n";
+    }
+    if(Event[35] == '1')
+    {
+        string+= "AC Voltage_stage1 Exceeding Range\n";
+    }
+    if(Event[36] == '1')
+    {
+        string+= "AC Voltage_stage1 Under Range\n";
+    }if(Event[37] == '1')
+    {
+        string+= "AC Voltage_stage1 Exceeding Range\n";
+    }
+    if(Event[38] == '1')
+    {
+        string+= "AC Voltage_stage1 Under Range\n";
+    }
+    if(Event[39] == '1')
+    {
+        string+= "Channel C: DC Voltage Too High\n";
+    }
+    if(Event[40] == '1')
+    {
+        string+= "Channel C: DC Voltage Too Low\n";
+    }
+    if(Event[41] == '1')
+    {
+        string+= "Channel D: DC Voltage Too High\n";
+    }
+    if(Event[42] == '1')
+    {
+        string+= "Channel D: DC Voltage Too Low\n";
+    }
+    if(Event[43] == '1')
+    {
+        string+= "Get Data Failed  ";
+    }
+    ui->textBrowser_alarmEvent->clear();
+    ui->textBrowser_alarmEvent->setText(string);
 }
