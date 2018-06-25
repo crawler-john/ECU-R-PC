@@ -4,6 +4,12 @@
 #include "QDateTime"
 #include <unistd.h>
 #include <QString>
+#include<QTcpServer>
+#include<QTcpSocket>
+#include<QMessageBox>
+#include<QDataStream>
+#include<QString>
+#include<QByteArray>
 
 #define MAJOR_VERSION   1
 #define MINOR_VERSION   0
@@ -14,7 +20,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     sprintf(ECUID,"000000000000");
     ECUID[12]  = '\0';
+    m_socket = NULL;
+    server = NULL;
     ui->setupUi(this);
+    memset(ECU_UID,'0',25);
     IPInterfaceSataus(false);
     setWindowTitle(tr("ECU-R Test V%1.%2").arg(MAJOR_VERSION).arg(MINOR_VERSION));
     setFixedSize(801,510);
@@ -48,6 +57,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tableWidget_alarmEvent->setColumnWidth(1,100);
     ui->tableWidget_alarmEvent->setColumnWidth(2,70);
     ui->tableWidget_alarmEvent->setColumnWidth(2,300);
+    ui->spinBox_third->setRange(0,256);
+    ui->spinBox_third->setValue(1);
+    ui->label_trina->hide();
+    ui->comboBox_trina->hide();
 }
 
 MainWindow::~MainWindow()
@@ -2709,7 +2722,9 @@ void MainWindow::on_btn_SetServer_clicked()
     memset(Recvbuff,0x00,4096);
     index = ui->comboBox_ServerItem->currentIndex()+1;
     Domain_Len = ui->lineEdit_Domain->text().length();
+
     memcpy(Domain,ui->lineEdit_Domain->text().toLatin1().data(),Domain_Len);
+    Domain[Domain_Len] = '\0';
     IP[0] = (unsigned char )ui->lineEdit_Ip_1->text().toInt(); //IP 1
     IP[1] = (unsigned char )ui->lineEdit_Ip_2->text().toInt(); //IP 2
     IP[2] = (unsigned char )ui->lineEdit_Ip_3->text().toInt(); //IP 3
@@ -2718,12 +2733,12 @@ void MainWindow::on_btn_SetServer_clicked()
     Port2 = ui->lineEdit_Port2->text().toUShort();
     Port3 = ui->lineEdit_Port3->text().toUShort();
 
-    if((index == 1)||(index == 2)||(index == 3))
+    if((index == 1)||(index == 2)||(index == 3) || (index == 3) || (index == 7))
     {
         sprintf(Sendbuff,"APS1100300024%s%02dEND",ECUID,index);
         qDebug("%s",Sendbuff);
         sendlen = 30;
-    }else
+    }else if((index == 4)||(index == 5)||(index == 6))
     {
         sprintf(Sendbuff,"APS11%04d0024%s%02dEND%03d",(Domain_Len+46),ECUID,index,Domain_Len);
         memcpy(&Sendbuff[33],Domain,Domain_Len);
@@ -2742,6 +2757,32 @@ void MainWindow::on_btn_SetServer_clicked()
         Sendbuff[45+Domain_Len] = 'D';
         qDebug("%s",Sendbuff);
         sendlen = (Domain_Len+46);
+    }else
+    {
+        sprintf(Sendbuff,"APS11%04d0024%s%02dEND%03d",(Domain_Len+46),ECUID,index,Domain_Len);
+        memcpy(&Sendbuff[33],Domain,Domain_Len);
+        Sendbuff[33+Domain_Len] = IP[0];
+        Sendbuff[34+Domain_Len] = IP[1];
+        Sendbuff[35+Domain_Len] = IP[2];
+        Sendbuff[36+Domain_Len] = IP[3];
+        Sendbuff[37+Domain_Len] = Port1/256;
+        Sendbuff[38+Domain_Len] = Port1%256;
+        Sendbuff[39+Domain_Len] = Port2/256;
+        Sendbuff[40+Domain_Len] = Port2%256;
+        Sendbuff[41+Domain_Len] = Port3/256;
+        Sendbuff[42+Domain_Len] = Port3%256;
+        if(ui->comboBox_trina->currentIndex() == 0)
+        {
+            Sendbuff[43+Domain_Len] = '0';
+        }else
+        {
+            Sendbuff[43+Domain_Len] = '1';
+        }
+        Sendbuff[44+Domain_Len] = 'E';
+        Sendbuff[45+Domain_Len] = 'N';
+        Sendbuff[46+Domain_Len] = 'D';
+        qDebug("%s",Sendbuff);
+        sendlen = (Domain_Len+47);
     }
 
     flag = ECU_Client->ECU_Communication(Sendbuff,sendlen,Recvbuff,&recvLen,3000,&commtime);
@@ -2781,7 +2822,43 @@ void MainWindow::on_btn_SetServer_clicked()
                 ui->lineEdit_Port3->setText(QString::number(Port3));
                 statusBar()->showMessage(tr("ECU Get Server Info Success ... time:%1").arg(commtime), 2000);
 
-            }else
+            }else if(index == 7)
+            {
+                //Domain
+                memcpy(Domain_Len_str,&Recvbuff[17],3);
+                Domain_Len =atoi(Domain_Len_str);
+                memcpy(Domain,&Recvbuff[20],Domain_Len);
+                //IP
+                IP[0] = Recvbuff[20+Domain_Len];
+                IP[1] = Recvbuff[21+Domain_Len];
+                IP[2] = Recvbuff[22+Domain_Len];
+                IP[3] = Recvbuff[23+Domain_Len];
+                //Port1
+                Port1 = (Recvbuff[24+Domain_Len]& 0x000000ff)*256 + (Recvbuff[25+Domain_Len]& 0x000000ff);
+                //Port2
+                Port2 = (Recvbuff[26+Domain_Len]& 0x000000ff)*256 + (Recvbuff[27+Domain_Len]& 0x000000ff);
+                //Port3
+                Port3 = (Recvbuff[28+Domain_Len]& 0x000000ff)*256 + (Recvbuff[29+Domain_Len]& 0x000000ff);
+
+                ui->lineEdit_Domain->setText(Domain);
+                ui->lineEdit_Ip_1->setText(QString::number(IP[0]));
+                ui->lineEdit_Ip_2->setText(QString::number(IP[1]));
+                ui->lineEdit_Ip_3->setText(QString::number(IP[2]));
+                ui->lineEdit_Ip_4->setText(QString::number(IP[3]));
+                ui->lineEdit_Port1->setText(QString::number(Port1));
+                ui->lineEdit_Port2->setText(QString::number(Port2));
+                ui->lineEdit_Port3->setText(QString::number(Port3));
+                if(Recvbuff[30+Domain_Len] == '1')
+                {
+                    ui->comboBox_trina->setCurrentIndex(1);
+                }else
+                {
+                    ui->comboBox_trina->setCurrentIndex(0);
+                }
+                statusBar()->showMessage(tr("ECU Get Server Info Success ... time:%1").arg(commtime), 2000);
+
+            }
+            else
             {
                 statusBar()->showMessage(tr("ECU Set Server Info Success ... time:%1").arg(commtime), 2000);
             }
@@ -4278,4 +4355,1139 @@ void MainWindow::on_tableWidget_alarmEvent_itemClicked(QTableWidgetItem *item)
     }
     ui->textBrowser_alarmEvent->clear();
     ui->textBrowser_alarmEvent->setText(string);
+}
+
+void MainWindow::on_comboBox_factor_currentIndexChanged(int index)
+{
+    //
+    if(0 == index)
+    {
+        ui->comboBox_type->clear();
+        ui->comboBox_type->addItem("01:30KTL-M");
+        ui->comboBox_type->addItem("02:33KTL-M");
+        ui->comboBox_type->addItem("03:36KTL-M");
+        ui->comboBox_type->addItem("04:40KTL-M");
+        ui->comboBox_type->addItem("05:50KTL-M");
+        ui->comboBox_type->addItem("06:60KTL-M");
+        ui->comboBox_type->addItem("07:60KU-M");
+        ui->comboBox_type->addItem("08:49K5J");
+        ui->comboBox_type->addItem("09:8KTL-M");
+        ui->comboBox_type->addItem("10:10KTL-M");
+        ui->comboBox_type->addItem("11:12KTL-M");
+        ui->comboBox_type->addItem("12:80KTL");
+        ui->comboBox_type->addItem("13:80KTL-M");
+        ui->comboBox_type->addItem("14:80HV");
+        ui->comboBox_type->addItem("15:125HV");
+        ui->comboBox_type->addItem("16:60KTL");
+        ui->comboBox_type->addItem("17:60KU");
+
+
+    }else if(1 == index)
+    {
+        ui->comboBox_type->clear();
+        ui->comboBox_type->addItem("01:SA Third");
+    }
+
+
+}
+
+void MainWindow::on_btn_addThird_clicked()
+{
+    char ThirdID[32],ThirdFactor[20],ThirdType[20],BaudRate[20];
+    int ModbusAddr = 0,row_count=0;
+
+    QTableWidgetItem *item = new QTableWidgetItem();
+    QTableWidgetItem *item1 = new QTableWidgetItem();
+    QTableWidgetItem *item2 = new QTableWidgetItem();
+    QTableWidgetItem *item3 = new QTableWidgetItem();
+    QTableWidgetItem *item4 = new QTableWidgetItem();
+
+    memcpy(ThirdID,ui->lineEdit_thirdID->text().toLatin1().data(),ui->lineEdit_thirdID->text().length());
+    ThirdID[ui->lineEdit_thirdID->text().length()] = '\0';
+    memcpy(ThirdFactor,ui->comboBox_factor->currentText().toLatin1().data(),ui->comboBox_factor->currentText().length());
+
+    memcpy(ThirdFactor,&ThirdFactor[3],5);
+    ThirdFactor[5] = '\0';
+    memcpy(ThirdType,&ui->comboBox_type->currentText().toLatin1().data()[3],ui->comboBox_type->currentText().length()-3);
+    ThirdType[ui->comboBox_type->currentText().length()-3] = '\0';
+
+    memcpy(BaudRate,ui->comboBox_BaudRate->currentText().toLatin1().data(),ui->comboBox_BaudRate->currentText().length());
+    BaudRate[ui->comboBox_BaudRate->currentText().length()] = '\0';
+
+    ModbusAddr = ui->spinBox_third->value();
+    row_count = ui->tableWidget_thirdID->rowCount(); //获取表单行数
+    ui->tableWidget_thirdID->insertRow(row_count); //插入新行
+
+    item->setText(ThirdID);
+    item1->setText(QString::number(ModbusAddr));
+    item2->setText(ThirdFactor);
+    item3->setText(ThirdType);
+    item4->setText(BaudRate);
+    //qDebug("%s %s %s %d %d\n",ThirdID,ThirdFactor,ThirdType,ModbusAddr,row_count);
+
+    ui->tableWidget_thirdID->setItem(row_count, 0, item);
+    ui->tableWidget_thirdID->setItem(row_count, 1, item1);
+    ui->tableWidget_thirdID->setItem(row_count, 2, item2);
+    ui->tableWidget_thirdID->setItem(row_count, 3, item3);
+    ui->tableWidget_thirdID->setItem(row_count, 4, item4);
+    statusBar()->showMessage(tr("Add Third ID Successful ..."), 2000);
+}
+
+void MainWindow::on_btn_clearthirdID_clicked()
+{
+    ui->tableWidget_thirdID->setRowCount(0);
+    //清空Table中内容
+    ui->tableWidget_thirdID->clearContents();
+    statusBar()->showMessage(tr("Clear Third ID Successful ..."), 2000);
+}
+
+void MainWindow::addThirdID(QTableWidget *table, QList<ThirdID_t *> &List)
+{
+    table->setRowCount(0);
+    //清空Table中内容
+    table->clearContents();
+
+    QList<ThirdID_t *>::Iterator iter = List.begin();
+    for ( ; iter != List.end(); iter++)  {
+        int row_count = table->rowCount(); //获取表单行数
+        table->insertRow(row_count); //插入新行
+        QTableWidgetItem *item = new QTableWidgetItem();
+        QTableWidgetItem *item1 = new QTableWidgetItem();
+        QTableWidgetItem *item2 = new QTableWidgetItem();
+        QTableWidgetItem *item3 = new QTableWidgetItem();
+        QTableWidgetItem *item4 = new QTableWidgetItem();
+
+        item->setText((*iter)->ID);
+        item1->setText(QString::number((*iter)->modbusAddr));
+        item2->setText((*iter)->Factor);
+        item3->setText((*iter)->Type);
+        if((*iter)->BaudRate == 1)
+        {
+            item4->setText("01:1200");
+        }else if((*iter)->BaudRate == 2)
+        {
+            item4->setText("02:2400");
+        }else if((*iter)->BaudRate == 3)
+        {
+            item4->setText("03:4800");
+        }else if((*iter)->BaudRate == 4)
+        {
+            item4->setText("04:9600");
+        }else if((*iter)->BaudRate == 5)
+        {
+            item4->setText("05:14400");
+        }else if((*iter)->BaudRate == 6)
+        {
+            item4->setText("06:19200");
+        }else if((*iter)->BaudRate == 7)
+        {
+            item4->setText("07:38400");
+        }else if((*iter)->BaudRate == 8)
+        {
+            item4->setText("08:56000");
+        }else if((*iter)->BaudRate == 9)
+        {
+            item4->setText("09:57600");
+        }else if((*iter)->BaudRate == 10)
+        {
+            item4->setText("10:115200");
+        }else if((*iter)->BaudRate == 11)
+        {
+            item4->setText("11:128000");
+        }else if((*iter)->BaudRate == 12)
+        {
+            item4->setText("12:256000");
+        }else
+        {
+            item4->setText("UNKNOWN");
+        }
+
+
+
+        table->setItem(row_count, 0, item);
+        table->setItem(row_count, 1, item1);
+        table->setItem(row_count, 2, item2);
+        table->setItem(row_count, 3, item3);
+        table->setItem(row_count, 4, item4);
+    }
+}
+
+void MainWindow::on_btn_getthirdID_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[8192] = {'\0'};
+    int length = 0,index = 0;
+    int num = 0;
+    int commtime = 0,i=0;
+    memset(Recvbuff,0x00,8192);
+    sprintf(Sendbuff,"APS1100300033%s02END",ECUID);
+    flag = ECU_Client->ECU_Communication(Sendbuff,30,Recvbuff,&recvLen,2000,&commtime);
+    ThirdID_List.clear();
+
+    if(flag == true)
+    {
+        ui->tableWidget_thirdID->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_thirdID->clearContents();
+        if(Recvbuff[16] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("ECU Get Third ID Success ... time:%1").arg(commtime), 2000);
+            num = (recvLen-20)/53;
+            length = 17;
+            for(index = 0;index < num;index++)
+            {
+                ThirdID_t *ThirdID = new ThirdID_t;
+                memcpy(ThirdID->ID,&Recvbuff[length],32);
+                ThirdID->modbusAddr = Recvbuff[length+32];
+                memcpy(ThirdID->Factor,&Recvbuff[length+33],10);
+                memcpy(ThirdID->Type,&Recvbuff[length+43],10);
+                ThirdID->BaudRate = Recvbuff[length+53];
+                ThirdID_List.push_back(ThirdID);
+                length += 54;
+            }
+            addThirdID(ui->tableWidget_thirdID,ThirdID_List);
+
+            QList<ThirdID_t *>::Iterator iter = ThirdID_List.begin();
+            for ( ; iter != ThirdID_List.end(); iter++)  {
+                delete (*iter);
+            }
+        }
+
+
+    }else
+    {
+        ui->tableWidget_thirdID->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_thirdID->clearContents();
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_registerThirdID_clicked()
+{
+    //从TableWeiget中获取数据  然后注册
+    unsigned char ModbusAddr = 0;
+    char thirdID[32];
+    char factor[20];
+    char type[20];
+    char Len_Str[5];
+    char baudrate[3];
+    unsigned char baudrateNO;
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[8192] = {'\0'};
+    int length = 0;
+    int commtime = 0,i=0;
+    memset(Recvbuff,0x00,8192);
+    sprintf(Sendbuff,"APS1100000033%s01END",ECUID);
+    length = 30;
+
+    for(int i=0;i<ui->tableWidget_thirdID->rowCount();i++){
+        memset(thirdID,'\0',32);
+        memset(factor,'\0',20);
+        memset(type,'\0',20);
+        ModbusAddr =0;
+        memcpy(thirdID,ui->tableWidget_thirdID->item(i,0)->text().toLatin1().data(),ui->tableWidget_thirdID->item(i,0)->text().length());
+        ModbusAddr = ui->tableWidget_thirdID->item(i,1)->text().toInt();
+        memcpy(factor,ui->tableWidget_thirdID->item(i,2)->text().toLatin1().data(),ui->tableWidget_thirdID->item(i,2)->text().length());
+        memcpy(type,ui->tableWidget_thirdID->item(i,3)->text().toLatin1().data(),ui->tableWidget_thirdID->item(i,3)->text().length());
+        memcpy(baudrate,ui->tableWidget_thirdID->item(i,4)->text().toLatin1().data(),2);
+        baudrate[2] = '\0';
+        baudrateNO =atoi(baudrate);
+
+        qDebug()<<thirdID <<" "<< ModbusAddr <<" "<< factor <<" "<< type << " " << baudrateNO <<endl;
+        memcpy(&Sendbuff[length],thirdID,32);
+        Sendbuff[length+32] = ModbusAddr;
+        memcpy(&Sendbuff[length+33],factor,10);
+        memcpy(&Sendbuff[length+43],type,10);
+        Sendbuff[length+53] = baudrateNO;
+        length+=54;
+    }
+    memcpy(&Sendbuff[length],"END",3);
+    length += 3;
+    sprintf(Len_Str,"%04d",length);
+    memcpy(&Sendbuff[5],Len_Str,4);
+    flag = ECU_Client->ECU_Communication(Sendbuff,length,Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        if(Recvbuff[16] == '1')
+        {//ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("Set Third ID Success ... time:%1").arg(commtime), 2000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::addThirdData(QTableWidget *table, QList<ThirdData_t *> &List)
+{
+    table->setRowCount(0);
+    //清空Table中内容
+    table->clearContents();
+
+    QList<ThirdData_t *>::Iterator iter = List.begin();
+    for ( ; iter != List.end(); iter++)  {
+        int row_count = table->rowCount(); //获取表单行数
+        table->insertRow(row_count); //插入新行
+        QTableWidgetItem *item = new QTableWidgetItem();
+        QTableWidgetItem *item1 = new QTableWidgetItem();
+        QTableWidgetItem *item2 = new QTableWidgetItem();
+        QTableWidgetItem *item3 = new QTableWidgetItem();
+        QTableWidgetItem *item4 = new QTableWidgetItem();
+        QTableWidgetItem *item5 = new QTableWidgetItem();
+        QTableWidgetItem *item6 = new QTableWidgetItem();
+        QTableWidgetItem *item7 = new QTableWidgetItem();
+        QTableWidgetItem *item8 = new QTableWidgetItem();
+        QTableWidgetItem *item9 = new QTableWidgetItem();
+        QTableWidgetItem *item10 = new QTableWidgetItem();
+        QTableWidgetItem *item11 = new QTableWidgetItem();
+        QTableWidgetItem *item12 = new QTableWidgetItem();
+        QTableWidgetItem *item13 = new QTableWidgetItem();
+        QTableWidgetItem *item14 = new QTableWidgetItem();
+        QTableWidgetItem *item15 = new QTableWidgetItem();
+        QTableWidgetItem *item16 = new QTableWidgetItem();
+        QTableWidgetItem *item17 = new QTableWidgetItem();
+        QTableWidgetItem *item18 = new QTableWidgetItem();
+        QTableWidgetItem *item19 = new QTableWidgetItem();
+        QTableWidgetItem *item20 = new QTableWidgetItem();
+        QTableWidgetItem *item21 = new QTableWidgetItem();
+        QTableWidgetItem *item22 = new QTableWidgetItem();
+        QTableWidgetItem *item23 = new QTableWidgetItem();
+        QTableWidgetItem *item24 = new QTableWidgetItem();
+        QTableWidgetItem *item25 = new QTableWidgetItem();
+        QTableWidgetItem *item26 = new QTableWidgetItem();
+        QTableWidgetItem *item27 = new QTableWidgetItem();
+        QTableWidgetItem *item28 = new QTableWidgetItem();
+        QTableWidgetItem *item29 = new QTableWidgetItem();
+        QTableWidgetItem *item30 = new QTableWidgetItem();
+        QTableWidgetItem *item31 = new QTableWidgetItem();
+        QTableWidgetItem *item32 = new QTableWidgetItem();
+        QTableWidgetItem *item33 = new QTableWidgetItem();
+        QTableWidgetItem *item34 = new QTableWidgetItem();
+        QTableWidgetItem *item35 = new QTableWidgetItem();
+        QTableWidgetItem *item36 = new QTableWidgetItem();
+
+
+
+        item->setText((*iter)->ID);
+        item1->setText((*iter)->factor);
+        item2->setText((*iter)->type);
+        item3->setText(QString::number((*iter)->PV_Voltage[0]));
+        item4->setText(QString::number((*iter)->PV_Voltage[1]));
+        item5->setText(QString::number((*iter)->PV_Voltage[2]));
+        item6->setText(QString::number((*iter)->PV_Voltage[3]));
+        item7->setText(QString::number((*iter)->PV_Voltage[4]));
+        item8->setText(QString::number((*iter)->PV_Voltage[5]));
+
+        item9->setText(QString::number((*iter)->PV_Current[0]));
+        item10->setText(QString::number((*iter)->PV_Current[1]));
+        item11->setText(QString::number((*iter)->PV_Current[2]));
+        item12->setText(QString::number((*iter)->PV_Current[3]));
+        item13->setText(QString::number((*iter)->PV_Current[4]));
+        item14->setText(QString::number((*iter)->PV_Current[5]));
+
+        item15->setText(QString::number((*iter)->PV_Power[0]));
+        item16->setText(QString::number((*iter)->PV_Power[1]));
+        item17->setText(QString::number((*iter)->PV_Power[2]));
+        item18->setText(QString::number((*iter)->PV_Power[3]));
+        item19->setText(QString::number((*iter)->PV_Power[4]));
+        item20->setText(QString::number((*iter)->PV_Power[5]));
+
+        item21->setText(QString::number((*iter)->AC_Voltage[0]));
+        item22->setText(QString::number((*iter)->AC_Voltage[1]));
+        item23->setText(QString::number((*iter)->AC_Voltage[2]));
+
+        item24->setText(QString::number((*iter)->AC_Current[0]));
+        item25->setText(QString::number((*iter)->AC_Current[1]));
+        item26->setText(QString::number((*iter)->AC_Current[2]));
+
+        item27->setText(QString::number((*iter)->Grid_Frequency[0]));
+        item28->setText(QString::number((*iter)->Grid_Frequency[1]));
+        item29->setText(QString::number((*iter)->Grid_Frequency[2]));
+
+        item30->setText(QString::number((*iter)->Temperature));
+
+        item31->setText(QString::number((*iter)->Reactive_Power));
+        item32->setText(QString::number((*iter)->Active_Power));
+        item33->setText(QString::number((*iter)->Power_Factor));
+        item34->setText(QString::number((*iter)->Daily_Energy));
+        item35->setText(QString::number((*iter)->Life_Energy));
+        item36->setText(QString::number((*iter)->Current_Energy));
+
+        if((*iter)->commStatus == 1)
+        {
+            item->setBackgroundColor(QColor(0,238,0));
+            item1->setBackgroundColor(QColor(0,238,0));
+            item2->setBackgroundColor(QColor(0,238,0));
+            item3->setBackgroundColor(QColor(0,238,0));
+            item4->setBackgroundColor(QColor(0,238,0));
+            item5->setBackgroundColor(QColor(0,238,0));
+            item6->setBackgroundColor(QColor(0,238,0));
+            item7->setBackgroundColor(QColor(0,238,0));
+            item8->setBackgroundColor(QColor(0,238,0));
+            item9->setBackgroundColor(QColor(0,238,0));
+            item10->setBackgroundColor(QColor(0,238,0));
+            item11->setBackgroundColor(QColor(0,238,0));
+            item12->setBackgroundColor(QColor(0,238,0));
+            item13->setBackgroundColor(QColor(0,238,0));
+            item14->setBackgroundColor(QColor(0,238,0));
+            item15->setBackgroundColor(QColor(0,238,0));
+            item16->setBackgroundColor(QColor(0,238,0));
+            item17->setBackgroundColor(QColor(0,238,0));
+            item18->setBackgroundColor(QColor(0,238,0));
+            item19->setBackgroundColor(QColor(0,238,0));
+            item20->setBackgroundColor(QColor(0,238,0));
+            item21->setBackgroundColor(QColor(0,238,0));
+            item22->setBackgroundColor(QColor(0,238,0));
+            item23->setBackgroundColor(QColor(0,238,0));
+            item24->setBackgroundColor(QColor(0,238,0));
+            item25->setBackgroundColor(QColor(0,238,0));
+            item26->setBackgroundColor(QColor(0,238,0));
+            item27->setBackgroundColor(QColor(0,238,0));
+            item28->setBackgroundColor(QColor(0,238,0));
+            item29->setBackgroundColor(QColor(0,238,0));
+            item30->setBackgroundColor(QColor(0,238,0));
+            item31->setBackgroundColor(QColor(0,238,0));
+            item32->setBackgroundColor(QColor(0,238,0));
+            item33->setBackgroundColor(QColor(0,238,0));
+            item34->setBackgroundColor(QColor(0,238,0));
+            item35->setBackgroundColor(QColor(0,238,0));
+            item36->setBackgroundColor(QColor(0,238,0));
+
+        }
+
+
+        table->setItem(row_count, 0, item);
+        table->setItem(row_count, 1, item1);
+        table->setItem(row_count, 2, item2);
+        table->setItem(row_count, 3, item3);
+        table->setItem(row_count, 4, item4);
+        table->setItem(row_count, 5, item5);
+        table->setItem(row_count, 6, item6);
+        table->setItem(row_count, 7, item7);
+        table->setItem(row_count, 8, item8);
+        table->setItem(row_count, 9, item9);
+        table->setItem(row_count, 10, item10);
+        table->setItem(row_count, 11, item11);
+        table->setItem(row_count, 12, item12);
+        table->setItem(row_count, 13, item13);
+        table->setItem(row_count, 14, item14);
+        table->setItem(row_count, 15, item15);
+        table->setItem(row_count, 16, item16);
+        table->setItem(row_count, 17, item17);
+        table->setItem(row_count, 18, item18);
+        table->setItem(row_count, 19, item19);
+        table->setItem(row_count, 20, item20);
+        table->setItem(row_count, 21, item21);
+        table->setItem(row_count, 22, item22);
+        table->setItem(row_count, 23, item23);
+        table->setItem(row_count, 24, item24);
+        table->setItem(row_count, 25, item25);
+        table->setItem(row_count, 26, item26);
+        table->setItem(row_count, 27, item27);
+        table->setItem(row_count, 28, item28);
+        table->setItem(row_count, 29, item29);
+        table->setItem(row_count, 30, item30);
+        table->setItem(row_count, 31, item31);
+        table->setItem(row_count, 32, item32);
+        table->setItem(row_count, 33, item33);
+        table->setItem(row_count, 34, item34);
+        table->setItem(row_count, 35, item35);
+        table->setItem(row_count, 36, item36);
+
+    }
+}
+
+
+void MainWindow::on_btn_getThirdData_clicked()
+{
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[8192] = {'\0'};
+    int length = 0,index = 0;
+    char dateTime[15] = {'\0'};
+    int commtime = 0;
+    memset(Recvbuff,0x00,8192);
+    sprintf(Sendbuff,"APS1100280034%sEND",ECUID);
+    flag = ECU_Client->ECU_Communication(Sendbuff,28,Recvbuff,&recvLen,2000,&commtime);
+    ThirdData_List.clear();
+    if(flag == true)
+    {
+        if(Recvbuff[14] == '1')
+        {   //ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else if(Recvbuff[14] == '2')
+        {
+            statusBar()->showMessage(tr("ECU Have No Data ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("ECU Get Third Data Success ... time:%1").arg(commtime), 2000);
+            int num = (recvLen-27)/193;
+            length = 24;
+            sprintf(dateTime,"%02x%02x%02x%02x%02x%02x%02x",Recvbuff[17],Recvbuff[18],Recvbuff[19],Recvbuff[20],Recvbuff[21],Recvbuff[22],Recvbuff[23]);
+            ui->label_ThirdTime->setText(dateTime);
+
+            for(index = 0;index < num;index++)
+            {
+                ThirdData_t *ThirdData = new ThirdData_t;
+
+                memcpy(ThirdData->ID,&Recvbuff[length],32);
+                ThirdData->commStatus = Recvbuff[length+32];
+                memcpy(ThirdData->factor,&Recvbuff[length+33],10);
+                memcpy(ThirdData->type,&Recvbuff[length+43],10);
+
+
+                ThirdData->PV_Voltage[0] = (float)((Recvbuff[length+53] & 0x000000ff)*256 + (Recvbuff[length+54] & 0x000000ff))/10;
+                ThirdData->PV_Voltage[1] = (float)((Recvbuff[length+55] & 0x000000ff)*256 + (Recvbuff[length+56] & 0x000000ff))/10;
+                ThirdData->PV_Voltage[2] = (float)((Recvbuff[length+57] & 0x000000ff)*256 + (Recvbuff[length+58] & 0x000000ff))/10;
+                ThirdData->PV_Voltage[3] = (float)((Recvbuff[length+59] & 0x000000ff)*256 + (Recvbuff[length+60] & 0x000000ff))/10;
+                ThirdData->PV_Voltage[4] = (float)((Recvbuff[length+61] & 0x000000ff)*256 + (Recvbuff[length+62] & 0x000000ff))/10;
+                ThirdData->PV_Voltage[5] = (float)((Recvbuff[length+63] & 0x000000ff)*256 + (Recvbuff[length+64] & 0x000000ff))/10;
+
+                ThirdData->PV_Current[0] = (float)((Recvbuff[length+65] & 0x000000ff)*256 + (Recvbuff[length+66] & 0x000000ff))/10;
+                ThirdData->PV_Current[1] = (float)((Recvbuff[length+67] & 0x000000ff)*256 + (Recvbuff[length+68] & 0x000000ff))/10;
+                ThirdData->PV_Current[2] = (float)((Recvbuff[length+69] & 0x000000ff)*256 + (Recvbuff[length+70] & 0x000000ff))/10;
+                ThirdData->PV_Current[3] = (float)((Recvbuff[length+71] & 0x000000ff)*256 + (Recvbuff[length+72] & 0x000000ff))/10;
+                ThirdData->PV_Current[4] = (float)((Recvbuff[length+73] & 0x000000ff)*256 + (Recvbuff[length+74] & 0x000000ff))/10;
+                ThirdData->PV_Current[5] = (float)((Recvbuff[length+75] & 0x000000ff)*256 + (Recvbuff[length+76] & 0x000000ff))/10;
+
+                ThirdData->PV_Power[0] = (float)((Recvbuff[length+77] & 0x000000ff)*256*256*256 + (Recvbuff[length+78] & 0x000000ff)*256*256 + (Recvbuff[length+79] & 0x000000ff)*256 + (Recvbuff[length+80] & 0x000000ff))/100;
+                ThirdData->PV_Power[1] = (float)((Recvbuff[length+81] & 0x000000ff)*256*256*256 + (Recvbuff[length+82] & 0x000000ff)*256*256 + (Recvbuff[length+83] & 0x000000ff)*256 + (Recvbuff[length+84] & 0x000000ff))/100;
+                ThirdData->PV_Power[2] = (float)((Recvbuff[length+85] & 0x000000ff)*256*256*256 + (Recvbuff[length+86] & 0x000000ff)*256*256 + (Recvbuff[length+87] & 0x000000ff)*256 + (Recvbuff[length+88] & 0x000000ff))/100;
+                ThirdData->PV_Power[3] = (float)((Recvbuff[length+89] & 0x000000ff)*256*256*256 + (Recvbuff[length+90] & 0x000000ff)*256*256 + (Recvbuff[length+91] & 0x000000ff)*256 + (Recvbuff[length+92] & 0x000000ff))/100;
+                ThirdData->PV_Power[4] = (float)((Recvbuff[length+93] & 0x000000ff)*256*256*256 + (Recvbuff[length+94] & 0x000000ff)*256*256 + (Recvbuff[length+95] & 0x000000ff)*256 + (Recvbuff[length+96] & 0x000000ff))/100;
+                ThirdData->PV_Power[5] = (float)((Recvbuff[length+97] & 0x000000ff)*256*256*256 + (Recvbuff[length+98] & 0x000000ff)*256*256 + (Recvbuff[length+99] & 0x000000ff)*256 + (Recvbuff[length+100] & 0x000000ff))/100;
+
+                ThirdData->AC_Voltage[0] = (float)((Recvbuff[length+101] & 0x000000ff)*256 + (Recvbuff[length+102] & 0x000000ff))/10;
+                ThirdData->AC_Voltage[1] = (float)((Recvbuff[length+103] & 0x000000ff)*256 + (Recvbuff[length+104] & 0x000000ff))/10;
+                ThirdData->AC_Voltage[2] = (float)((Recvbuff[length+105] & 0x000000ff)*256 + (Recvbuff[length+106] & 0x000000ff))/10;
+
+                ThirdData->AC_Current[0] = (float)((Recvbuff[length+107] & 0x000000ff)*256 + (Recvbuff[length+108] & 0x000000ff))/10;
+                ThirdData->AC_Current[1] = (float)((Recvbuff[length+109] & 0x000000ff)*256 + (Recvbuff[length+110] & 0x000000ff))/10;
+                ThirdData->AC_Current[2] = (float)((Recvbuff[length+111] & 0x000000ff)*256 + (Recvbuff[length+112] & 0x000000ff))/10;
+
+                ThirdData->Grid_Frequency[0] = (float)((Recvbuff[length+113] & 0x000000ff)*256 + (Recvbuff[length+114] & 0x000000ff))/10;
+                ThirdData->Grid_Frequency[1] = (float)((Recvbuff[length+115] & 0x000000ff)*256 + (Recvbuff[length+116] & 0x000000ff))/10;
+                ThirdData->Grid_Frequency[2] = (float)((Recvbuff[length+117] & 0x000000ff)*256 + (Recvbuff[length+118] & 0x000000ff))/10;
+
+                ThirdData->Temperature = (float)((Recvbuff[length+119] & 0x000000ff)*256 + (Recvbuff[length+120] & 0x000000ff) - 1000)/10;
+                ThirdData->Reactive_Power = ((Recvbuff[length+121] & 0x000000ff)*256*256*256 + (Recvbuff[length+122] & 0x000000ff)*256*256 + (Recvbuff[length+123] & 0x000000ff)*256 + (Recvbuff[length+124] & 0x000000ff));
+                ThirdData->Active_Power = ((Recvbuff[length+125] & 0x000000ff)*256*256*256 + (Recvbuff[length+126] & 0x000000ff)*256*256 + (Recvbuff[length+127] & 0x000000ff)*256 + (Recvbuff[length+128] & 0x000000ff));
+                ThirdData->Power_Factor = (float)((Recvbuff[length+129] & 0x000000ff)*256 + (Recvbuff[length+130] & 0x000000ff))/1000;
+                ThirdData->Current_Energy = (float)((Recvbuff[length+131] & 0x000000ff)*256*256*256 + (Recvbuff[length+132] & 0x000000ff)*256*256 + (Recvbuff[length+133] & 0x000000ff)*256 + (Recvbuff[length+134] & 0x000000ff))/10;
+                ThirdData->Daily_Energy = (float)((Recvbuff[length+135] & 0x000000ff)*256*256*256 + (Recvbuff[length+136] & 0x000000ff)*256*256 + (Recvbuff[length+137] & 0x000000ff)*256 + (Recvbuff[length+138] & 0x000000ff))/10;
+                ThirdData->Life_Energy = (float)((Recvbuff[length+139] & 0x000000ff)*256*256*256 + (Recvbuff[length+140] & 0x000000ff)*256*256 + (Recvbuff[length+141] & 0x000000ff)*256 + (Recvbuff[length+142] & 0x000000ff));
+
+
+                ThirdData_List.push_back(ThirdData);
+                length += 193;
+            }
+            addThirdData(ui->tableWidget_ThirdData,ThirdData_List);
+
+            QList<ThirdData_t *>::Iterator iter = ThirdData_List.begin();
+            for ( ; iter != ThirdData_List.end(); iter++)  {
+                delete (*iter);
+            }
+
+
+
+
+
+        }
+
+
+    }else
+    {
+        ui->tableWidget_ThirdData->setRowCount(0);
+        //清空Table中内容
+        ui->tableWidget_ThirdData->clearContents();
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_clearText_clicked()
+{
+    ui->plainTextEdit_ZigBeeSend->clear();
+}
+
+void MainWindow::on_btn_ZigBeeSend_clicked()
+{
+    //从TableWeiget中获取数据  然后注册
+    char Len_Str[5];
+    char UID[13];
+    QString StrZigbee;
+    qint64 recvLen=0;
+    bool flag = false;
+    char Sendbuff[200] = {'\0'};
+    char Recvbuff[8192] = {'\0'};
+    int length = 0;
+    int commtime = 0;
+    memset(Recvbuff,0x00,8192);
+    sprintf(Sendbuff,"APS1100000035%sEND",ECUID);
+    length = 28;
+    if(ui->comboBox_Zigbee->currentIndex() == 0)
+    {
+        Sendbuff[length++] = '0';
+        memcpy(&Sendbuff[length],"000000000000",12);
+        length += 12;
+    }else if(ui->comboBox_Zigbee->currentIndex() == 1)
+    {
+        Sendbuff[length++] = '1';
+        if(ui->lineEdit_ZigBeeUID->text().length() == 12)
+        {
+            memcpy(UID,ui->lineEdit_ZigBeeUID->text().toLatin1().data(),12);
+            memcpy(&Sendbuff[length],UID,12);
+            length += 12;
+        }
+        else
+        {
+            statusBar()->showMessage(tr("ID Error ... time:%1").arg(commtime), 2000);
+            return;
+        }
+    }else
+    {
+        Sendbuff[length++] = '2';
+        memcpy(&Sendbuff[length],"000000000000",12);
+        length += 12;
+    }
+
+    StrZigbee = ui->plainTextEdit_ZigBeeSend->toPlainText();
+    StrZigbee.remove(QRegExp("\\s"));
+    if(StrZigbee.length() == 0)
+    {
+        statusBar()->showMessage(tr("ID Send BUFF Error ... time:%1").arg(commtime), 2000);
+        return;
+    }else
+    {
+        sprintf(&Sendbuff[length],"%03d",(StrZigbee.length()));
+        length+=3;
+        memcpy(&Sendbuff[length],StrZigbee.toLatin1().data(),StrZigbee.length());
+        length += StrZigbee.length();
+
+    }
+    sprintf(Len_Str,"%04d",length);
+    memcpy(&Sendbuff[5],Len_Str,4);
+    flag = ECU_Client->ECU_Communication(Sendbuff,length,Recvbuff,&recvLen,2000,&commtime);
+    if(flag == true)
+    {
+        if(Recvbuff[16] == '1')
+        {//ECU ID不匹配
+            statusBar()->showMessage(tr("ECU ID Mismatching ... time:%1").arg(commtime), 2000);
+        }
+        else
+        {
+            statusBar()->showMessage(tr("Set Third ID Success ... time:%1").arg(commtime), 2000);
+        }
+    }else
+    {
+        statusBar()->showMessage(tr("Please verify WIFI Connect ..."), 2000);
+    }
+}
+
+void MainWindow::on_btn_trinasolarServer_clicked()
+{
+    if(m_socket != NULL)
+    {
+        m_socket->close();
+        delete m_socket;
+        m_socket = NULL;
+    }
+
+    if(server != NULL)
+    {
+        server->disconnect();
+        server->close();
+        delete server;
+        server = NULL;
+    }
+    this->server = new QTcpServer(this);
+    this->m_socket = NULL;
+    if(!this->server->listen(QHostAddress::Any, 60000)) {
+        qDebug()<<server->errorString(); //错误信息
+        ui->label_ServerStatus->setText("CONNECT Error");
+    }else
+    {
+        ui->label_ServerStatus->setText("CONNECT");
+    }
+    QObject::connect(this->server,SIGNAL(newConnection()),this,SLOT(newConnection()));
+}
+
+void MainWindow::on_btn_trinasolarServer_close_clicked()
+{
+    ui->label_ServerStatus->setText("DISCONNECT");
+    if(m_socket != NULL)
+    {
+        m_socket->close();
+        delete m_socket;
+        m_socket = NULL;
+    }
+
+    if(server != NULL)
+    {
+        server->disconnect();
+        server->close();
+        delete server;
+        server = NULL;
+    }
+
+}
+
+void MainWindow::newConnection(){
+    this->m_socket=this->server->nextPendingConnection();
+    //    QMessageBox::about(this,"提示","有新的连接！");
+    connect(this->m_socket,SIGNAL(readyRead()),this,SLOT(ReceiveData()));
+}
+
+unsigned short MainWindow::computeCRC(unsigned char* pByte, size_t nbBytes)
+{
+    unsigned short CRC = 0xFFFF;
+    size_t count = 0;
+    size_t bitCount = 0;
+    unsigned char buff = 0;
+    for(count = 0; count < nbBytes; count++)
+    {
+        CRC ^= pByte[count];
+        for(bitCount = 0; bitCount != 8; bitCount++)
+        {
+            if(CRC & 1)
+            {
+                CRC >>= 1;
+                CRC ^= 0xA001;
+            }
+            else
+            {
+                CRC >>= 1;
+            }
+        }
+    }
+
+    buff = (CRC >> 8);
+    CRC <<= 8;
+    CRC |= buff;
+
+    return CRC;
+}
+
+void MainWindow::ReceiveData(){
+    char Data[4096] = {'\0'};
+    char UID[50] = {'\0'};
+    QString Str;
+    int cmd = 0;
+    char curTime[15] = {'\0'};
+    char SendData[4096] = {'\0'};
+    QByteArray arr=this->m_socket->readAll();
+    memcpy(Data,arr.data(),arr.length());
+
+    cmd = Data[52] * 0x100 + Data[53];
+    qDebug("length:%d cmd:%x\n",arr.length(),cmd);
+    if(cmd == 0x0001)    //登录命令
+    {   //回复0801
+        memcpy(UID,&Data[2],25);
+        memcpy(ECU_UID,UID,25);
+        unsigned short CRC = 0;
+        memcpy(SendData,Data,52);
+        SendData[52] = 0x08;
+        SendData[53] = 0x01;
+        SendData[54] = 0x01;
+        SendData[55] = 0x00;
+        SendData[56] = 0x00;
+        SendData[57] = 0x07;
+        //时间
+        memcpy(curTime,QDateTime::currentDateTime().toString("yyyyMMddHHmmss").toLatin1().data(),14);
+        SendData[58] = (curTime[0]-'0')*0x10 + (curTime[1]-'0');
+        SendData[59] = (curTime[2]-'0')*0x10 + (curTime[3]-'0');
+        SendData[60] = (curTime[4]-'0')*0x10 + (curTime[5]-'0');
+        SendData[61] = (curTime[6]-'0')*0x10 + (curTime[7]-'0');
+        SendData[62] = (curTime[8]-'0')*0x10 + (curTime[9]-'0');
+        SendData[63] = (curTime[10]-'0')*0x10 + (curTime[11]-'0');
+        SendData[64] = (curTime[12]-'0')*0x10 + (curTime[13]-'0');
+        CRC = computeCRC((unsigned char*)SendData, 65);
+
+        SendData[66] = (CRC >> 8);
+        SendData[65] = (CRC & 0xFF);
+        this->m_socket->write(SendData,67);
+        Str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + ":" + QString(UID)+" Login";
+        ui->browser->appendPlainText(Str);
+        qDebug() << Str;
+
+    }else if(cmd == 0x0002)  //心跳命令
+    {
+        memcpy(UID,&Data[2],25);
+        unsigned short CRC = 0;
+        memcpy(SendData,Data,52);
+        SendData[52] = 0x08;
+        SendData[53] = 0x02;
+        SendData[54] = 0x01;
+        SendData[55] = 0x00;
+        SendData[56] = 0x00;
+        SendData[57] = 0x00;
+        CRC = computeCRC((unsigned char*)SendData, 58);
+
+        SendData[59] = (CRC >> 8);
+        SendData[58] = (CRC & 0xFF);
+        this->m_socket->write(SendData,60);
+        Str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + ":" +QString(UID)+" Heart";
+        ui->browser->appendPlainText(Str);
+        qDebug() << Str;
+
+    }else if(cmd == 0x0804)     //表示设置服务器成功
+    {
+        memcpy(UID,&Data[2],25);
+        Str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + ":" +QString(UID)+" Set Server Successful DOMAIN,IP:" + ui->lineEdit_trinaIP->text()+"  PORT:"+ui->lineEdit_trinaport->text();
+        ui->browser->appendPlainText(Str);
+    }else if(cmd == 0x0805)     //升级ECU
+    {
+        memcpy(UID,&Data[2],25);
+        Str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + ":" +QString(UID)+" Update";
+        ui->browser->appendPlainText(Str);
+    }else if(cmd == 0x0808)     //重启ECU
+    {
+        memcpy(UID,&Data[2],25);
+        Str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + ":" +QString(UID)+" Reboot";
+        ui->browser->appendPlainText(Str);
+    }else if(cmd == 0x0809)     //获取设备信息
+    {
+        char factory[3] = {'\0'};
+        char Type[14] = {'\0'};
+        char CCID[21] = {'\0'};
+        char Time[15] = {'\0'};
+        char Version[11] = {'\0'};
+        char GB;
+        memcpy(UID,&Data[2],25);
+        //厂商
+        memcpy(factory,&Data[58],2);
+        //型号
+        memcpy(Type,&Data[60],13);
+        //CCID
+        memcpy(CCID,&Data[73],20);
+        //设备时间
+        Time[0] = Data[93]/16 + '0';
+        Time[1] = Data[93]%16 + '0';
+        Time[2] = Data[94]/16 + '0';
+        Time[3] = Data[94]%16 + '0';
+        Time[4] = Data[95]/16 + '0';
+        Time[5] = Data[95]%16 + '0';
+        Time[6] = Data[96]/16 + '0';
+        Time[7] = Data[96]%16 + '0';
+        Time[8] = Data[97]/16 + '0';
+        Time[9] = Data[97]%16 + '0';
+        Time[10] = Data[98]/16 + '0';
+        Time[11] = Data[98]%16 + '0';
+        Time[12] = Data[99]/16 + '0';
+        Time[13] = Data[99]%16 + '0';
+        //固件版本
+        memcpy(Version,&Data[100],10);
+        //国家标准
+        GB = Data[110];
+        Str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + ":" +QString(UID)+" Device Info Factory:" + QString(factory) +" Type:" + QString(Type) +" CCID:" + QString(CCID) +" Time:" + QString(Time) +" Ver:"+ QString(Version) +" GB:" + QString::number(GB);
+        ui->browser->appendPlainText(Str);
+    }
+    else if(cmd == 0x0201)
+    {
+        memcpy(UID,&Data[2],25);
+        unsigned short CRC = 0;
+        memcpy(SendData,Data,52);
+        SendData[52] = 0x0A;
+        SendData[53] = 0x01;
+        SendData[54] = 0x01;
+        SendData[55] = 0x00;
+        SendData[56] = 0x00;
+        SendData[57] = 0x00;
+        CRC = computeCRC((unsigned char*)SendData, 58);
+
+        SendData[59] = (CRC >> 8);
+        SendData[58] = (CRC & 0xFF);
+        this->m_socket->write(SendData,60);
+        Str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + ":" +QString(UID)+" Record";
+        ui->browser->appendPlainText(Str);
+        qDebug() << Str;
+    }else if(cmd == 0x0206)
+    {
+        memcpy(UID,&Data[2],25);
+        unsigned short CRC = 0;
+        memcpy(SendData,Data,52);
+        SendData[52] = 0x0A;
+        SendData[53] = 0x06;
+        SendData[54] = 0x01;
+        SendData[55] = 0x00;
+        SendData[56] = 0x00;
+        SendData[57] = 0x00;
+        CRC = computeCRC((unsigned char*)SendData, 58);
+
+        SendData[59] = (CRC >> 8);
+        SendData[58] = (CRC & 0xFF);
+        this->m_socket->write(SendData,60);
+        Str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + ":" +QString(UID)+"History Record";
+        ui->browser->appendPlainText(Str);
+        qDebug() << Str;
+    }
+    else if(cmd == 0x0a02)
+    {
+        memcpy(UID,&Data[2],25);
+        Str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + ":" +QString(UID)+" RSD Set Successful";
+        ui->browser->appendPlainText(Str);
+        qDebug() << Str;
+    }else if(cmd == 0x0a05)
+    {
+        memcpy(UID,&Data[2],25);
+        Str = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss") + ":" +QString(UID)+" Relation";
+        ui->browser->appendPlainText(Str);
+        qDebug() << Str;
+    }
+    memset(Data,0x00,4096);
+    cmd = -1;
+
+}
+
+
+
+void MainWindow::on_btn_setServer_clicked()
+{
+    char sendbuff[4096] = {'\0'};
+    unsigned short CRC = 0;
+    char domain[50] = {'\0'};
+    int port;
+    memcpy(domain,ui->lineEdit_trinaIP->text().toLatin1().data(),ui->lineEdit_trinaIP->text().length());
+    port = ui->lineEdit_trinaport->text().toInt();
+    sendbuff[0] = 'T';
+    sendbuff[1] = 'S';
+    memcpy(&sendbuff[2],ECU_UID,12);
+    memcpy(&sendbuff[27],ECU_UID,12);
+    sendbuff[52] = 0x00;
+    sendbuff[53] = 0x04;
+    sendbuff[54] = 0x01;
+    sendbuff[55] = 0x00;
+    sendbuff[56] = 0x00;
+    sendbuff[57] = 52;
+    //域名
+    memcpy(&sendbuff[58],domain,50);
+    //端口
+    sendbuff[108] = port/256;
+    sendbuff[109] = port%256;
+    CRC = computeCRC((unsigned char*)sendbuff, 110);
+
+    sendbuff[111] = (CRC >> 8);
+    sendbuff[110] = (CRC & 0xFF);
+    if(m_socket)
+        this->m_socket->write(sendbuff,112);
+}
+
+void MainWindow::on_btn_trinaReboot_clicked()
+{
+    char sendbuff[4096] = {'\0'};
+    unsigned short CRC = 0;
+
+    sendbuff[0] = 'T';
+    sendbuff[1] = 'S';
+    memcpy(&sendbuff[2],ECU_UID,12);
+    memcpy(&sendbuff[27],ECU_UID,12);
+    sendbuff[52] = 0x00;
+    sendbuff[53] = 0x08;
+    sendbuff[54] = 0x01;
+    sendbuff[55] = 0x00;
+    sendbuff[56] = 0x00;
+    sendbuff[57] = 00;
+
+    CRC = computeCRC((unsigned char*)sendbuff, 58);
+
+    sendbuff[59] = (CRC >> 8);
+    sendbuff[58] = (CRC & 0xFF);
+    if(m_socket)
+        this->m_socket->write(sendbuff,60);
+}
+
+void MainWindow::on_btn_trinagetinfo_clicked()
+{
+    char sendbuff[4096] = {'\0'};
+    unsigned short CRC = 0;
+
+    sendbuff[0] = 'T';
+    sendbuff[1] = 'S';
+    memcpy(&sendbuff[2],ECU_UID,12);
+    memcpy(&sendbuff[27],ECU_UID,12);
+    sendbuff[52] = 0x00;
+    sendbuff[53] = 0x09;
+    sendbuff[54] = 0x01;
+    sendbuff[55] = 0x00;
+    sendbuff[56] = 0x00;
+    sendbuff[57] = 00;
+
+    CRC = computeCRC((unsigned char*)sendbuff, 58);
+
+    sendbuff[59] = (CRC >> 8);
+    sendbuff[58] = (CRC & 0xFF);
+    if(m_socket)
+        this->m_socket->write(sendbuff,60);
+}
+
+void MainWindow::on_btn_trinaUpdate_clicked()
+{
+    char sendbuff[4096] = {'\0'};
+    unsigned short CRC = 0;
+    char uri[101] = {'\0'};
+    char user[20] = {'\0'};
+    char passwd[20] = {'\0'};
+
+    memcpy(uri,ui->lineEdit_trinaURI->text().toLatin1().data(),ui->lineEdit_trinaURI->text().length());
+    memcpy(user,ui->lineEdit_trinauser->text().toLatin1().data(),ui->lineEdit_trinauser->text().length());
+    memcpy(passwd,ui->lineEdit_trinapasswd->text().toLatin1().data(),ui->lineEdit_trinapasswd->text().length());
+
+
+    sendbuff[0] = 'T';
+    sendbuff[1] = 'S';
+    memcpy(&sendbuff[2],ECU_UID,12);
+    memcpy(&sendbuff[27],ECU_UID,12);
+    sendbuff[52] = 0x00;
+    sendbuff[53] = 0x05;
+    sendbuff[54] = 0x01;
+    sendbuff[55] = 0x00;
+    sendbuff[56] = 0x00;
+    sendbuff[57] = 114;
+
+    sendbuff[58] = 0x01;
+    sendbuff[59] = 0x02;
+    memcpy(&sendbuff[60],uri,100);
+    memcpy(&sendbuff[160],user,6);
+    memcpy(&sendbuff[166],passwd,6);
+
+    CRC = computeCRC((unsigned char*)sendbuff, 172);
+
+    sendbuff[173] = (CRC >> 8);
+    sendbuff[172] = (CRC & 0xFF);
+    if(m_socket)
+        this->m_socket->write(sendbuff,174);
+}
+
+void MainWindow::on_btn_trinaRSD_clicked()
+{
+    char sendbuff[4096] = {'\0'};
+    int packlen = 0;
+    char ID[16];
+    char ID_List[4096];
+    char text[4096] = {'\0'};
+    int index=0;
+    int length = 0;
+    unsigned short CRC = 0;
+    unsigned char num = 0;
+    unsigned char FunctionStatus = 0;
+    if(ui->comboBox_RSD->currentIndex() == 0)
+    {
+        num = 0;
+    }else
+    {
+        length = ui->plainTextEdit_RSDLIST->toPlainText().length();
+        num = (length + 1)/13;
+        memcpy(text,ui->plainTextEdit_RSDLIST->toPlainText().toLatin1().data(),length);
+
+        for(index = 0;index<num;index++)
+        {
+            memset(ID,0x00,16);
+            memcpy(ID,&text[0+index*13],12);
+            memcpy(&ID_List[index*15],ID,15);
+        }
+
+    }
+    switch(ui->comboBox_RSDFunctionStatus->currentIndex())
+    {
+    case 0:
+        FunctionStatus = 0x11;
+        break;
+    case 1:
+        FunctionStatus = 0x10;
+        break;
+    case 2:
+        FunctionStatus = 0x01;
+        break;
+    case 3:
+        FunctionStatus = 0x00;
+        break;
+    }
+
+    sendbuff[0] = 'T';
+    sendbuff[1] = 'S';
+    memcpy(&sendbuff[2],ECU_UID,12);
+    memcpy(&sendbuff[27],ECU_UID,12);
+    sendbuff[52] = 0x02;
+    sendbuff[53] = 0x02;
+    sendbuff[54] = 0x01;
+    sendbuff[55] = 0x00;
+
+    if(num == 0)
+    {
+        sendbuff[56] = 0x00;
+        sendbuff[57] = 17;
+        sendbuff[58] = num;
+        sendbuff[59] = FunctionStatus;
+        sendbuff[60] = 'a';
+        sendbuff[61] = 'l';
+        sendbuff[62] = 'l';
+        packlen =75;
+    }else
+    {   //num*15+2
+        sendbuff[56] = (num*15+2)/256;
+        sendbuff[57] = (num*15+2)%256;
+        sendbuff[58] = num;
+        sendbuff[59] = FunctionStatus;
+        memcpy(&sendbuff[60],ID_List,num*15);
+        packlen =60+num*15;
+    }
+
+    CRC = computeCRC((unsigned char*)sendbuff, packlen);
+
+    sendbuff[packlen+1] = (CRC >> 8);
+    sendbuff[packlen] = (CRC & 0xFF);
+    if(m_socket)
+        this->m_socket->write(sendbuff,packlen+2);
+}
+
+void MainWindow::on_btn_trinagetrelation_clicked()
+{
+    char sendbuff[4096] = {'\0'};
+    unsigned short CRC = 0;
+
+    sendbuff[0] = 'T';
+    sendbuff[1] = 'S';
+    memcpy(&sendbuff[2],ECU_UID,12);
+    memcpy(&sendbuff[27],ECU_UID,12);
+    sendbuff[52] = 0x02;
+    sendbuff[53] = 0x05;
+    sendbuff[54] = 0x01;
+    sendbuff[55] = 0x00;
+    sendbuff[56] = 0x00;
+    sendbuff[57] = 0x00;
+
+    CRC = computeCRC((unsigned char*)sendbuff, 58);
+
+    sendbuff[59] = (CRC >> 8);
+    sendbuff[58] = (CRC & 0xFF);
+    if(m_socket)
+        this->m_socket->write(sendbuff,60);
+}
+
+void MainWindow::on_comboBox_ServerItem_currentIndexChanged(int index)
+{
+    if((index == 6) || (index == 7))
+    {
+        ui->label_trina->show();
+        ui->comboBox_trina->show();
+    }else
+    {
+        ui->label_trina->hide();
+        ui->comboBox_trina->hide();
+    }
 }

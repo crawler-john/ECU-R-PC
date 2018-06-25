@@ -6,6 +6,10 @@
 #include <QTableWidget>
 #include "commudp.h"
 
+
+#define MAX_PV_NUM 	6
+#define MAX_AC_NUM	3
+
 typedef struct
 {
     char ID[13];
@@ -21,6 +25,29 @@ typedef struct
     unsigned short Grid_Voltage_C;
     unsigned short Inverter_Power_D;
 } YC600_RealData_t;
+
+typedef struct
+{
+    char ID[32];
+    unsigned char commStatus;
+    char factor[10];
+    char type[10];
+    float PV_Voltage[MAX_PV_NUM];                       //直流电压		最多4路
+    float PV_Current[MAX_PV_NUM];                       //直流电流		最多4路
+    float PV_Power[MAX_PV_NUM];                         //直流电流		最多4路
+    float AC_Voltage[MAX_AC_NUM];                       //交流电压		3相电压
+    float AC_Current[MAX_AC_NUM];                       //交流电流		3相电压
+    float Grid_Frequency[MAX_AC_NUM];                      //电网频率
+    float Temperature;                           //机内温度
+    int Reactive_Power;                        //无功功率
+    int Active_Power;                          //有功功率
+    float Power_Factor;                        //功率因数
+    float Daily_Energy;                        //日发电量
+    float Life_Energy;                         //历史发电量
+    float Current_Energy;                      //本轮发电量	//日发电量计算
+} ThirdData_t;
+
+
 
 typedef struct
 {
@@ -66,6 +93,15 @@ typedef struct
     char Time[10];
     char Event[65];
 } AlarmEvent_t;
+
+typedef struct
+{
+    char ID[32];
+    int modbusAddr;
+    char Factor[20];
+    char Type[20];
+    unsigned char BaudRate;
+} ThirdID_t;
 
 typedef struct
 {
@@ -337,6 +373,49 @@ private slots:
 
     void on_tableWidget_alarmEvent_itemClicked(QTableWidgetItem *item);
 
+    void on_comboBox_factor_currentIndexChanged(int index);
+
+    void on_btn_addThird_clicked();
+
+    void on_btn_clearthirdID_clicked();
+    void addThirdID(QTableWidget *table, QList<ThirdID_t *> &List);
+    void on_btn_getthirdID_clicked();
+
+    void on_btn_registerThirdID_clicked();
+    void addThirdData(QTableWidget *table, QList<ThirdData_t *> &List);
+    void on_btn_getThirdData_clicked();
+
+
+    void on_btn_clearText_clicked();
+
+    void on_btn_ZigBeeSend_clicked();
+
+    void on_btn_trinasolarServer_clicked();
+    unsigned short computeCRC(unsigned char* pByte, size_t nbBytes);
+private slots:
+//    void server_New_Connect();
+    void newConnection();
+       void ReceiveData();
+//       void on_pushButton_2_clicked();
+
+
+//       void on_pushButton_clicked();
+       void on_btn_trinasolarServer_close_clicked();
+
+       void on_btn_setServer_clicked();
+
+       void on_btn_trinaReboot_clicked();
+
+       void on_btn_trinagetinfo_clicked();
+
+       void on_btn_trinaUpdate_clicked();
+
+       void on_btn_trinaRSD_clicked();
+
+       void on_btn_trinagetrelation_clicked();
+
+       void on_comboBox_ServerItem_currentIndexChanged(int index);
+
 private:
     Ui::MainWindow *ui;
     Communication *ECU_Client;
@@ -346,6 +425,8 @@ private:
     CommUDP *UDPClient2;
     char ECUID[13];
     QList<YC600_RealData_t *> YC600_RealData_List;
+    QList<ThirdData_t *> ThirdData_List;
+
     QList<ShortAddr_t *> ShortAddr_List;
     QList<RSDStatus_t *> RSDStatus_List;
     QList<TurnOnOff_t *> TurnOnOff_List;
@@ -353,6 +434,7 @@ private:
     QList<MaxPower_t *> MaxPower_List;
     QList<IRD_t *> IRD_List;
     QList<AlarmEvent_t *> AlarmEvent_List;
+    QList<ThirdID_t *> ThirdID_List;
 
     QList<RSSI_t *> RSSI_List;
 
@@ -362,7 +444,9 @@ private:
     QList<SSID_t *> SSID_List;
     QList<OPT700_RS_INFO *> OPT700_RS_INFOList;
     QList<ESP07S_SSID_INFO *> ESP07S_SSID_INFOList;
-
+    QTcpServer *server;
+    QTcpSocket *m_socket;
+    char ECU_UID[25];
 };
 
 #endif // MAINWINDOW_H
